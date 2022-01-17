@@ -11,27 +11,48 @@ func main() {
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
-func simplex(tableau [][]float64, tabConst []float64) [][]float64{
+func simplex(tableau [][]float64, tabConst []float64) []float64{
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	var alphaTab [len(tableau) + len(tableau[0])]float64
+	var alphaTab=make([]float64, len(tableau)+len(tableau[0])) 
 	//initialisation des affectations
 	for k:= 0; k< len(alphaTab); k++ {
 		alphaTab[k]=0
 	}	
+
+	//on ne peut pas mettre nil dans un tableau d'entier, on cree donc une
+	//valeur qui ne peut exister dans le tableau et que l'on retrouvera 
+	var essaie_de_devenir_nil float64
+	for i :=0;i<len(tabConst)+1; i++{
+		var aide_pour_devenir_nil bool
+		aide_pour_devenir_nil=true
+		for j := range tabConst{
+			if i==j{
+				aide_pour_devenir_nil=false
+			}			
+		}
+		if aide_pour_devenir_nil==true{
+			essaie_de_devenir_nil=float64(i)
+			break
+		}
+	}
+
+
 	//for a modifier
 	for k := 0; k < len(tableau); k++ {
 		//actualConstraint est la ligne qui ne respecte pas sa contrainte
 		//on avait &alphaTab, or on ne modifie pas alphaTab dans checkConst
-		actualConstraint := checkConst(alphaTab, tabConst, len(tableau[0]))
-		if actualConstraint == nil {
+		actualConstraint := checkConst(alphaTab, tabConst, len(tableau[0]),essaie_de_devenir_nil)
+		if actualConstraint == -1 {
 			//on avait un break ici
 			// il faut return solution  
+			
+			return alphaTab
 		}
 		//on cherche la colonne du pivot
-		//(pour l'instant on utilise pas la règle de bland)
+		//(pour l'instant on utilise pas la regle de bland)
 		//on avait pas & pour alphaTab, or on envoie dans pivot un pointeur vers alphaTab
-		colonnePivot := pivot(tableau, tabConst, &alphaTab, actualConstraint)
-		if colonnePivot == nil {
+		colonnePivot := pivot(tableau, tabConst, alphaTab, actualConstraint)
+		if colonnePivot == -1 {
 			fmt.Println("Il n'existe pas de solution pour ces contraintes") 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
@@ -57,45 +78,34 @@ func simplex(tableau [][]float64, tabConst []float64) [][]float64{
 				}
 			}
 			//on considere qu'une variable dont la contrainte est respectee l'a respectera ad vitam
-			//a surveiller 
-			tabConst[actualConstraint] = nil
+			//a surveiller
+			//idee conne pour eviter le probleme du nil 
+			tabConst[actualConstraint] = essaie_de_devenir_nil
 			//on modifie les affectations des variables de la base			
-			//je propose ici : !***!!  une autre version
-			for i := len(tableau[0]); i < len(alphaTab); i++ {
-				//a quoi sert cette conditionnelle?
-				if i !=  actualConstraint + len(tableau[0]){
-					alphaTab[i] = 0
-					//Avec une trace je ne retrouve pas le bon alpha pour j
-					for j := 0; j < len(tableau[0]); j++ {
-						alphaTab[i] += tableau[i - len(tableau[0])][j] * alphaTab[j]
+			for i := 0; i<len(tableau);i++{
+				if i != actualConstraint {
+					for j :=0; j<len(tableau[0]);j++{
+						alphaTab[i]+= tableau[i][j]*alphaTab[len(tableau)]
 					}
 				}
 			}
+			fmt.Println("ici2", alphaTab)
 		}
 	}
-	return tableau
+	return alphaTab
 }
-
-/*  !***!!
-for i := 0; i<len(tableau);i++{
-	if i != actualConstraint {
-		for j :=0; j<len(tableau[0]);j++{
-			alphaTab[i]+= tableau[i][j]*alphaTab[len(tableau)]
-		}
-	}
-}
-*/
 
 
 
 //Cherche la premiere contrainte qui n'est pas respectee ca place dans tabConst
-func checkConst(alphaTab []float64,  tabConst []float64, nbInconnu int) int{
+func checkConst(alphaTab []float64,  tabConst []float64, nbInconnu int, essaie_de_devenir_nil float64) int{
 	for index, element := range tabConst {
-		if element != nil {
+		if element != essaie_de_devenir_nil {
 			//on avait alphaTab[index + nbInconnu] or alpha est
 			// construit comme ca initialement : {e1, e2,e3, x,y}
 			//si on garde +nbInconnu, ca voudra dire qu'une ligne qui
 			// n'existe pas peut etre renvoye
+			fmt.Println(alphaTab,"ici",alphaTab[index])
 			if alphaTab[index] < element {
 				return index
 			}
@@ -106,32 +116,38 @@ func checkConst(alphaTab []float64,  tabConst []float64, nbInconnu int) int{
 }
 
 //Renvoie la colonne pivot par rapport a la contrainte a traiter
-func pivot(tableau []float64,  tabConst []float64, alphaTab *[]float64, pivotLine int) int{
+func pivot(tableau [][]float64,  tabConst []float64, alphaTab []float64, pivotLine int) int{
 	var teta float64
+	fmt.Println("pivotline",pivotLine)
 	for index1, element1 := range tableau[pivotLine]{
+		var alphaColumnPivot float64
 		//il y avait +len(tableau[0]) mais c'est une erreur
-		teta = (tabConst[pivotLine] - (*alphaTab[pivotLine]) ) / element1
+		teta = (tabConst[pivotLine] - (alphaTab[pivotLine]) ) / element1
+		fmt.Println("tabconst[pivotLine]",tabConst[pivotLine],"alphapivotline",alphaTab[pivotLine],"teta=",teta,element1)
 		//renommage alpha inconnu et *alphaTab[index1] devient : *aphaTab[index1 + nombre de lignes]
 		//car c'est la variable de la colonne que l'on modifie
-		alphaColumnPivot := teta + (*alphaTab[index1+len(tableau)])
+		alphaColumnPivot = teta + (alphaTab[index1+len(tableau)])
 		//pourquoi imbrication? voir: *$& 
 		var varAlphaEcart float64
 		//ce for n'est qu'une somme pour determiner l'affectation de la variable ligne du pivot
 		for index2, element2 := range tableau[pivotLine] {
 			//idem que plus haut, +len(tableau)
-			varAlphaEcart += element2 * (*alphaTab[index2+len(tableau)])
+			if element1 != element2{
+				varAlphaEcart += element2 * (alphaTab[index2+len(tableau)])
+			}
 		}
+		varAlphaEcart+= element1 * alphaColumnPivot
 		//*$& a cause d'ici ?
 		if  varAlphaEcart >= tabConst[pivotLine] {
 			//Changement des place dans alphaTab entre li pivot et la variable d'ecart
 			//alphaColumnPivot passe dans la base, donc au debut de alphaTab.
 			// L'ajout du nombre de colonnes n'est pas pertinent pour l'index d'alphaTab,
 			// car il commence par le nombre de ligne
-			*alphaTab[index1] = alphaColumnPivot
-			*alphaTab[index1 + len(tableau)] = varAlphaEcart
+			alphaTab[index1] = alphaColumnPivot
+			alphaTab[index1 + len(tableau)] = varAlphaEcart
 			return index1
 		}
 	}
 	//pas de pivot suitable
-	return nil	 
+	return -1	 
 }
