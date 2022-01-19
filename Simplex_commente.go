@@ -15,6 +15,10 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alphaTab := createAlphaTab(tableau)
 	var posVarTableau = createPosVarTableau(tableau)
+	var bland = make([]string, len(posVarTableau))
+	for i:= range posVarTableau{
+		bland[i]=posVarTableau[i]
+	}
 	//on ne peut pas mettre nil dans un tableau d'entier, on cree donc une
 	//valeur qui ne peut exister dans le tableau et que l'on retrouvera 
 	var essaie_de_devenir_nil float64
@@ -41,7 +45,6 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 		if workingLine == -1 {
 			//on avait un break ici
 			// il faut return solution  
-			
 			return alphaTab
 		}
 		//on cherche la colonne du pivot
@@ -49,7 +52,8 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 		//on avait pas & pour alphaTab, or on envoie dans pivot un pointeur vers alphaTab
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine, posVarTableau)
 		if columnPivot == -1 {
-			fmt.Println("Il n'existe pas de solution pour ces contraintes") 
+			fmt.Println("Il n'existe pas de solution pour ces contraintes")
+			return alphaTab 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			for i := 0; i < len(tableau[0]); i++ {
@@ -59,7 +63,6 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 					tableau[workingLine][i] = -tableau[workingLine][i]/tableau[workingLine][columnPivot]
 				}
 			}
-			fmt.Println("tableau =", tableau)
 			//on modifie le tableau des coefficients des autres lignes
 			for i := 0; i < len(tableau); i++ {
 				if i != workingLine {
@@ -79,18 +82,15 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 			//idee conne pour eviter le probleme du nil 
 			tabConst[workingLine] = essaie_de_devenir_nil
 			//on modifie les affectations des variables de la base	
-			fmt.Println("alphaTab avant maj", alphaTab)		
 			for i := 0; i<len(tableau);i++{
 				if i != workingLine {
-					calAlpha := 0.0
+					var calAlpha float64 
 					for j :=0; j<len(tableau[0]);j++{
-						fmt.Println("i =", i, "/", calAlpha, "=", tableau[i][j], "*", alphaTab[posVarTableau[j + len(tableau)]])
 						calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j + len(tableau)]]
 					}
-					alphaTab[fmt.Sprint("e", i)] = calAlpha
+					alphaTab[posVarTableau[i]] = calAlpha
 				}
 			}
-			fmt.Println("alphaTab apres maj", alphaTab)
 		}
 	}
 	return alphaTab
@@ -100,7 +100,6 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 
 //Cherche la premiere contrainte qui n'est pas respectee ca place dans tabConst
 func checkConst(alphaTab map[string]float64,  tabConst []float64, nbInconnu int, essaie_de_devenir_nil float64) int{
-	fmt.Println(tabConst)
 	for index, element := range tabConst {
 		if element != essaie_de_devenir_nil {
 			//on avait alphaTab[index + nbInconnu] or alpha est
@@ -118,15 +117,15 @@ func checkConst(alphaTab map[string]float64,  tabConst []float64, nbInconnu int,
 
 //Renvoie la colonne pivot par rapport a la contrainte a traiter
 func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64, pivotLine int, posVarTableau []string) int{
-	var teta float64
-	fmt.Println("pivotline =",pivotLine)
-	for index1, element1 := range tableau[pivotLine]{
+	for numero_colonne, element1 := range tableau[pivotLine]{
+		var teta float64
 		var alphaColumn float64
 		//il y avait +len(tableau[0]) mais c'est une erreur
+		//for bonne_colonne,coeff_bonne_colonne := range(tableau)		
 		teta = (tabConst[pivotLine] - (alphaTab[posVarTableau[pivotLine]]) ) / element1
 		//renommage alpha inconnu et *alphaTab[index1] devient : *aphaTab[index1 + nombre de lignes]
 		//car c'est la variable de la colonne que l'on modifie
-		alphaColumn = teta + (alphaTab[posVarTableau[index1+len(tableau)]])
+		alphaColumn = teta + (alphaTab[posVarTableau[numero_colonne+len(tableau)]])
 		//pourquoi imbrication? voir: *$& 
 		var alphaLine float64
 		//ce for n'est qu'une somme pour determiner l'affectation de la variable ligne du pivot
@@ -134,19 +133,20 @@ func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64
 			//idem que plus haut, +len(tableau)
 			if element1 != element2{
 				alphaLine += element2 * (alphaTab[posVarTableau[index2+len(tableau)]])
+			
 			}
 		}
 		alphaLine += element1 * alphaColumn
 		//*$& a cause d'ici ?
-		if  alphaLine >= tabConst[pivotLine] {
+		if  alphaLine >= tabConst[pivotLine] && (teta)>=0 {
 			//Changement des place dans alphaTab entre li pivot et la variable d'ecart
 			//alphaColumn passe dans la base, donc au debut de alphaTab.
 			// L'ajout du nombre de colonnes n'est pas pertinent pour l'index d'alphaTab,
 			// car il commence par le nombre de ligne
 			alphaTab[posVarTableau[pivotLine]] = alphaLine
-			alphaTab[posVarTableau[index1 + len(tableau)]] = alphaColumn
-			switchVarStringTab(posVarTableau, pivotLine, index1 + len(tableau))
-			return index1
+			alphaTab[posVarTableau[numero_colonne + len(tableau)]] = alphaColumn
+			switchVarStringTab(posVarTableau, pivotLine, numero_colonne + len(tableau))
+			return numero_colonne
 		}
 	}
 	//pas de pivot suitable
