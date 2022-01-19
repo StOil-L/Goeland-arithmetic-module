@@ -114,10 +114,11 @@ func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64
 		}
 		alphaLine += coefColumn * alphaColumn
 		//on verifie la suitabilite de alphaLine
-		if  alphaLine >= tabConst[pivotLine] {
+		if  alphaLine >= tabConst[pivotLine] && teta>0 {
 			alphaTab[posVarTableau[pivotLine]] = alphaLine
 			alphaTab[posVarTableau[numero_colonne + len(tableau)]] = alphaColumn
 			switchVarStringTab(posVarTableau, pivotLine, numero_colonne + len(tableau))
+			fmt.Println(teta)
 			return numero_colonne
 		}
 	}
