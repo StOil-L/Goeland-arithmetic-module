@@ -104,7 +104,7 @@ func checkConst(alphaTab map[string]float64,  tabConst []float64, nbInconnu int,
 //Renvoie la colonne pivot par rapport a la contrainte a traiter
 func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64, pivotLine int, posVarTableau []string) int{
 	for numero_colonne, coefColumn := range tableau[pivotLine]{
-		if string(posVarTableau[numero_colonne + len(tableau)][0]) != "e" {
+		if string(posVarTableau[numero_colonne + len(tableau)][0]) != "e" && coefColumn != 0 {
 			var teta float64
 			var alphaColumn float64		
 			teta = (tabConst[pivotLine] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
