@@ -108,7 +108,12 @@ func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64
 			var teta float64
 			var alphaColumn float64		
 			teta = (tabConst[pivotLine] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
-			alphaColumn = teta + (alphaTab[posVarTableau[numero_colonne+len(tableau)]])
+			//nos contraintes sont tq il faut augmenter la variable de la base, en fonction du pivot, on incrémente ou décrémente la variable hors de la base
+			if coefColumn>0 {
+				alphaColumn = (alphaTab[posVarTableau[numero_colonne+len(tableau)]]) + teta 
+			} else {
+				alphaColumn = (alphaTab[posVarTableau[numero_colonne+len(tableau)]]) - teta 
+			 }
 			var alphaLine float64
 			//on calcule alphaLine
 			for index2, element2 := range tableau[pivotLine] {
