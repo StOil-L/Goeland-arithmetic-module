@@ -3,12 +3,16 @@ package main
 //bibliothèque de base
 import (
 	"fmt"
+	"strconv"
 )
 
 func main() {
 	var tableau = [][]float64{{1,1}, {2,-1}, {-1,2}}
+	var tableau2 = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
 	var tabConst = []float64{2,0,1}
+	var tabConst2 = []float64{0,1,2,3,4}
 	fmt.Println(simplex(tableau, tabConst))
+	fmt.Println(simplex(tableau2,tabConst2))
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
@@ -17,33 +21,31 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 	alphaTab := createAlphaTab(tableau)
 	//tableau qui nous donne la postion des variables dans le tableau alphaTab
 	var posVarTableau = createPosVarTableau(tableau)
-	//on ne peut pas mettre nil dans un tableau d'entier, on cree donc une
-	//valeur qui ne peut exister dans le tableau et que l'on retrouvera 
-	var essaie_de_devenir_nil float64
-	for i :=0;i<=len(tabConst); i++{
-		var aide_pour_devenir_nil bool
-		aide_pour_devenir_nil=true
-		for j := range tabConst{
-			if i==j{
-				aide_pour_devenir_nil=false
-			}			
-		}
-		if aide_pour_devenir_nil==true{
-			essaie_de_devenir_nil=float64(i)
-			break
-		}
+	var bland = make([]string, len(posVarTableau))
+	
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
 	}
-
-
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+	
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
-	for k := 0; k < len(tableau); k++ {
+	k := true
+	for k {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
-		workingLine := checkConst(alphaTab, tabConst, len(tableau[0]), essaie_de_devenir_nil)
+		workingLine := checkConst(alphaTab, tabConst, PosConst)
 		if workingLine == -1 { 
 			return alphaTab
 		}
 		//on cherche la colonne du pivot
-		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine, posVarTableau)
+		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine, posVarTableau, bland, PosConst)
 		if columnPivot == -1 {
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
 			return alphaTab 
@@ -68,20 +70,19 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 					}
 				}
 			}
-			tabConst[workingLine] = essaie_de_devenir_nil
+			
 			//calcul des nouveaux alpha
-			fmt.Println(alphaTab)
-			fmt.Println(posVarTableau)
 			for i := 0; i<len(tableau);i++{
 				if i != workingLine {
 					var calAlpha float64 
 					for j :=0; j<len(tableau[0]);j++{
-						fmt.Println(calAlpha, tableau[i][j], alphaTab[posVarTableau[j + len(tableau)]], posVarTableau[j + len(tableau)])
 						calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j + len(tableau)]]
 					}
 					alphaTab[posVarTableau[i]] = calAlpha
 				}
 			}
+
+			fmt.Println(alphaTab)
 		}
 	}
 	return alphaTab
@@ -90,47 +91,83 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 
 
 //Cherche la premiere contrainte qui n'est pas respectee et retourne le numero de la ligne associee
-func checkConst(alphaTab map[string]float64,  tabConst []float64, nbInconnu int, essaie_de_devenir_nil float64) int{
-	for index, element := range tabConst {
-		if element != essaie_de_devenir_nil {
-			if alphaTab[fmt.Sprint("e", index)] < element {
-				return index
-			}
-		}
+func checkConst(alphaTab map[string]float64,  tabConst []float64,  PosConst []int) int{
+	var min int
+	min=len(tabConst)
+	for _, position := range PosConst  {
+		if position!=-1 {
+			if min>position && alphaTab[fmt.Sprint("e", position)] < tabConst[position]{
+				min=position
+				fmt.Println(position)
+			}	
+		}	
 	}
+	if min != len(tabConst) && min != -1{
+		return min
+	}
+
 	return -1
 }
 
 //Renvoie la colonne pivot par rapport a la contrainte a traiter
-func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64, pivotLine int, posVarTableau []string) int{
-	for numero_colonne, coefColumn := range tableau[pivotLine]{
-		if string(posVarTableau[numero_colonne + len(tableau)][0]) != "e" && coefColumn != 0 {
-			var teta float64
-			var alphaColumn float64		
-			teta = (tabConst[pivotLine] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
-			//nos contraintes sont tq il faut augmenter la variable de la base, en fonction du pivot, on incrémente ou décrémente la variable hors de la base
-			if coefColumn>0 {
-				alphaColumn = (alphaTab[posVarTableau[numero_colonne+len(tableau)]]) + teta 
-			} else {
-				alphaColumn = (alphaTab[posVarTableau[numero_colonne+len(tableau)]]) - teta 
-			 }
-			var alphaLine float64
-			//on calcule alphaLine
-			for index2, element2 := range tableau[pivotLine] {
-				if coefColumn != element2{
-					alphaLine += element2 * (alphaTab[posVarTableau[index2+len(tableau)]])
+func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64, pivotLine int, posVarTableau []string, bland []string, PosConst []int) int{
+		fmt.Println("pivotLine",pivotLine)
+		var cpt int
+		cpt=len(tableau[0])
+		for cpt>0{
+			var variablePivot string
+			var index int
+			for _,vari := range bland{		
+				for j:=len(tableau); j< len(tableau)+len(tableau[0]);j++{
+					if vari==posVarTableau[j]{
+						variablePivot=vari
+						index=j
+						var theta float64
+						var coefColumn float64
+						coefColumn=tableau[pivotLine][index-len(tableau)]
+						if coefColumn != 0 {
+							theta = (tabConst[pivotLine] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
+						}
+						var numero_colonne int
+						numero_colonne=index-len(tableau)
+						var alphaColumn float64	
+						if coefColumn>0 {
+						alphaColumn = (alphaTab[variablePivot]) + theta 
+						} else {
+							alphaColumn = (alphaTab[variablePivot]) - theta 
+						}
+						var alphaLine float64
+						//on calcule alphaLine
+						for index2, element2 := range tableau[pivotLine] {
+							if coefColumn != element2{
+								alphaLine += element2 * (alphaTab[posVarTableau[index2+len(tableau)]])
+							}
+						}
+						alphaLine += coefColumn * alphaColumn
+						//on verifie la suitabilite de alphaLine
+						if  alphaLine >= tabConst[pivotLine] {
+							alphaTab[posVarTableau[pivotLine]] = alphaLine
+							alphaTab[variablePivot] = alphaColumn
+							switchVarStringTab(posVarTableau, pivotLine, numero_colonne + len(tableau))
+							if variablePivot[0]=='e'{
+								switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine])
+							} else {
+								metavar := string(posVarTableau[pivotLine][1])
+								var indice int
+								if valeur,err := strconv.Atoi(metavar); err==nil{
+									indice=valeur
+								}
+								PosConst[indice]=-1
+							}
+							return numero_colonne
+						} else {
+							cpt-=1
+						}
+					}
 				}
-			}
-			alphaLine += coefColumn * alphaColumn
-			//on verifie la suitabilite de alphaLine
-			if  alphaLine >= tabConst[pivotLine] {
-				alphaTab[posVarTableau[pivotLine]] = alphaLine
-				alphaTab[posVarTableau[numero_colonne + len(tableau)]] = alphaColumn
-				switchVarStringTab(posVarTableau, pivotLine, numero_colonne + len(tableau))
-				return numero_colonne
+		
 			}
 		}
-	}
 	return -1	 
 }
 
@@ -165,4 +202,20 @@ func switchVarStringTab(tab []string, pos1 int, pos2 int){
 	valeur := tab[pos1]
 	tab[pos1] = tab[pos2]
 	tab[pos2] = valeur
+}
+
+func switchContrainte(PosConst []int,variableColonne string,variableLigne string){
+	var1 := string(variableColonne[1])
+	var I1 int
+	if valeur1,err1 := strconv.Atoi(var1); err1==nil{
+		I1=valeur1
+	}
+	var2 := string(variableLigne[1])
+	var I2 int
+	if valeur2,err2 := strconv.Atoi(var2); err2==nil{
+		I2=valeur2
+	}
+	PosConst[I1]=PosConst[I2]
+	PosConst[I2]=-1
+
 }
