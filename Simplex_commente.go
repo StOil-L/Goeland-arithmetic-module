@@ -98,7 +98,6 @@ func checkConst(alphaTab map[string]float64,  tabConst []float64,  PosConst []in
 		if position!=-1 {
 			if min>position && alphaTab[fmt.Sprint("e", position)] < tabConst[position]{
 				min=position
-				fmt.Println(position)
 			}	
 		}	
 	}
@@ -111,63 +110,61 @@ func checkConst(alphaTab map[string]float64,  tabConst []float64,  PosConst []in
 
 //Renvoie la colonne pivot par rapport a la contrainte a traiter
 func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64, pivotLine int, posVarTableau []string, bland []string, PosConst []int) int{
-		fmt.Println("pivotLine",pivotLine)
-		var cpt int
-		cpt=len(tableau[0])
-		for cpt>0{
-			var variablePivot string
-			var index int
-			for _,vari := range bland{		
-				for j:=len(tableau); j< len(tableau)+len(tableau[0]);j++{
-					if vari==posVarTableau[j]{
-						variablePivot=vari
-						index=j
-						var theta float64
-						var coefColumn float64
-						coefColumn=tableau[pivotLine][index-len(tableau)]
-						if coefColumn != 0 {
-							theta = (tabConst[pivotLine] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
-						}
-						var numero_colonne int
-						numero_colonne=index-len(tableau)
-						var alphaColumn float64	
-						if coefColumn>0 {
-						alphaColumn = (alphaTab[variablePivot]) + theta 
-						} else {
-							alphaColumn = (alphaTab[variablePivot]) - theta 
-						}
-						var alphaLine float64
-						//on calcule alphaLine
-						for index2, element2 := range tableau[pivotLine] {
-							if coefColumn != element2{
-								alphaLine += element2 * (alphaTab[posVarTableau[index2+len(tableau)]])
-							}
-						}
-						alphaLine += coefColumn * alphaColumn
-						//on verifie la suitabilite de alphaLine
-						if  alphaLine >= tabConst[pivotLine] {
-							alphaTab[posVarTableau[pivotLine]] = alphaLine
-							alphaTab[variablePivot] = alphaColumn
-							switchVarStringTab(posVarTableau, pivotLine, numero_colonne + len(tableau))
-							if variablePivot[0]=='e'{
-								switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine])
-							} else {
-								metavar := string(posVarTableau[pivotLine][1])
-								var indice int
-								if valeur,err := strconv.Atoi(metavar); err==nil{
-									indice=valeur
-								}
-								PosConst[indice]=-1
-							}
-							return numero_colonne
-						} else {
-							cpt-=1
-						}
+	var monBool bool
+	monBool = false	
+	var variablePivot string
+	var index int
+	for _,vari := range bland{
+		HERE:
+			if monBool==true {
+			    monBool=false
+				continue
+			}
+		for j:=len(tableau); j< len(tableau)+len(tableau[0]);j++{
+			if vari==posVarTableau[j]{
+				variablePivot=vari
+				index=j
+				var theta float64
+				var coefColumn float64
+				coefColumn=tableau[pivotLine][index-len(tableau)]
+				if coefColumn != 0 {
+					theta = (tabConst[PosConst[pivotLine]] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
+				} else  if coefColumn<0 && alphaTab[variablePivot]<=tabConst[PosConst[pivotLine]] || coefColumn==0{
+					monBool=true
+					goto HERE
+				}
+				var numero_colonne int
+				numero_colonne=index-len(tableau)
+				var alphaColumn float64	
+				alphaColumn = (alphaTab[variablePivot]) + theta
+				var alphaLine float64
+				//on calcule alphaLine
+				for index2, element2 := range tableau[pivotLine] {
+					if coefColumn != element2{
+						alphaLine += element2 * (alphaTab[posVarTableau[index2+len(tableau)]])
 					}
 				}
-		
+				alphaLine += coefColumn * alphaColumn
+				alphaTab[posVarTableau[pivotLine]] = alphaLine
+				alphaTab[variablePivot] = alphaColumn
+				switchVarStringTab(posVarTableau, pivotLine, numero_colonne + len(tableau))
+				if variablePivot[0]=='e'{
+					switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine])
+				} else {
+					metavar := string(posVarTableau[pivotLine][1])
+					var indice int
+					if valeur,err := strconv.Atoi(metavar); err==nil{
+						indice=valeur
+					}
+					PosConst[indice]=-1
+				}
+				return numero_colonne
+						
 			}
 		}
+		
+	}
+		
 	return -1	 
 }
 
