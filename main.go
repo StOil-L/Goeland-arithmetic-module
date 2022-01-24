@@ -14,7 +14,7 @@ import (
     "strings"
     "regexp"
 )
- 
+
 func main() {
     // on definit plusieurs equation et on les split
     var pluEqu = " x+y = 5, z+x >=3"
@@ -25,7 +25,7 @@ func main() {
     var nbrEq = len([]string(split))
     println("Length of the string is :", nbrEq)
     
-    var equation = "2x+4y <= 1z"
+    var equation = "2x+4y <= z"
     // tableau de variables
     reV := regexp.MustCompile(`[a-z]`)
     vars := reV.FindAll([]byte(equation), -1)
@@ -45,35 +45,29 @@ func main() {
     }
     fmt.Println("tableauVar =",tableauVar)
     
-    var tableauCoeff []string
-    var lenTC = len([][]byte(coeff))
-    for cpt := 0; cpt < lenTC; cpt++ {
-        sC := string([]byte(coeff[cpt]))
-        tableauCoeff = append(tableauCoeff,sC)
-    }
-    fmt.Println("tableauCoeff =",tableauCoeff)
-    
-    // creation de la map qui contient la variable en clé et sa valeur en valeur
+    // creation de la map qui initialise chaque variable à 1
     m := make(map[string]string)
     var lenM = len([]string(tableauVar))
     for cpt := 0; cpt < lenM; cpt++ {
-        m[tableauVar[cpt]] = tableauCoeff[cpt]
+        m[tableauVar[cpt]] = "1"
     }
     fmt.Println("map:", m)
 
-    
-    //var equation = "x+y <= 5"
-    // va aller dans la boucle for
-    if strings.Contains(equation, ">=") {
-        fmt.Println(">=")
-    } else if strings.Contains(equation, "<=") {
-        fmt.Println("<=")
-    } else if strings.Contains(equation, "=") {
-        fmt.Println("=")
-    } else {
-        fmt.Println("erreur")
+    fmt.Println("equation = ",equation)
+    for cpt := 0; cpt < lenM; cpt++ {
+        findVar := regexp.MustCompile(tableauVar[cpt])
+        loc := findVar.FindStringIndex(equation)
+        loc1 := loc[0]-1
+        loc2 := loc[1]-1
+        //fmt.Println(loc1,loc2)
+        valBefore := equation[loc1:loc2]
+        //fmt.Println("valeur avant = ",valBefore)
+        
+        if valBefore != " " {
+            m[tableauVar[cpt]] = valBefore
+        }
     }
-    
-    
+    fmt.Println("map:", m)
 
 }
+
