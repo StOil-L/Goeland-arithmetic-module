@@ -13,6 +13,7 @@ import (
     "fmt"
     "strings"
     "regexp"
+    "strconv"
 )
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
     var nbrEq = len([]string(split))
     println("Length of the string is :", nbrEq)
     
-    var equation = "2x+4y <= z"
+    var equation = "2x+4y <= z x+2y = 5"
     // tableau de variables
     reV := regexp.MustCompile(`[a-z]`)
     vars := reV.FindAll([]byte(equation), -1)
@@ -46,10 +47,10 @@ func main() {
     fmt.Println("tableauVar =",tableauVar)
     
     // creation de la map qui initialise chaque variable à 1
-    m := make(map[string]string)
+    m := make(map[string]float64)
     var lenM = len([]string(tableauVar))
     for cpt := 0; cpt < lenM; cpt++ {
-        m[tableauVar[cpt]] = "1"
+        m[tableauVar[cpt]] = 0
     }
     fmt.Println("map:", m)
 
@@ -63,8 +64,14 @@ func main() {
         valBefore := equation[loc1:loc2]
         //fmt.Println("valeur avant = ",valBefore)
         
+        //on converti valBefore en float64
+        valBeforeF, err := strconv.ParseFloat(valBefore, 64)
+    	if err == nil {
+    	    fmt.Println(valBeforeF, err)
+    	}
+        
         if valBefore != " " {
-            m[tableauVar[cpt]] = valBefore
+            m[tableauVar[cpt]] = m[tableauVar[cpt]] + valBeforeF
         }
     }
     fmt.Println("map:", m)
