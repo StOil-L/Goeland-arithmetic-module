@@ -22,7 +22,7 @@ func main() {
     //fmt.Println(strconv.ParseFloat(element, 64))
     var tableau = make([][]float64,0) 
     var tabConst = make([]float64,0)
-    tableaux("-2 x +4 y <= 8", tableau, tabConst)
+    tableaux("20 r - x + y -18 z <= 8", tableau, tabConst)
 }
 
 
@@ -50,7 +50,11 @@ func tableaux(eq string, tableau [][]float64, tabConst []float64) {
             ligneEq[posTab] = conv
             //fmt.Println("type = ",reflect.TypeOf(tabEle[i]).String())
         } else {
-            posTab += 1
+            if tabEle[i] == "-"{
+                ligneEq[posTab] = -1.0
+            } else if tabEle[i] != "+" {
+                posTab += 1
+            }
         }
     }
     //fmt.Println("ligneEq",ligneEq)
