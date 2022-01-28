@@ -19,13 +19,26 @@ func main() {
     // Creation du tableau de coeff et du tableau de contraintes
     var tableau = make([][]float64,0) 
     var tabConst = make([]float64,0)
-
-    tableaux("20 r - x + y -18 z <= 8", tableau, tabConst)
+    var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
+    
+    tabConst, tableau = addAllConst(tabExe, tableau, tabConst)
+    fmt.Println("tableau = ",tableau)
+    fmt.Println("tabConst = ",tabConst)
 }
 
+// fonction qui prend en parametre un tableau d'equation eqs, une matrice de coeff et un tableau de contraintes 
+// et renvoit ces tableaux de coeff et de contraintes remplis
+func addAllConst(eqs []string, tableau [][]float64, tabConst []float64) ([]float64, [][]float64){
+    for _, element := range eqs {
+        lastEle, tab := addOneConst(element)
+        tableau = append(tableau, tab)
+        tabConst = append(tabConst, lastEle)
+    }
+    return tabConst, tableau
+}
 
-// fonction qui prend en parametre une equation et qui implemente les tableaux de coeff et de contraintes
-func tableaux(eq string, tableau [][]float64, tabConst []float64) {
+// fonction qui prend en parametre une equation et qui implemente les tableaux de coeff et de contraintes 
+func addOneConst(eq string) (float64, []float64){
     // on split la string avec les espaces, ce qui nous donne un tableaux avec tous les elements de la string
     tabEle := strings.Split(eq, " ")
     // tableau qui va contenir les coefficients de l'equation
@@ -57,15 +70,12 @@ func tableaux(eq string, tableau [][]float64, tabConst []float64) {
         }
     }
 
-    // On ajoute notre ligne de coeff dans notre tableau de coeff
-    tableau = append(tableau, ligneEq[0:posTab])
-    fmt.Println(tableau)
-    
     // On ajoute la contraintes dans le tableau de contraintes en l'a convertissant d'abord
     lastEle := tabEle[len(tabEle)-1]
     lastEleC,_ := strconv.ParseFloat(lastEle, 64)
-    tabConst = append(tabConst, lastEleC)
-    fmt.Println(tabConst)
+
+    
+    return lastEleC, ligneEq[0:posTab]
 }
 
 
