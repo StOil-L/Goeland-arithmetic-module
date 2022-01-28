@@ -4,15 +4,33 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"time"
 )
 
 func main() {
+	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
+	var x int
+	fmt.Scanln(&x)
+	if x==1 {
 	var tableau = [][]float64{{1,1}, {2,-1}, {-1,2}}
-	var tableau2 = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
 	var tabConst = []float64{2,0,1}
-	var tabConst2 = []float64{0,1,2,3,4}
+	fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
 	fmt.Println(simplex(tableau, tabConst))
+	}
+	if x==2{
+
+	var tableau2 = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
+	var tabConst2 = []float64{0,1,2,3,4}
+	fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
 	fmt.Println(simplex(tableau2,tabConst2))
+
+	}
+	if x==3{
+ 	var tableau3 = [][]float64{{1,1}, {1,2}, {1,3}, {1,4}, {1,5}}
+	var tabConst2 = []float64{0,1,2,3,4}
+	fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
+	fmt.Println(simplex(tableau3,tabConst2))
+	}
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
@@ -81,7 +99,7 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 					alphaTab[posVarTableau[i]] = calAlpha
 				}
 			}
-
+			time.Sleep(time.Second)
 			fmt.Println(alphaTab)
 		}
 	}
@@ -129,9 +147,10 @@ func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64
 				coefColumn=tableau[pivotLine][index-len(tableau)]
 				if coefColumn != 0 {
 					theta = (tabConst[PosConst[pivotLine]] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
-				} else  if coefColumn<0 && alphaTab[variablePivot]<=tabConst[PosConst[pivotLine]] || coefColumn==0{
-					monBool=true
-					goto HERE
+					if coefColumn<0 && alphaTab[variablePivot]<=tabConst[PosConst[pivotLine]] || coefColumn==0{
+						monBool=true
+						goto HERE
+					}
 				}
 				var numero_colonne int
 				numero_colonne=index-len(tableau)
@@ -158,6 +177,7 @@ func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64
 					}
 					PosConst[indice]=-1
 				}
+				fmt.Println(variablePivot)
 				return numero_colonne
 						
 			}
