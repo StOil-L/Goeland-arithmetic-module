@@ -22,7 +22,7 @@ func main() {
     //fmt.Println(strconv.ParseFloat(element, 64))
     var tableau = make([][]float64,0) 
     var tabConst = make([]float64,0)
-    tableaux("-2 x +4 y <= 8 ", tableau, tabConst)
+    tableaux("20 r - x + y -18 z <= 8", tableau, tabConst)
 }
 
 
@@ -42,22 +42,24 @@ func tableaux(eq string, tableau [][]float64, tabConst []float64) {
 
         if isChar != "" {
             fmt.Println("tabEle[i]",tabEle[i])
-            fmt.Println(strconv.ParseFloat(tabEle[i], 64))
-            conv,error := strconv.ParseFloat(tabEle[i], 64)
-            fmt.Println("conv",conv)
-            fmt.Println("error",error)
+            //fmt.Println(strconv.ParseFloat(tabEle[i], 64))
+            conv,_ := strconv.ParseFloat(tabEle[i], 64)
+            //fmt.Println("conv",conv)
+            //fmt.Println("error",error)
             //ligneEq[posTab] = strconv.ParseFloat(tabEle[i], 64)
             ligneEq[posTab] = conv
             //fmt.Println("type = ",reflect.TypeOf(tabEle[i]).String())
-            posTab += 1
         } else {
-            if ligneEq[posTab] == 1.0 {
+            if tabEle[i] == "-"{
+                ligneEq[posTab] = -1.0
+            } else if tabEle[i] != "+" {
                 posTab += 1
             }
         }
     }
     //fmt.Println("ligneEq",ligneEq)
-    tableau = append(tableau, ligneEq)
+    fmt.Println("postab = ", posTab)
+    tableau = append(tableau, ligneEq[0:posTab])
     fmt.Println(tableau)
     //tabConst = append(tabConst, tabEle[len(tabEle)-1])
 }
