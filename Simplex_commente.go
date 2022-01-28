@@ -147,10 +147,11 @@ func pivot(tableau [][]float64,  tabConst []float64, alphaTab map[string]float64
 				coefColumn=tableau[pivotLine][index-len(tableau)]
 				if coefColumn != 0 {
 					theta = (tabConst[PosConst[pivotLine]] - (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn
-					if coefColumn<0 && alphaTab[variablePivot]<=tabConst[PosConst[pivotLine]] || coefColumn==0{
-						monBool=true
-						goto HERE
-					}
+				}
+				if coefColumn<0 && alphaTab[variablePivot]<=tabConst[PosConst[pivotLine]] || coefColumn==0{
+					monBool=true
+					goto HERE
+					
 				}
 				var numero_colonne int
 				numero_colonne=index-len(tableau)
