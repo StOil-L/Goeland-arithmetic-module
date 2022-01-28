@@ -4,7 +4,7 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"time"
+//	"time"
 )
 
 func main() {
@@ -99,7 +99,7 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 					alphaTab[posVarTableau[i]] = calAlpha
 				}
 			}
-			time.Sleep(time.Second)
+			//time.Sleep(time.Second)
 			fmt.Println(alphaTab)
 		}
 	}
