@@ -50,13 +50,7 @@ func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst
 
 //Verifie que le nombre donné soit un entier
 func isInteger(nombre float64) bool{
-	var estEntier bool 
-	estEntier = false
-	if(math.Mod(nombre,1) == nombre){
-	estEntier = true
-	}
-
-return estEntier
+	return 	math.Mod(nombre,1) == 0
 
 }
 
@@ -69,3 +63,4 @@ func estSol(solution []float64) bool{
 	}
 	return true
 }
+
