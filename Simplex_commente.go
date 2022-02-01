@@ -79,6 +79,8 @@ func main() {
 		fmt.Println(simplex(tableau4, tabConst4))
 		
 	}
+	fmt.Println("\033[0m") 
+
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
@@ -185,7 +187,7 @@ func pivot(tableau [][]float64,  tabConst []float64,
 			alphaLine += coefColumn * alphaColumn
 			alphaTab[posVarTableau[pivotLine]] = alphaLine
 			alphaTab[variablePivot] = alphaColumn
-			fmt.Println("variable \033[36m colonne",variablePivot+"\033[0m","variable \033[36m ligne",posVarTableau[pivotLine]+"\033[0m")
+			fmt.Println("variable \033[36m colonne:",variablePivot+"\033[0m","variable \033[36m ligne:",posVarTableau[pivotLine]+"\033[0m")
 			switchVarStringTab(posVarTableau, pivotLine,
 				 numero_colonne + len(tableau))
 			if variablePivot[0]=='e'{
