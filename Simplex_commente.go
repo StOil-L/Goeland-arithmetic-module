@@ -7,6 +7,7 @@ import (
 //	"time"
 )
 
+
 func main() {
 	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
 	var x int
@@ -34,7 +35,7 @@ func main() {
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
-func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
+func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool){
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alphaTab := createAlphaTab(tableau)
 	//tableau qui nous donne la postion des variables dans le tableau alphaTab
@@ -60,54 +61,24 @@ func simplex(tableau [][]float64, tabConst []float64) map[string]float64{
 		//workingLine est la ligne qui ne respecte pas sa contrainte
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
 		if workingLine == -1 { 
-			return alphaTab
+			return alphaTab,true
 		}
 		//on cherche la colonne du pivot
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine,
 			 posVarTableau, bland, PosConst)
 		if columnPivot == -1 {
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			return alphaTab 
+			return alphaTab,false 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
-			for i := 0; i < len(tableau[0]); i++ {
-				if i == columnPivot {
-					tableau[workingLine][i] = 1/tableau[workingLine][i]
-				} else {
-					tableau[workingLine][i] = 
-					-tableau[workingLine][i]/tableau[workingLine][columnPivot]
-				}
-			}
-			//on modifie le tableau des coefficients des autres lignes
-			for i := 0; i < len(tableau); i++ {
-				if i != workingLine {
-					for j := 0; j < len(tableau[0]); j++ {
-						if j==columnPivot{
-							tableau[i][columnPivot]*=tableau[workingLine][columnPivot]
-						} else {
-							tableau[i][j] += tableau[workingLine][j] *
-							 tableau[i][columnPivot]		
-						}
-					}
-				}
-			}
-			
+			coefficients(tableau,columnPivot,workingLine)
 			//calcul des nouveaux alpha
-			for i := 0; i<len(tableau);i++{
-				if i != workingLine {
-					var calAlpha float64 
-					for j :=0; j<len(tableau[0]);j++{
-						calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j +
-						 len(tableau)]]
-					}
-					alphaTab[posVarTableau[i]] = calAlpha
-				}
-			}
+			affectation(tableau,workingLine,alphaTab,posVarTableau)
 			//time.Sleep(time.Second)
 			fmt.Println(alphaTab)
 		}
 	}
-	return alphaTab
+	return alphaTab,false
 }
 
 
@@ -234,4 +205,44 @@ func switchContrainte(PosConst []int,variableColonne string,variableLigne string
 	PosConst[I1]=PosConst[I2]
 	PosConst[I2]=-1
 
+}
+
+func affectation(tableau [][]float64, workingLine int, 
+	alphaTab map[string]float64, posVarTableau []string){
+	for i := 0; i<len(tableau);i++{
+		if i != workingLine {
+			var calAlpha float64 
+			for j :=0; j<len(tableau[0]);j++{
+				calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j +
+				 len(tableau)]]
+			}
+			alphaTab[posVarTableau[i]] = calAlpha
+		}
+	}
+}
+
+
+func coefficients(tableau [][]float64, columnPivot int, workingLine int){
+	for i := 0; i < len(tableau[0]); i++ {
+		if i == columnPivot {
+			tableau[workingLine][i] = 1/tableau[workingLine][i]
+		} else {
+			tableau[workingLine][i] = 
+			-tableau[workingLine][i]/tableau[workingLine][columnPivot]
+		}
+	}
+	//on modifie le tableau des coefficients des autres lignes
+	for i := 0; i < len(tableau); i++ {
+		if i != workingLine {
+			for j := 0; j < len(tableau[0]); j++ {
+				if j==columnPivot{
+					tableau[i][columnPivot]*=tableau[workingLine][columnPivot]
+				} else {
+					tableau[i][j] += tableau[workingLine][j] *
+					 tableau[i][columnPivot]		
+				}
+			}
+		}
+	}
+	
 }
