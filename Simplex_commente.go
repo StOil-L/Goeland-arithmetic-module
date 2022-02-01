@@ -1,4 +1,5 @@
 package main
+//package color
 
 //bibliothèque de base
 import (
@@ -9,28 +10,74 @@ import (
 
 
 func main() {
-	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
+	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 4 pour construire votre matrice des coefficients et vos contraintes")
 	var x int
 	fmt.Scanln(&x)
 	if x==1 {
-	var tableau = [][]float64{{1,1}, {2,-1}, {-1,2}}
-	var tabConst = []float64{2,0,1}
-	fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
-	fmt.Println(simplex(tableau, tabConst))
+		var tableau = [][]float64{{1,1}, {2,-1}, {-1,2}}
+		var tabConst = []float64{2,0,1}
+		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
+		fmt.Println(simplex(tableau, tabConst))
 	}
 	if x==2{
 
-	var tableau2 = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
-	var tabConst2 = []float64{0,1,2,3,4}
-	fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
-	fmt.Println(simplex(tableau2,tabConst2))
+		var tableau2 = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
+		var tabConst2 = []float64{0,1,2,3,4}
+		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
+		fmt.Println(simplex(tableau2,tabConst2))
 
 	}
 	if x==3{
- 	var tableau3 = [][]float64{{1,1}, {1,2}, {1,3}, {1,4}, {1,5}}
-	var tabConst2 = []float64{0,1,2,3,4}
-	fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
-	fmt.Println(simplex(tableau3,tabConst2))
+		var tableau3 = [][]float64{{1,1}, {1,2}, {1,3}, {1,4}, {1,5}}
+		var tabConst3 = []float64{0,1,2,3,4}
+		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
+		fmt.Println(simplex(tableau3,tabConst3))
+	}
+
+	if x==4{
+		fmt.Println("veuillez saisir le nombre de lignes de la matrice des coefficients")
+		var c int
+		var l int
+		fmt.Scanln(&c)
+		fmt.Println("veuillez saisir le nombre de colonnes de la matrice des coefficients")
+		fmt.Scanln(&l)
+		var tableau4= make([][]float64, c)
+		for j:=0; j<c;j++{
+			tableau4[j]=make([]float64,l)
+		}
+		cpt:=0
+		cpt2:=0
+		for k,_ := range tableau4{
+			for kk,_ := range tableau4[k]{
+				var a float64
+				if cpt==0{
+					fmt.Println("veuillez saisir la ligne :",cpt2+1)
+				}
+				fmt.Scanln(&a)
+				tableau4[k][kk]=a
+				cpt++
+				if cpt%l==0{
+					cpt=0
+					cpt2++
+				}
+		
+			}
+			
+		}
+
+
+
+		fmt.Println("veuillez saisir le nombre d'inéquations")
+		var i int
+		fmt.Scanln(&i)
+		var tabConst4= make([]float64,i)
+		for j,_ := range tabConst4{
+			var a float64
+			fmt.Scanln(&a)
+			tabConst4[j]=a
+		}
+		fmt.Println(simplex(tableau4, tabConst4))
+		
 	}
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
@@ -56,12 +103,12 @@ func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool)
 	}	
 	
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
-	k := true
-	for k {
+	for true {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
-		if workingLine == -1 { 
-			return alphaTab,true
+		if workingLine == -1 {
+			fmt.Println(" \033[33m La solution est : ") 
+			return  alphaTab,true
 		}
 		//on cherche la colonne du pivot
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine,
@@ -138,7 +185,7 @@ func pivot(tableau [][]float64,  tabConst []float64,
 			alphaLine += coefColumn * alphaColumn
 			alphaTab[posVarTableau[pivotLine]] = alphaLine
 			alphaTab[variablePivot] = alphaColumn
-			fmt.Println("variable colonne",variablePivot,"variable ligne",posVarTableau[pivotLine])
+			fmt.Println("variable \033[36m colonne",variablePivot+"\033[0m","variable \033[36m ligne",posVarTableau[pivotLine]+"\033[0m")
 			switchVarStringTab(posVarTableau, pivotLine,
 				 numero_colonne + len(tableau))
 			if variablePivot[0]=='e'{
