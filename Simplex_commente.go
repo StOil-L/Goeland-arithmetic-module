@@ -38,17 +38,17 @@ func main() {
 		fmt.Println("veuillez saisir le nombre de lignes de la matrice des coefficients")
 		var c int
 		var l int
-		fmt.Scanln(&c)
-		fmt.Println("veuillez saisir le nombre de colonnes de la matrice des coefficients")
 		fmt.Scanln(&l)
-		var tableau4= make([][]float64, c)
-		for j:=0; j<c;j++{
-			tableau4[j]=make([]float64,l)
+		fmt.Println("veuillez saisir le nombre de colonnes de la matrice des coefficients")
+		fmt.Scanln(&c)
+		var tableau4= make([][]float64, l)
+		for j:=0; j<l;j++{
+			tableau4[j]=make([]float64,c)
 		}
 		cpt:=0
 		cpt2:=0
 		for k,_ := range tableau4{
-			for kk,_ := range tableau4[k]{
+			for kk,_ := range tableau4[0]{
 				var a float64
 				if cpt==0{
 					fmt.Println("veuillez saisir la ligne :",cpt2+1)
@@ -56,7 +56,7 @@ func main() {
 				fmt.Scanln(&a)
 				tableau4[k][kk]=a
 				cpt++
-				if cpt%l==0{
+				if cpt%c==0{
 					cpt=0
 					cpt2++
 				}
@@ -65,17 +65,15 @@ func main() {
 			
 		}
 
-
-
-		fmt.Println("veuillez saisir le nombre d'inéquations")
-		var i int
-		fmt.Scanln(&i)
-		var tabConst4= make([]float64,i)
+		fmt.Println("veuillez saisir les contraintes une à une :")
+		var tabConst4= make([]float64,l)
 		for j,_ := range tabConst4{
 			var a float64
 			fmt.Scanln(&a)
 			tabConst4[j]=a
 		}
+
+		fmt.Println(tableau4, tabConst4)
 		fmt.Println(simplex(tableau4, tabConst4))
 		
 	}
