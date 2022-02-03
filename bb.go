@@ -1,3 +1,10 @@
+/******************************************************************************
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
 package main
 
 import (
@@ -12,7 +19,7 @@ func main() {
 	branch_bound(simplexe(tableau, tabConst), tableau, tabConst, channel)
 }
 
-func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst []float64, channel chan []float64) []flaot64{
+func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst []float64, channel chan []float64) []float64{
 
 	//Cas d'arret si solution est fait seulement d'entier
 	if(estSol(solution)){
@@ -36,13 +43,31 @@ func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst
 
 					//Ajout de la nouvelle contrainte dans les copies de tableau
 					if i==0 {
+					    var tabInter = []float64
 						//Traduction tableau et contrainte de Margaux
+						tabConstBis = append(tabConstBis, math.Ceil(element))
+						for i := 0; i < len(solution); i++ {
+						    if i == index {
+						        tabInter = append(tabInter,1)
+						    }else {
+						        tabInter = append(tabInter,0)
+						    }
+						}
+						tableauBis = append(tableauBis, tabInter)
 					} else {
-						//Traduction tableau et contrainte de Margaux
+						var tabInter = []float64
+						tabConstBis = append(tabConstBis, -math.Floor(element))
+						for i := 0; i < len(solution); i++ {
+						    if i == index {
+						        tabInter = append(tabInter,-1)
+						    }else {
+						        tabInter = append(tabInter,0)
+						    }
+						}
+						tableauBis = append(tableauBis, tabInter)
 					}
-
 					channel <- branch_bound(simplexe(tableauBis, tabConstBis), tableauBis, tabConstBis, channelBis)
-				}
+				}()
 			}
 		}	
 	}
