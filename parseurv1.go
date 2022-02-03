@@ -35,7 +35,19 @@ func addAllConst(eqs []string, tableau [][]float64, tabConst []float64, tabVar[]
         lastEle, tab, Var := addOneConst(element)
         tableau = append(tableau, tab)
         tabConst = append(tabConst, lastEle)
-        tabVar = Var
+
+        for i := 0;i < len(Var);i++{
+          var present bool
+          present = false
+          for j := 0;j < len(tabVar);j++{
+            if Var[i] == tabVar[j] {
+              present = true
+            }
+          }
+          if present == false {
+              tabVar = append(tabVar,Var[i])
+            }
+        }
     }
     return tabConst, tableau, tabVar
 }
