@@ -115,6 +115,9 @@ func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool)
 		PosConst[i]=i
 	}	
 	
+	var IncrementalCoef = make([]float64, 0)
+	var IncrementalAff= make([]float64,0)
+
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
@@ -132,9 +135,9 @@ func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool)
 			return alphaTab,false 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
-			coefficients(tableau,columnPivot,workingLine)
+			coefficients(tableau,columnPivot,workingLine,IncrementalCoef)
 			//calcul des nouveaux alpha
-			affectation(tableau,workingLine,alphaTab,posVarTableau)
+			affectation(tableau,workingLine,alphaTab,posVarTableau,IncrementalAff)
 			//time.Sleep(time.Second)
 			fmt.Println("\033[34m affectations :" ,alphaTab,"\033[0m")
 			fmt.Println("\033[35m matrice des coefficients :",tableau,"\033[0m")
@@ -240,7 +243,7 @@ func createPosVarTableau(tableau [][]float64) []string{
 	for i := 0; i < lenTab + len(tableau[0]); i++ {
 		if i < lenTab {
 			posVarTableau[i] = fmt.Sprint("e", i)
-		} else {
+		} else {   //margaux, dans ce else il faudra remplacer fmt.sprint par tabVar[i-lenTab]
 			posVarTableau[i] = fmt.Sprint("v", i - lenTab)
 		}
 	}
@@ -274,13 +277,13 @@ func switchContrainte(PosConst []int,variableColonne string,variableLigne string
 }
 
 func affectation(tableau [][]float64, workingLine int, 
-	alphaTab map[string]float64, posVarTableau []string){
+	alphaTab map[string]float64, posVarTableau []string, IncrementalAff []float64){
 	for i := 0; i<len(tableau);i++{
 		if i != workingLine {
 			var calAlpha float64 
 			for j :=0; j<len(tableau[0]);j++{
-				calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j +
-				 len(tableau)]]
+				calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j + len(tableau)]]
+				IncrementalAff=append(IncrementalAff,alphaTab[posVarTableau[j+len(tableau)]])
 			}
 			alphaTab[posVarTableau[i]] = calAlpha
 		}
@@ -288,7 +291,7 @@ func affectation(tableau [][]float64, workingLine int,
 }
 
 
-func coefficients(tableau [][]float64, columnPivot int, workingLine int){
+func coefficients(tableau [][]float64, columnPivot int, workingLine int, IncrementalCoef []float64){
 	for i := 0; i < len(tableau[0]); i++ {
 		if i == columnPivot {
 			tableau[workingLine][i] = 1/tableau[workingLine][i]
@@ -299,6 +302,8 @@ func coefficients(tableau [][]float64, columnPivot int, workingLine int){
 	}
 	//on modifie le tableau des coefficients des autres lignes
 	for i := 0; i < len(tableau); i++ {
+		IncrementalCoef=append(IncrementalCoef,float64(columnPivot))
+		IncrementalCoef=append(IncrementalCoef,tableau[workingLine][columnPivot])
 		if i != workingLine {
 			for j := 0; j < len(tableau[0]); j++ {
 				if j==columnPivot{
@@ -306,8 +311,11 @@ func coefficients(tableau [][]float64, columnPivot int, workingLine int){
 				} else {
 					tableau[i][j] += tableau[workingLine][j] *
 					 tableau[i][columnPivot]		
+					 IncrementalCoef=append(IncrementalCoef,tableau[workingLine][j])
+		
 				}
 			}
+
 		}
 	}
 	
