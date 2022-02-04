@@ -1,7 +1,5 @@
 package main
-//package color
 
-//bibliothèque de base
 import (
 	"fmt"
 	"strconv"
@@ -122,7 +120,6 @@ func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool)
 		//workingLine est la ligne qui ne respecte pas sa contrainte
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
 		if workingLine == -1 {
-			fmt.Println(tableau)
 			fmt.Println(" \033[33m La solution est : ") 
 			return  alphaTab,true
 		}
@@ -139,7 +136,8 @@ func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool)
 			//calcul des nouveaux alpha
 			affectation(tableau,workingLine,alphaTab,posVarTableau)
 			//time.Sleep(time.Second)
-			fmt.Println(alphaTab)
+			fmt.Println("\033[34m affectations :" ,alphaTab,"\033[0m")
+			fmt.Println("\033[35m matrice des coefficients :",tableau,"\033[0m")
 		}
 	}
 	return alphaTab,false
@@ -215,6 +213,7 @@ func pivot(tableau [][]float64,  tabConst []float64,
 
 			switchVarStringTab(posVarTableau, pivotLine,
 				 numero_colonne + len(tableau))
+			fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
 			return numero_colonne
 		}
 	}
