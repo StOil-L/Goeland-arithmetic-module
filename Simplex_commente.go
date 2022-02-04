@@ -5,14 +5,14 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"math/big"
+//	"math/big"
 
 //	"time"
 )
 
 
 func main() {
-	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 4 pour construire votre matrice des coefficients et vos contraintes")
+	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 4 pour : x>=1/4,x<=1/5 \n 5 pour : x=1/4 \n 6 pour : construire votre matrice des coefficients et vos contraintes")
 	var x int
 	fmt.Scanln(&x)
 	if x==1 {
@@ -23,40 +23,53 @@ func main() {
 	}
 	if x==2{
 
-		var tableau2 = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
-		var tabConst2 = []float64{0,1,2,3,4}
+		var tableau = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
+		var tabConst = []float64{0,1,2,3,4}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
-		fmt.Println(simplex(tableau2,tabConst2))
+		fmt.Println(simplex(tableau,tabConst))
 
 	}
 	if x==3{
-		var tableau3 = [][]float64{{1,1}, {1,2}, {1,3}, {1,4}, {1,5}}
-		var tabConst3 = []float64{0,1,2,3,4}
+		var tableau = [][]float64{{1,1}, {1,2}, {1,3}, {1,4}, {1,5}}
+		var tabConst = []float64{0,1,2,3,4}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
-		fmt.Println(simplex(tableau3,tabConst3))
+		fmt.Println(simplex(tableau,tabConst))
+	}
+	if x==4{
+		var tableau = [][]float64{{1}, {-1}}
+		var tabConst = []float64{0.25,-0.2}
+		fmt.Println("x>=1/4,x<=1/5")
+		fmt.Println(simplex(tableau,tabConst))
 	}
 
-	if x==4{
+	if x==5{
+		var tableau = [][]float64{{1}, {-1}}
+		var tabConst = []float64{0.25,-0.25}
+		fmt.Println("x=1/4")
+		fmt.Println(simplex(tableau,tabConst))
+	}
+
+	if x==6{
 		fmt.Println("veuillez saisir le nombre de lignes de la matrice des coefficients")
 		var c int
 		var l int
 		fmt.Scanln(&l)
 		fmt.Println("veuillez saisir le nombre de colonnes de la matrice des coefficients")
 		fmt.Scanln(&c)
-		var tableau4= make([][]float64, l)
+		var tableau= make([][]float64, l)
 		for j:=0; j<l;j++{
-			tableau4[j]=make([]float64,c)
+			tableau[j]=make([]float64,c)
 		}
 		cpt:=0
 		cpt2:=0
-		for k,_ := range tableau4{
-			for kk,_ := range tableau4[0]{
+		for k,_ := range tableau{
+			for kk,_ := range tableau[0]{
 				var a float64
 				if cpt==0{
 					fmt.Println("veuillez saisir la ligne :",cpt2+1)
 				}
 				fmt.Scanln(&a)
-				tableau4[k][kk]=a
+				tableau[k][kk]=a
 				cpt++
 				if cpt%c==0{
 					cpt=0
@@ -68,15 +81,15 @@ func main() {
 		}
 
 		fmt.Println("veuillez saisir les contraintes une à une :")
-		var tabConst4= make([]float64,l)
-		for j,_ := range tabConst4{
+		var tabConst= make([]float64,l)
+		for j,_ := range tabConst{
 			var a float64
 			fmt.Scanln(&a)
-			tabConst4[j]=a
+			tabConst[j]=a
 		}
 
-		fmt.Println(tableau4, tabConst4)
-		fmt.Println(simplex(tableau4, tabConst4))
+		fmt.Println(tableau, tabConst)
+		fmt.Println(simplex(tableau, tabConst))
 		
 	}
 	fmt.Println("\033[0m") 
@@ -109,6 +122,7 @@ func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool)
 		//workingLine est la ligne qui ne respecte pas sa contrainte
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
 		if workingLine == -1 {
+			fmt.Println(tableau)
 			fmt.Println(" \033[33m La solution est : ") 
 			return  alphaTab,true
 		}
@@ -116,6 +130,7 @@ func simplex(tableau [][]float64, tabConst []float64) (map[string]float64, bool)
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine,
 			 posVarTableau, bland, PosConst)
 		if columnPivot == -1 {
+			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
 			return alphaTab,false 
 		} else {
@@ -148,7 +163,6 @@ func checkConst(alphaTab map[string]float64,  tabConst []float64,
 	if min != len(tabConst) && min != -1{
 		return min
 	}
-
 	return -1
 }
 
@@ -188,9 +202,7 @@ func pivot(tableau [][]float64,  tabConst []float64,
 			alphaTab[posVarTableau[pivotLine]] = alphaLine
 			alphaTab[variablePivot] = alphaColumn
 			fmt.Println("variable \033[36m colonne:",variablePivot+"\033[0m","variable \033[36m ligne:",posVarTableau[pivotLine]+"\033[0m")
-			switchVarStringTab(posVarTableau, pivotLine,
-				 numero_colonne + len(tableau))
-			if variablePivot[0]=='e'{
+			if variablePivot[0]=='e' {
 				switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine])
 			} else {
 				metavar := string(posVarTableau[pivotLine][1])
@@ -200,6 +212,9 @@ func pivot(tableau [][]float64,  tabConst []float64,
 				}
 				PosConst[indice]=-1
 			}
+
+			switchVarStringTab(posVarTableau, pivotLine,
+				 numero_colonne + len(tableau))
 			return numero_colonne
 		}
 	}
@@ -242,16 +257,19 @@ func switchVarStringTab(tab []string, pos1 int, pos2 int){
 
 func switchContrainte(PosConst []int,variableColonne string,variableLigne string){
 	var1 := string(variableColonne[1])
+
 	var I1 int
 	if valeur1,err1 := strconv.Atoi(var1); err1==nil{
 		I1=valeur1
 	}
 	var2 := string(variableLigne[1])
+	
 	var I2 int
 	if valeur2,err2 := strconv.Atoi(var2); err2==nil{
 		I2=valeur2
 	}
-	PosConst[I1]=PosConst[I2]
+
+	PosConst[I1]=I1
 	PosConst[I2]=-1
 
 }
