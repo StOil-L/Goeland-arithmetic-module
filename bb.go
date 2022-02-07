@@ -1,25 +1,19 @@
-/******************************************************************************
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
-C#, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
-Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"math"
+	"math/big"
 )
 
 func main() {
-	var tableau = [][]float64{{1,1}, {2,-1}, {-1,2}}
-	var tabConst = []float64{2,0,1}
-	channel := make(chan []float64)
+	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
+	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
+	channel := make(chan []*big.Rat)
 	branch_bound(simplexe(tableau, tabConst), tableau, tabConst, channel)
 }
 
-func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst []float64, channel chan []float64) []float64{
+func branch_bound(solution []*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan []*big.Rat) []*big.Rat{
 
 	//Cas d'arret si solution est fait seulement d'entier
 	if(estSol(solution)){
@@ -29,9 +23,9 @@ func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst
 		if(!isInteger(element)){
 			for i := 0; i < 2; i++ {
 				go func() {
-					var tableauBis []float64
-					var tabConstBis []float64
-					channelBis := make(chan []float64)
+					var tableauBis [][]*big.Rat
+					var tabConstBis []*big.Rat
+					channelBis := make(chan []*big.Rat)
 
 					//Copie de tableau et du tableau de contrainte
 					for j := 0; j < len(tabConst); j++ {
@@ -43,25 +37,26 @@ func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst
 
 					//Ajout de la nouvelle contrainte dans les copies de tableau
 					if i==0 {
-					    var tabInter = []float64
-						//Traduction tableau et contrainte de Margaux
-						tabConstBis = append(tabConstBis, math.Ceil(element))
+					    var tabInter []*big.Rat
+					    partiEntiere, _ := element.Float64()
+						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
 						for i := 0; i < len(solution); i++ {
 						    if i == index {
-						        tabInter = append(tabInter,1)
+						        tabInter = append(tabInter, big.NewRat(1,1))
 						    }else {
-						        tabInter = append(tabInter,0)
+						        tabInter = append(tabInter, new(big.Rat))
 						    }
 						}
 						tableauBis = append(tableauBis, tabInter)
 					} else {
-						var tabInter = []float64
-						tabConstBis = append(tabConstBis, -math.Floor(element))
+						var tabInter []*big.Rat
+						partiEntiere, _ := element.Float64()
+						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Ceil(partiEntiere)))
 						for i := 0; i < len(solution); i++ {
 						    if i == index {
-						        tabInter = append(tabInter,-1)
+						        tabInter = append(tabInter, big.NewRat(-1,1))
 						    }else {
-						        tabInter = append(tabInter,0)
+						        tabInter = append(tabInter, new(big.Rat))
 						    }
 						}
 						tableauBis = append(tableauBis, tabInter)
@@ -76,13 +71,17 @@ func branch_bound(solution []float64, gotSol bool, tableau [][]float64, tabConst
 }
 
 //Verifie que le nombre donné soit un entier
-func isInteger(nombre float64) bool{
-	return 	math.Mod(nombre,1) == 0
-
+func isInteger(nombre *big.Rat) bool{
+	nombreFl, exact := nombre.Float64()
+	if exact {
+		return 	math.Mod(nombreFl,1) == 0 
+	} else {
+		return 	false
+	}
 }
 
 //Verifie qu'un tableau contient seulement des entier
-func estSol(solution []float64) bool{
+func estSol(solution []*big.Rat) bool{
 	for _, element := range solution {
 		if(!isInteger(element)){
 			return false

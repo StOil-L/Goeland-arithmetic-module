@@ -53,7 +53,7 @@ func main() {
   z3:=new(big.Rat).SetFloat64(4.2)
   c:=new(big.Rat)
   d:=new(big.Rat)
-  fmt.Println(c)
+  fmt.Println("c: ", c)
  
   var tab =make([]big.Rat,0)
   tab=append(tab,*z2)
