@@ -92,7 +92,7 @@ func main() {
 			tabConst[j]=new(big.Rat).SetFloat64(a)
 		}
 
-		fmt.Println(tableau, tabConst)
+		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tabConst)
 		fmt.Println(simplex(tableau, tabConst, tabVar))
 		
 	}
@@ -113,11 +113,12 @@ func main() {
     	    reader := bufio.NewReader(os.Stdin)
             fmt.Print("Entrez une equation: ")
             equation, _ := reader.ReadString('\n')
-    		tabExe = append(tabExe, equation)
+			equation = strings.TrimSuffix(equation, "\n")
+			tabExe = append(tabExe, equation)
     	}
     	
-    	fmt.Println("tabExe =",tabExe)
-        //var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
+    	fmt.Println("tabExe =",tabExe,string(tabExe[0][22]))
+    //    var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
         
         tabConst, tableau, tabVar = addAllConst(tabExe, tableau, tabConst, tabVar)
         fmt.Println("tableau = ",tableau)
@@ -271,7 +272,6 @@ func createAlphaTab(tableau [][]*big.Rat, tabVar []string) map[string]*big.Rat{
 	    //fmt.Println(alphaTab[fmt.Sprint("e", i)]) //pour debug
 		alphaTab[fmt.Sprint("e", i)] = new(big.Rat)
 	}
-	fmt.Println(alphaTab)
 	if len(tabVar) == 0 {
 	    for i := 0; i < len(tableau[0]); i++ {
 		alphaTab[fmt.Sprint("v", i)] = new(big.Rat)
@@ -430,9 +430,9 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
         // si on a un chiffre
         if isFig != "" {
             // on converti notre caractere qui est une string en float64
-            conv,_ := strconv.ParseFloat(tabEle[i], 64)
-            // on l'insere dans notre tableau a la position "posTab"
-            ligneEq[posTab].SetFloat64(conv)
+            conv,_ := new(big.Rat).SetString(tabEle[i])
+           // on l'insere dans notre tableau a la position "posTab"
+            ligneEq[posTab]=conv
 
             
         } else {
@@ -448,8 +448,7 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
     // On ajoute la contraintes dans le tableau de contraintes en l'a convertissant d'abord
     lastEle := tabEle[len(tabEle)-1]
-    lastEleC,_ := strconv.ParseFloat(lastEle, 64)
-    fmt.Println("lastEleC =",new(big.Rat).SetFloat64(lastEleC))
-    
-    return new(big.Rat).SetFloat64(lastEleC), ligneEq[0:posTab],TabVar
+	lastEleC,_ := new(big.Rat).SetString(lastEle)
+ 
+    return lastEleC, ligneEq[0:posTab],TabVar
 }
