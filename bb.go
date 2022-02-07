@@ -6,8 +6,8 @@ import (
 	"strconv"
     "strings"
     "regexp"
-	"bufio"
-    "os"
+//	"bufio"
+//  "os"
 	"math/big"
 	"math"
 //	"time"
@@ -16,16 +16,17 @@ import (
 
 
 func main() {
-	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 4 pour : x>=1/4,x<=1/5 \n 5 pour : x=1/4 \n 6 pour : construire votre matrice des coefficients et vos contraintes \n 7 pour : faire appel au parseur")
-	var x int
-	fmt.Scanln(&x)
+	//fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 4 pour : x>=1/4,x<=1/5 \n 5 pour : x=1/4 \n 6 pour : construire votre matrice des coefficients et vos contraintes \n 7 pour : faire appel au parseur")
+	//var x int
+	//fmt.Scanln(&x)
 	var tabVar = make([]string,0)
 	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
 	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 	channel := make(chan map[string]*big.Rat)
 	a,b:=simplex(tableau,tabConst,tabVar)
-	branch_bound(a,b, tableau, tabConst, channel)
-	
+	fmt.Println(a,b,"\033[0m ")
+	fmt.Println(branch_bound(a,b, tableau, tabConst, channel))
+/*	
 	if x==1 {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
@@ -133,7 +134,7 @@ func main() {
         fmt.Println("tabVar = ",tabVar)
         fmt.Println(simplex(tableau, tabConst, tabVar))
 	}
-
+*/
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
