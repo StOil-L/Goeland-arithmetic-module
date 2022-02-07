@@ -8,7 +8,7 @@ import (
     "regexp"
 	"bufio"
     "os"
-//	"math/big"
+	"math/big"
 //	"time"
     
 )
@@ -20,35 +20,35 @@ func main() {
 	fmt.Scanln(&x)
 	var tabVar = make([]string,0)
 	if x==1 {
-		var tableau = [][]float64{{1,1}, {2,-1}, {-1,2}}
-		var tabConst = []float64{2,0,1}
+		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
+		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
 		fmt.Println(simplex(tableau, tabConst,tabVar))
 	}
 	if x==2{
 
-		var tableau = [][]float64{{1,1}, {1,1}, {1,1}, {1,1}, {1,1}}
-		var tabConst = []float64{0,1,2,3,4}
+		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
+		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
 		fmt.Println(simplex(tableau,tabConst,tabVar))
 
 	}
 	if x==3{
-		var tableau = [][]float64{{1,1}, {1,2}, {1,3}, {1,4}, {1,5}}
-		var tabConst = []float64{0,1,2,3,4}
+		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
+		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
 		fmt.Println(simplex(tableau,tabConst,tabVar))
 	}
 	if x==4{
-		var tableau = [][]float64{{1}, {-1}}
-		var tabConst = []float64{0.25,-0.2}
+		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
+		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
 		fmt.Println("x>=1/4,x<=1/5")
 		fmt.Println(simplex(tableau,tabConst,tabVar))
 	}
 
 	if x==5{
-		var tableau = [][]float64{{1}, {-1}}
-		var tabConst = []float64{0.25,-0.25}
+		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
+		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
 		fmt.Println("x=1/4")
 		fmt.Println(simplex(tableau,tabConst,tabVar))
 	}
@@ -60,9 +60,9 @@ func main() {
 		fmt.Scanln(&l)
 		fmt.Println("veuillez saisir le nombre de colonnes de la matrice des coefficients")
 		fmt.Scanln(&c)
-		var tableau= make([][]float64, l)
+		var tableau= make([][]*big.Rat, l)
 		for j:=0; j<l;j++{
-			tableau[j]=make([]float64,c)
+			tableau[j]=make([]*big.Rat,c)
 		}
 		cpt:=0
 		cpt2:=0
@@ -73,7 +73,7 @@ func main() {
 					fmt.Println("veuillez saisir la ligne :",cpt2+1)
 				}
 				fmt.Scanln(&a)
-				tableau[k][kk]=a
+				tableau[k][kk]=new(big.Rat).SetFloat64(a)
 				cpt++
 				if cpt%c==0{
 					cpt=0
@@ -85,11 +85,11 @@ func main() {
 		}
 
 		fmt.Println("veuillez saisir les contraintes une à une :")
-		var tabConst= make([]float64,l)
+		var tabConst= make([]*big.Rat,l)
 		for j,_ := range tabConst{
 			var a float64
 			fmt.Scanln(&a)
-			tabConst[j]=a
+			tabConst[j]=new(big.Rat).SetFloat64(a)
 		}
 
 		fmt.Println(tableau, tabConst)
@@ -100,8 +100,8 @@ func main() {
 	
 	if x == 7 {
 	    // Creation du tableau de coeff et du tableau de contraintes
-        var tableau = make([][]float64,0) 
-        var tabConst = make([]float64,0)
+        var tableau = make([][]*big.Rat,0) 
+        var tabConst = make([]*big.Rat,0)
         var tabVar = make([]string,0)
         fmt.Println("Veuillez saisir le nombre d'equations")
         var nbrEq int
@@ -129,7 +129,7 @@ func main() {
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
-func simplex(tableau [][]float64, tabConst []float64, tabVar[]string) (map[string]float64, bool){
+func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[string]*big.Rat, bool){
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alphaTab := createAlphaTab(tableau, tabVar)
 	//tableau qui nous donne la postion des variables dans le tableau alphaTab
@@ -149,8 +149,8 @@ func simplex(tableau [][]float64, tabConst []float64, tabVar[]string) (map[strin
 		PosConst[i]=i
 	}	
 	
-	var IncrementalCoef = make([]float64, 0)
-	var IncrementalAff= make([]float64,0)
+	var IncrementalCoef = make([]*big.Rat, 0)
+	var IncrementalAff= make([]*big.Rat,0)
 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
@@ -183,14 +183,14 @@ func simplex(tableau [][]float64, tabConst []float64, tabVar[]string) (map[strin
 
 
 //Cherche la premiere contrainte qui n'est pas respectee et retourne le numero de la ligne associee
-func checkConst(alphaTab map[string]float64,  tabConst []float64,
+func checkConst(alphaTab map[string]*big.Rat,  tabConst []*big.Rat,
 	  PosConst []int) int{
 	var min int
 	min=len(tabConst)
 	for _, position := range PosConst  {
 		if position!=-1 {
 			if min>position && 
-			alphaTab[fmt.Sprint("e", position)] < tabConst[position]{
+			alphaTab[fmt.Sprint("e", position)].Cmp(tabConst[position])==-1{
 				min=position
 			}	
 		}	
@@ -202,13 +202,13 @@ func checkConst(alphaTab map[string]float64,  tabConst []float64,
 }
 
 //Renvoie la colonne pivot par rapport a la contrainte a traiter
-func pivot(tableau [][]float64,  tabConst []float64,
-	 alphaTab map[string]float64, pivotLine int, posVarTableau []string,
+func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
+	 alphaTab map[string]*big.Rat, pivotLine int, posVarTableau []string,
 	  bland []string, PosConst []int) int{
 	var variablePivot string
 	var index int
 	for _,vari := range bland{
-		var coefColumn float64
+		var coefColumn = new(big.Rat)
 		for j:=len(tableau);j<len(tableau)+len(tableau[0]);j++{
 			if vari==posVarTableau[j]{
 				variablePivot=vari
@@ -216,26 +216,32 @@ func pivot(tableau [][]float64,  tabConst []float64,
 				coefColumn=tableau[pivotLine][index-len(tableau)]
 			}
 		} 	
-		for index< len(tableau)+len(tableau[0])  && (coefColumn != 0) &&
-		 !(coefColumn<0 && alphaTab[variablePivot]<=tabConst[PosConst[pivotLine]])  {
-			var theta float64
+		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) &&
+		 !(coefColumn.Cmp(new(big.Rat))==-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[pivotLine]])<=0)  {
+			var theta = new(big.Rat)/*
 			theta = (tabConst[PosConst[pivotLine]] -
-				 (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn				
+				 (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn	
+			fmt.Println("Ligne 224: ", tabConst[PosConst[pivotLine]])
+			fmt.Println("Ligne 225: ", alphaTab[posVarTableau[pivotLine]])*/
+			theta.Mul(new(big.Rat).Add(tabConst[PosConst[pivotLine]], new(big.Rat).Neg(alphaTab[posVarTableau[pivotLine]])), new(big.Rat).Inv(coefColumn))
 			var numero_colonne int
 			numero_colonne=index-len(tableau)
-			var alphaColumn float64	
-			alphaColumn = (alphaTab[variablePivot]) + theta
-			var alphaLine float64
+			var alphaColumn = new(big.Rat)	/*
+			alphaColumn = (alphaTab[variablePivot]) + theta*/
+			alphaColumn.Add(alphaTab[variablePivot], theta)
+			var alphaLine = new(big.Rat)
 			//on calcule alphaLine
 			for index2, element2 := range tableau[pivotLine] {
-				if coefColumn != element2{
+				if coefColumn.Cmp(element2) != 0{/*
 					alphaLine += element2 * 
-					(alphaTab[posVarTableau[index2+len(tableau)]])
+					(alphaTab[posVarTableau[index2+len(tableau)]])*/
+					alphaLine.Add(alphaLine, new(big.Rat).Mul(element2, alphaTab[posVarTableau[index2+len(tableau)]]))
 				}
-			}
-			alphaLine += coefColumn * alphaColumn
-			alphaTab[posVarTableau[pivotLine]] = alphaLine
-			alphaTab[variablePivot] = alphaColumn
+			}/*
+			alphaLine += coefColumn * alphaColumn*/
+			alphaLine.Add(alphaLine, new(big.Rat).Mul(coefColumn, alphaColumn))
+			alphaTab[posVarTableau[pivotLine]].Set(alphaLine)
+			alphaTab[variablePivot].Set(alphaColumn)
 			fmt.Println("variable \033[36m colonne:",variablePivot+"\033[0m","variable \033[36m ligne:",posVarTableau[pivotLine]+"\033[0m")
 			if variablePivot[0]=='e' {
 				switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine])
@@ -259,25 +265,27 @@ func pivot(tableau [][]float64,  tabConst []float64,
 
 
 //creation d'un dictionnaire (clé:nomDesVariable et valeur:affectation)
-func createAlphaTab(tableau [][]float64, tabVar []string) map[string]float64{
-	alphaTab := make(map[string]float64)
+func createAlphaTab(tableau [][]*big.Rat, tabVar []string) map[string]*big.Rat{
+	alphaTab := make(map[string]*big.Rat)
 	for i := 0; i < len(tableau); i++ {
-		alphaTab[fmt.Sprint("e", i)] = 0
+	    //fmt.Println(alphaTab[fmt.Sprint("e", i)]) //pour debug
+		alphaTab[fmt.Sprint("e", i)] = new(big.Rat)
 	}
+	fmt.Println(alphaTab)
 	if len(tabVar) == 0 {
 	    for i := 0; i < len(tableau[0]); i++ {
-		alphaTab[fmt.Sprint("v", i)] = 0
+		alphaTab[fmt.Sprint("v", i)] = new(big.Rat)
 	    }
     } else {
         for i := 0; i < len(tableau[0]); i++ {
-            alphaTab[tabVar[i]] = 0
+            alphaTab[tabVar[i]] = new(big.Rat)
 	    }
     }
 	return alphaTab
 }
 
 
-func createPosVarTableau(tableau [][]float64, tabVar[]string) []string{
+func createPosVarTableau(tableau [][]*big.Rat, tabVar[]string) []string{
 	var posVarTableau = make([]string, len(tableau[0])+len(tableau))
 	lenTab := len(tableau)
 	for i := 0; i < lenTab + len(tableau[0]); i++ {
@@ -321,41 +329,46 @@ func switchContrainte(PosConst []int,variableColonne string,variableLigne string
 
 }
 
-func affectation(tableau [][]float64, workingLine int, 
-	alphaTab map[string]float64, posVarTableau []string, IncrementalAff []float64){
+func affectation(tableau [][]*big.Rat, workingLine int, 
+	alphaTab map[string]*big.Rat, posVarTableau []string, IncrementalAff []*big.Rat){
 	for i := 0; i<len(tableau);i++{
 		if i != workingLine {
-			var calAlpha float64 
-			for j :=0; j<len(tableau[0]);j++{
-				calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j + len(tableau)]]
+			var calAlpha = new(big.Rat)
+			for j :=0; j<len(tableau[0]);j++{/*
+				calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j + len(tableau)]]*/
+				calAlpha.Add(calAlpha, new(big.Rat).Mul(tableau[i][j], alphaTab[posVarTableau[j + len(tableau)]]))
 				IncrementalAff=append(IncrementalAff,alphaTab[posVarTableau[j+len(tableau)]])
 			}
-			alphaTab[posVarTableau[i]] = calAlpha
+			alphaTab[posVarTableau[i]].Set(calAlpha)
 		}
 	}
 }
 
 
-func coefficients(tableau [][]float64, columnPivot int, workingLine int, IncrementalCoef []float64){
+func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, IncrementalCoef []*big.Rat){
 	for i := 0; i < len(tableau[0]); i++ {
-		if i == columnPivot {
-			tableau[workingLine][i] = 1/tableau[workingLine][i]
-		} else {
+		if i == columnPivot {/*
+			tableau[workingLine][i] = 1/tableau[workingLine][i]*/
+			tableau[workingLine][i].Inv(tableau[workingLine][i])
+		} else {/*
 			tableau[workingLine][i] = 
-			-tableau[workingLine][i]/tableau[workingLine][columnPivot]
+			-tableau[workingLine][i]/tableau[workingLine][columnPivot]*/
+			tableau[workingLine][i].Mul(new(big.Rat).Neg(tableau[workingLine][i]), new(big.Rat).Inv(tableau[workingLine][columnPivot]))
 		}
 	}
 	//on modifie le tableau des coefficients des autres lignes
 	for i := 0; i < len(tableau); i++ {
-		IncrementalCoef=append(IncrementalCoef,float64(columnPivot))
+		IncrementalCoef=append(IncrementalCoef,big.NewRat(int64(columnPivot), 1))
 		IncrementalCoef=append(IncrementalCoef,tableau[workingLine][columnPivot])
 		if i != workingLine {
 			for j := 0; j < len(tableau[0]); j++ {
-				if j==columnPivot{
-					tableau[i][columnPivot]*=tableau[workingLine][columnPivot]
-				} else {
+				if j==columnPivot{/*
+					tableau[i][columnPivot]*=tableau[workingLine][columnPivot]*/
+					tableau[i][columnPivot].Mul(tableau[i][columnPivot], tableau[workingLine][columnPivot])
+				} else {/*
 					tableau[i][j] += tableau[workingLine][j] *
-					 tableau[i][columnPivot]		
+					 tableau[i][columnPivot]		*/
+					tableau[i][j].Add(tableau[i][j], new(big.Rat).Mul(tableau[workingLine][j], tableau[i][columnPivot]))
 					 IncrementalCoef=append(IncrementalCoef,tableau[workingLine][j])
 		
 				}
@@ -368,7 +381,7 @@ func coefficients(tableau [][]float64, columnPivot int, workingLine int, Increme
 
 // fonction qui prend en parametre un tableau d'equation eqs, une matrice de coeff et un tableau de contraintes 
 // et renvoit ces tableaux de coeff et de contraintes remplis
-func addAllConst(eqs []string, tableau [][]float64, tabConst []float64, tabVar[]string) ([]float64, [][]float64, []string){
+func addAllConst(eqs []string, tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) ([]*big.Rat, [][]*big.Rat, []string){
     for _, element := range eqs {
         lastEle, tab, Var := addOneConst(element)
         tableau = append(tableau, tab)
@@ -392,16 +405,16 @@ func addAllConst(eqs []string, tableau [][]float64, tabConst []float64, tabVar[]
 }
 
 // fonction qui prend en parametre une equation et qui implemente les tableaux de coeff et de contraintes 
-func addOneConst(eq string) (float64, []float64,[]string){
+func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
     // on split la string avec les espaces, ce qui nous donne un tableaux avec tous les elements de la string
     tabEle := strings.Split(eq, " ")
     // tableau qui va contenir les coefficients de l'equation
-    var ligneEq []float64
+    var ligneEq []*big.Rat
     var TabVar []string
     // indique notre position dans le tableau
     posTab := 0
     for i := 0; i < len(tabEle)-2; i++ {
-        ligneEq = append(ligneEq, 1.0)
+        ligneEq = append(ligneEq, big.NewRat(1,1))
         // nous permet de savoir si notre caractere est un chiffre
         re := regexp.MustCompile(`[0-9]`)
         isFig := re.FindString(tabEle[i])
@@ -419,13 +432,13 @@ func addOneConst(eq string) (float64, []float64,[]string){
             // on converti notre caractere qui est une string en float64
             conv,_ := strconv.ParseFloat(tabEle[i], 64)
             // on l'insere dans notre tableau a la position "posTab"
-            ligneEq[posTab] = conv
+            ligneEq[posTab].SetFloat64(conv)
 
             
         } else {
             // le cas du -
             if tabEle[i] == "-"{
-                ligneEq[posTab] = -1.0
+                ligneEq[posTab].SetFloat64(-1.0)
             // le cas du +
             } else if tabEle[i] != "+" {
                 posTab += 1
@@ -436,8 +449,7 @@ func addOneConst(eq string) (float64, []float64,[]string){
     // On ajoute la contraintes dans le tableau de contraintes en l'a convertissant d'abord
     lastEle := tabEle[len(tabEle)-1]
     lastEleC,_ := strconv.ParseFloat(lastEle, 64)
-    fmt.Println("lastEleC =",lastEleC)
+    fmt.Println("lastEleC =",new(big.Rat).SetFloat64(lastEleC))
     
-    return lastEleC, ligneEq[0:posTab],TabVar
+    return new(big.Rat).SetFloat64(lastEleC), ligneEq[0:posTab],TabVar
 }
-
