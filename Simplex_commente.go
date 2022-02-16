@@ -19,52 +19,97 @@ type bAndB struct {
     solStr  map[string]*big.Rat
 }
 
+
 func main() {
-	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 4 pour : x>=1/4,x<=1/5 \n 5 pour : x=1/4 \n 6 pour : construire votre matrice des coefficients et vos contraintes \n 7 pour : faire appel au parseur")
+	fmt.Println("choisissez le test que vous voulez executer, ajoutez 1 pour le B&B \n\n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 3 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 5 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 7 pour : x>=1/4,x<=1/5 \n 9 pour : x=1/4 \n 11 pour : construire votre matrice des coefficients et vos contraintes \n 13 pour : faire appel au parseur \n 15 pour : écrire à la main le système en utilisant le parseur\n\nexemple : l'option 1 lance le simplexe du jeu de test 1, l'option 2 lance le B&B sur le jeu de test 1")
 	var x int
 	fmt.Scanln(&x)
-	var tabVar = make([]string,0)
-//	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
-//	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
-//	channel := make(chan map[string]*big.Rat)
-//	a,b:=simplex(tableau,tabConst,tabVar)
-//	branch_bound(a,b, tableau, tabConst, channel)
-	
+	var tabVar = make([]string,0)	
 	if x==1 {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
-		fmt.Println(simplex(tableau, tabConst,tabVar))
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
 	}
-	if x==2{
-
+	
+	if x==2 {
+		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
+		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
+		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+	}
+	if x==3{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
-
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
 	}
-	if x==3{
+
+	if x==4{
+		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
+		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
+		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+	}
+	if x==5{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
-	}
-	if x==4{
-		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
-		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
-		fmt.Println("x>=1/4,x<=1/5")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
-	}
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
 
-	if x==5{
-		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
-		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
-		fmt.Println("x=1/4")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
 	}
 
 	if x==6{
+		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
+		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
+		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+	}
+	if x==7{
+		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
+		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
+		fmt.Println("x>=1/4,x<=1/5")
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
+
+	}
+
+	if x==8{
+		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
+		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
+		fmt.Println("x>=1/4,x<=1/5")
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+	}
+	if x==9{
+		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
+		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
+		fmt.Println("x=1/4")
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
+
+	}
+
+	if x==10{
+		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
+		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
+		fmt.Println("x=1/4")
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+	}
+
+	if x==11{
 		fmt.Println("veuillez saisir le nombre de lignes de la matrice des coefficients")
 		var c int
 		var l int
@@ -104,12 +149,92 @@ func main() {
 		}
 
 		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tabConst)
-		fmt.Println(simplex(tableau, tabConst, tabVar))
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
 		
 	}
 	fmt.Println("\033[0m") 
-	
-	if x == 7 {
+
+	if x==12{
+		fmt.Println("veuillez saisir le nombre de lignes de la matrice des coefficients")
+		var colonne int
+		var ligne int
+		fmt.Scanln(&ligne)
+		fmt.Println("veuillez saisir le nombre de colonnes de la matrice des coefficients")
+		fmt.Scanln(&colonne)
+		var tableau= make([][]*big.Rat, ligne)
+		for j:=0; j<ligne;j++{
+			tableau[j]=make([]*big.Rat,colonne)
+		}
+		cpt:=0
+		cpt2:=0
+		for k,_ := range tableau{
+			for kk,_ := range tableau[0]{
+				var aa float64
+				if cpt==0{
+					fmt.Println("veuillez saisir la ligne :",cpt2+1)
+				}
+				fmt.Scanln(&aa)
+				tableau[k][kk]=new(big.Rat).SetFloat64(aa)
+				cpt++
+				if cpt%colonne==0{
+					cpt=0
+					cpt2++
+				}
+		
+			}
+			
+		}
+
+		fmt.Println("veuillez saisir les contraintes une à une :")
+		var tabConst= make([]*big.Rat,ligne)
+		for j,_ := range tabConst{
+			var aa float64
+			fmt.Scanln(&aa)
+			tabConst[j]=new(big.Rat).SetFloat64(aa)
+		}
+
+		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tabConst)
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+		
+	}
+	fmt.Println("\033[0m")
+	if x == 13 {
+	    // Creation du tableau de coeff et du tableau de contraintes
+        var tableau = make([][]*big.Rat,0) 
+        var tabConst = make([]*big.Rat,0)
+        var tabVar = make([]string,0)
+        var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
+        
+        tabConst, tableau, tabVar = addAllConst(tabExe, tableau, tabConst, tabVar)
+        fmt.Println("tableau = ",tableau)
+        fmt.Println("tabConst = ",tabConst)
+        fmt.Println("tabVar = ",tabVar)
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
+
+	}
+	if x == 14 {
+	    // Creation du tableau de coeff et du tableau de contraintes
+        var tableau = make([][]*big.Rat,0) 
+        var tabConst = make([]*big.Rat,0)
+        var tabVar = make([]string,0)
+        var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
+        
+        tabConst, tableau, tabVar = addAllConst(tabExe, tableau, tabConst, tabVar)
+        fmt.Println("tableau = ",tableau)
+        fmt.Println("tabConst = ",tabConst)
+        fmt.Println("tabVar = ",tabVar)
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+		
+	}
+
+
+	if x == 15 {
 	    // Creation du tableau de coeff et du tableau de contraintes
         var tableau = make([][]*big.Rat,0) 
         var tabConst = make([]*big.Rat,0)
@@ -128,21 +253,46 @@ func main() {
 			tabExe = append(tabExe, equation)
     	}
     	
-    	//fmt.Println("tabExe =",tabExe,string(tabExe[0][22]))
-		
-    //    var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
-        
         tabConst, tableau, tabVar = addAllConst(tabExe, tableau, tabConst, tabVar)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tabConst = ",tabConst)
         fmt.Println("tabVar = ",tabVar)
-        fmt.Println(simplex(tableau, tabConst, tabVar))
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
+
+	}
+	if x == 16 {
+	    // Creation du tableau de coeff et du tableau de contraintes
+        var tableau = make([][]*big.Rat,0) 
+        var tabConst = make([]*big.Rat,0)
+        var tabVar = make([]string,0)
+        fmt.Println("Veuillez saisir le nombre d'equations")
+        var nbrEq int
+        fmt.Scanln(&nbrEq)
+        fmt.Println("nbrEq =",nbrEq)
+    	var tabExe = make([]string,0)
+    	//var equation string
+    	for i:=0; i<nbrEq; i++{
+    	    reader := bufio.NewReader(os.Stdin)
+            fmt.Print("Entrez une equation: ")
+            equation, _ := reader.ReadString('\n')
+			equation = strings.TrimSuffix(equation, "\n")
+			tabExe = append(tabExe, equation)
+    	}
+    	
+        tabConst, tableau, tabVar = addAllConst(tabExe, tableau, tabConst, tabVar)
+        fmt.Println("tableau = ",tableau)
+        fmt.Println("tabConst = ",tabConst)
+        fmt.Println("tabVar = ",tabVar)
+		channel := make(chan bAndB)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
 	}
 
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
-func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[string]*big.Rat, bool){
+func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[string]*big.Rat, bool,[]string){
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alphaTab := createAlphaTab(tableau, tabVar)
 	//tableau qui nous donne la postion des variables dans le tableau alphaTab
@@ -171,7 +321,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
-			return  alphaTab,true
+			return  alphaTab,true,bland[:len(tableau[0])]
 		}
 		//on cherche la colonne du pivot
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine,
@@ -179,7 +329,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 		if columnPivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			return alphaTab,false 
+			return alphaTab,false,bland[:len(tableau[0])] 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			coefficients(tableau,columnPivot,workingLine,IncrementalCoef)
@@ -190,7 +340,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 			fmt.Println("\033[35m matrice des coefficients :",tableau,"\033[0m")
 		}
 	}
-	return alphaTab,false
+	return alphaTab,false,bland[:len(tableau[0])]
 }
 
 
@@ -278,7 +428,7 @@ func createAlphaTab(tableau [][]*big.Rat, tabVar []string) map[string]*big.Rat{
 	}
 	if len(tabVar) == 0 {
 	    for i := 0; i < len(tableau[0]); i++ {
-		alphaTab[fmt.Sprint("v", i)] = new(big.Rat)
+		alphaTab[fmt.Sprint("x", i)] = new(big.Rat)
 	    }
     } else {
         for i := 0; i < len(tableau[0]); i++ {
@@ -297,7 +447,7 @@ func createPosVarTableau(tableau [][]*big.Rat, tabVar[]string) []string{
 			posVarTableau[i] = fmt.Sprint("e", i)
 		} else {
 		    if len(tabVar) == 0 {
-		        posVarTableau[i] = fmt.Sprint("v", i - lenTab)
+		        posVarTableau[i] = fmt.Sprint("x", i - lenTab)
 		    } else {
 		        posVarTableau[i] = tabVar[i-lenTab]
 		    }
@@ -451,71 +601,67 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 
 
-func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB) (map[string]*big.Rat, bool){
-    var tabVar = make([]string,0)
+func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB) (map[string]*big.Rat, bool){
 
-    //Cas d'arret si solution est fait seulement d'entier
-    if (!gotSol) {
+	var tabVar = make([]string,0)
+	solutionEntiere,index:=estSol(solution,varInit)
+
+	//Cas d'arret si solution est fait seulement d'entier
+	if (!gotSol) {
         return solution, false
-    } else if (estSol(solution)){
+    } else if (solutionEntiere){
         return solution, true
     }
+	for i := 0; i < 2; i++ {
+		go func() {
+			var tableauBis [][]*big.Rat
+			var tabConstBis []*big.Rat
+			channelBis := make(chan bAndB)
 
-	for index, element := range solution {
-		if(!isInteger(element)){
-			for i := 0; i < 2; i++ {
-				go func() {
-					var tableauBis [][]*big.Rat
-					var tabConstBis []*big.Rat
-					channelBis := make(chan bAndB)
+			//Copie de tableau et du tableau de contrainte
+			for j := 0; j < len(tabConst); j++ {
+				tabConstBis = append(tabConstBis, tabConst[i])
+			}
+			for j := 0; j < len(tableau); j++ {
+				tableauBis = append(tableauBis, tableau[i])
+			}
 
-					//Copie de tableau et du tableau de contrainte
-					for j := 0; j < len(tabConst); j++ {
-						tabConstBis = append(tabConstBis, tabConst[i])
+			//Ajout de la nouvelle contrainte dans les copies de tableau
+			if i==0 {
+				var tabInter []*big.Rat
+				partiEntiere, _ := solution[varInit[index]].Float64()
+				tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
+				for i := 0; i < len(solution); i++ {
+					if i == index {
+						tabInter = append(tabInter, big.NewRat(1,1))
+					}else {
+						tabInter = append(tabInter, new(big.Rat))
 					}
-					for j := 0; j < len(tableau); j++ {
-						tableauBis = append(tableauBis, tableau[i])
+				}
+				tableauBis = append(tableauBis, tabInter)
+			} else {
+				var tabInter []*big.Rat
+				partiEntiere, _ := solution[varInit[index]].Float64()
+				tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Ceil(partiEntiere)))
+				for i := 0; i < len(solution); i++ {
+					if i == index {
+						tabInter = append(tabInter, big.NewRat(-1,1))
+					}else {
+						tabInter = append(tabInter, new(big.Rat))
 					}
-
-					//Ajout de la nouvelle contrainte dans les copies de tableau
-					if i==0 {
-					    var tabInter []*big.Rat
-					    partiEntiere, _ := element.Float64()
-						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
-						for i := 0; i < len(solution); i++ {
-						    if string(i) == index {
-						        tabInter = append(tabInter, big.NewRat(1,1))
-						    }else {
-						        tabInter = append(tabInter, new(big.Rat))
-						    }
-						}
-						tableauBis = append(tableauBis, tabInter)
-					} else {
-						var tabInter []*big.Rat
-						partiEntiere, _ := element.Float64()
-						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Ceil(partiEntiere)))
-						for i := 0; i < len(solution); i++ {
-						    if string(i) == index {
-						        tabInter = append(tabInter, big.NewRat(-1,1))
-						    }else {
-						        tabInter = append(tabInter, new(big.Rat))
-						    }
-						}
-						tableauBis = append(tableauBis, tabInter)
-					}
-					a,b :=simplex(tableauBis,tabConstBis,tabVar)
-                    sol, solBool := branch_bound(a,b, tableauBis, tabConstBis, channelBis)
-                    stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
-                    channel <- stBAndB
-                }()
-            }
-        }  
-        break
-    }
-    stBAndB := <- channel
-    if(!stBAndB.solBoolStr){
-        stBAndB = <- channel
-    }
+				}
+				tableauBis = append(tableauBis, tabInter)
+			}
+			a,b,c :=simplex(tableauBis,tabConstBis,tabVar)
+			sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
+			stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
+			channel <- stBAndB
+		}()
+	}
+	stBAndB := <- channel
+	if(!stBAndB.solBoolStr){
+		stBAndB = <- channel
+	}
     return stBAndB.solStr, stBAndB.solBoolStr
 }
 
@@ -525,12 +671,14 @@ func isInteger(nombre *big.Rat) bool{
 }
 
 //Verifie qu'un tableau contient seulement des entier
-func estSol(solution map[string]*big.Rat) bool{
-	for _, element := range solution {
-		if(!isInteger(element)){
-			return false
-		}
+func estSol(solution map[string]*big.Rat, varInit []string) (bool,int){
+	index:=0
+	for( index < len(varInit) && isInteger(solution[varInit[index]]) ){
+		index+=1
 	}
-	return true
+	if index < len(varInit){
+			return false,index
+		}
+	return true,index
 }
 
