@@ -463,15 +463,16 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 
 
-func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan map[string]*big.Rat) map[string]*big.Rat{
+
+
+func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan map[string]*big.Rat) map[string]*big.Rat{
 	var tabVar = make([]string,0)
 
 	//Cas d'arret si solution est fait seulement d'entier
-	if(estSol(solution)){
+	solutionEntiere,index:=estSol(solution,varInit)
+	if(solutionEntiere){
 		return solution
 	}
-	for index, element := range solution {
-		if(!isInteger(element)){
 			for i := 0; i < 2; i++ {
 				go func() {
 					var tableauBis [][]*big.Rat
@@ -489,10 +490,10 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 					//Ajout de la nouvelle contrainte dans les copies de tableau
 					if i==0 {
 					    var tabInter []*big.Rat
-					    partiEntiere, _ := element.Float64()
+					    partiEntiere, _ := solution[varInit[index]].Float64()
 						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
 						for i := 0; i < len(solution); i++ {
-						    if string(i) == index {
+						    if i == index {
 						        tabInter = append(tabInter, big.NewRat(1,1))
 						    }else {
 						        tabInter = append(tabInter, new(big.Rat))
@@ -501,10 +502,10 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 						tableauBis = append(tableauBis, tabInter)
 					} else {
 						var tabInter []*big.Rat
-						partiEntiere, _ := element.Float64()
+						partiEntiere, _ := solution[varInit[index]].Float64()
 						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Ceil(partiEntiere)))
 						for i := 0; i < len(solution); i++ {
-						    if string(i) == index {
+						    if i == index {
 						        tabInter = append(tabInter, big.NewRat(-1,1))
 						    }else {
 						        tabInter = append(tabInter, new(big.Rat))
@@ -512,12 +513,12 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 						}
 						tableauBis = append(tableauBis, tabInter)
 					}
-					a,b :=simplex(tableauBis,tabConstBis,tabVar)
-					channel <- branch_bound(a,b, tableauBis, tabConstBis, channelBis)
+					a,b,c :=simplex(tableauBis,tabConstBis,tabVar)
+					channel <- branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
 				}()
 			}
-		}	
-	}
+			
+	
 	sol := <- channel
 	return sol	
 }
@@ -528,12 +529,13 @@ func isInteger(nombre *big.Rat) bool{
 }
 
 //Verifie qu'un tableau contient seulement des entier
-func estSol(solution map[string]*big.Rat) bool{
-	for _, element := range solution {
-		if(!isInteger(element)){
-			return false
-		}
+func estSol(solution map[string]*big.Rat, varInit []string) (bool,int){
+	index:=0
+	for(isInteger(solution[varInit[index]]) && index < len(varInit)-1){
+		index+=1
 	}
-	return true
+	if index < len(varInit)-1{
+			return false,index
+		}
+	return true,index
 }
-

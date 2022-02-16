@@ -20,44 +20,55 @@ func main() {
 	var x int
 	fmt.Scanln(&x)
 	var tabVar = make([]string,0)
-//	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
-//	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
-//	channel := make(chan map[string]*big.Rat)
-//	a,b:=simplex(tableau,tabConst,tabVar)
-//	branch_bound(a,b, tableau, tabConst, channel)
+	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
+	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
+	channel := make(chan map[string]*big.Rat)
+	a,b,c:=simplex(tableau,tabConst,tabVar)
+	fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
 	
 	if x==1 {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
-		fmt.Println(simplex(tableau, tabConst,tabVar))
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
 	}
 	if x==2{
 
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
-
+		//affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		//fmt.Println(affect,solution)
+		channel := make(chan map[string]*big.Rat)
+		a,b,c:=simplex(tableau,tabConst,tabVar)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+	
 	}
 	if x==3{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
+
 	}
 	if x==4{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
 		fmt.Println("x>=1/4,x<=1/5")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
+
 	}
 
 	if x==5{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
 		fmt.Println("x=1/4")
-		fmt.Println(simplex(tableau,tabConst,tabVar))
+		affect,solution,_:=simplex(tableau, tabConst,tabVar)
+		fmt.Println(affect,solution)
+
 	}
 
 	if x==6{
@@ -138,7 +149,7 @@ func main() {
 }
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
-func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[string]*big.Rat, bool){
+func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[string]*big.Rat, bool,[]string){
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alphaTab := createAlphaTab(tableau, tabVar)
 	//tableau qui nous donne la postion des variables dans le tableau alphaTab
@@ -167,7 +178,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
-			return  alphaTab,true
+			return  alphaTab,true,bland[:len(tableau[0])]
 		}
 		//on cherche la colonne du pivot
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine,
@@ -175,7 +186,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 		if columnPivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			return alphaTab,false 
+			return alphaTab,false,bland[:len(tableau[0])] 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			coefficients(tableau,columnPivot,workingLine,IncrementalCoef)
@@ -186,7 +197,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 			fmt.Println("\033[35m matrice des coefficients :",tableau,"\033[0m")
 		}
 	}
-	return alphaTab,false
+	return alphaTab,false,bland[:len(tableau[0])]
 }
 
 
@@ -274,7 +285,7 @@ func createAlphaTab(tableau [][]*big.Rat, tabVar []string) map[string]*big.Rat{
 	}
 	if len(tabVar) == 0 {
 	    for i := 0; i < len(tableau[0]); i++ {
-		alphaTab[fmt.Sprint("v", i)] = new(big.Rat)
+		alphaTab[fmt.Sprint("x", i)] = new(big.Rat)
 	    }
     } else {
         for i := 0; i < len(tableau[0]); i++ {
@@ -293,7 +304,7 @@ func createPosVarTableau(tableau [][]*big.Rat, tabVar[]string) []string{
 			posVarTableau[i] = fmt.Sprint("e", i)
 		} else {
 		    if len(tabVar) == 0 {
-		        posVarTableau[i] = fmt.Sprint("v", i - lenTab)
+		        posVarTableau[i] = fmt.Sprint("x", i - lenTab)
 		    } else {
 		        posVarTableau[i] = tabVar[i-lenTab]
 		    }
@@ -447,15 +458,14 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 
 
-func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan map[string]*big.Rat) map[string]*big.Rat{
+func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan map[string]*big.Rat) map[string]*big.Rat{
 	var tabVar = make([]string,0)
 
 	//Cas d'arret si solution est fait seulement d'entier
-	if(estSol(solution)){
+	solutionEntiere,index:=estSol(solution,varInit)
+	if(solutionEntiere){
 		return solution
 	}
-	for index, element := range solution {
-		if(!isInteger(element)){
 			for i := 0; i < 2; i++ {
 				go func() {
 					var tableauBis [][]*big.Rat
@@ -473,10 +483,10 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 					//Ajout de la nouvelle contrainte dans les copies de tableau
 					if i==0 {
 					    var tabInter []*big.Rat
-					    partiEntiere, _ := element.Float64()
+					    partiEntiere, _ := solution[varInit[index]].Float64()
 						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
 						for i := 0; i < len(solution); i++ {
-						    if string(i) == index {
+						    if i == index {
 						        tabInter = append(tabInter, big.NewRat(1,1))
 						    }else {
 						        tabInter = append(tabInter, new(big.Rat))
@@ -485,10 +495,10 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 						tableauBis = append(tableauBis, tabInter)
 					} else {
 						var tabInter []*big.Rat
-						partiEntiere, _ := element.Float64()
+						partiEntiere, _ := solution[varInit[index]].Float64()
 						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Ceil(partiEntiere)))
 						for i := 0; i < len(solution); i++ {
-						    if string(i) == index {
+						    if i == index {
 						        tabInter = append(tabInter, big.NewRat(-1,1))
 						    }else {
 						        tabInter = append(tabInter, new(big.Rat))
@@ -496,12 +506,12 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 						}
 						tableauBis = append(tableauBis, tabInter)
 					}
-					a,b :=simplex(tableauBis,tabConstBis,tabVar)
-					channel <- branch_bound(a,b, tableauBis, tabConstBis, channelBis)
+					a,b,c :=simplex(tableauBis,tabConstBis,tabVar)
+					channel <- branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
 				}()
 			}
-		}	
-	}
+			
+	
 	sol := <- channel
 	return sol	
 }
@@ -512,12 +522,14 @@ func isInteger(nombre *big.Rat) bool{
 }
 
 //Verifie qu'un tableau contient seulement des entier
-func estSol(solution map[string]*big.Rat) bool{
-	for _, element := range solution {
-		if(!isInteger(element)){
-			return false
-		}
+func estSol(solution map[string]*big.Rat, varInit []string) (bool,int){
+	index:=0
+	for(isInteger(solution[varInit[index]]) && index < len(varInit)-1){
+		index+=1
 	}
-	return true
+	if index < len(varInit)-1{
+			return false,index
+		}
+	return true,index
 }
 
