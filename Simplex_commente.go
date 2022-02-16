@@ -14,6 +14,11 @@ import (
     
 )
 
+type bAndB struct {
+    solBoolStr bool
+    solStr  map[string]*big.Rat
+}
+
 
 func main() {
 	fmt.Println("choisissez le test que vous voulez executer : \n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 2 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 3 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 4 pour : x>=1/4,x<=1/5 \n 5 pour : x=1/4 \n 6 pour : construire votre matrice des coefficients et vos contraintes \n 7 pour : faire appel au parseur")
@@ -22,7 +27,7 @@ func main() {
 	var tabVar = make([]string,0)
 //	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
 //	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
-//	channel := make(chan map[string]*big.Rat)
+//	channel := make(chan bAndB)
 //	a,b:=simplex(tableau,tabConst,tabVar)
 //	branch_bound(a,b, tableau, tabConst, channel)
 	
@@ -447,12 +452,14 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 
 
-func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan map[string]*big.Rat) map[string]*big.Rat{
+func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB) (map[string]*big.Rat, bool){
 	var tabVar = make([]string,0)
 
 	//Cas d'arret si solution est fait seulement d'entier
-	if(estSol(solution)){
-		return solution
+	if (!gotSol) {
+		return solution, false
+	} else if (estSol(solution)){
+		return solution, true
 	}
 	for index, element := range solution {
 		if(!isInteger(element)){
@@ -460,7 +467,7 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 				go func() {
 					var tableauBis [][]*big.Rat
 					var tabConstBis []*big.Rat
-					channelBis := make(chan map[string]*big.Rat)
+					channelBis := make(chan bAndB)
 
 					//Copie de tableau et du tableau de contrainte
 					for j := 0; j < len(tabConst); j++ {
@@ -497,13 +504,19 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 						tableauBis = append(tableauBis, tabInter)
 					}
 					a,b :=simplex(tableauBis,tabConstBis,tabVar)
-					channel <- branch_bound(a,b, tableauBis, tabConstBis, channelBis)
+					sol, solBool := branch_bound(a,b, tableauBis, tabConstBis, channelBis)
+					stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
+					channel <- stBAndB
 				}()
 			}
-		}	
+		}
+		break	
 	}
-	sol := <- channel
-	return sol	
+	stBAndB := <- channel
+	if(!stBAndB.solBoolStr){
+		stBAndB = <- channel
+	}
+	return stBAndB.solStr, stBAndB.solBoolStr
 }
 
 //Verifie que le nombre donné soit un entier
