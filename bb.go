@@ -468,14 +468,15 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 
 func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB) (map[string]*big.Rat, bool){
-	var tabVar = make([]string,0)
+    var tabVar = make([]string,0)
 
-	//Cas d'arret si solution est fait seulement d'entier
-	if (!gotSol) {
-		return solution, false
-	} else if (estSol(solution)){
-		return solution, true
-	}
+    //Cas d'arret si solution est fait seulement d'entier
+    if (!gotSol) {
+        return solution, false
+    } else if (estSol(solution)){
+        return solution, true
+    }
+
 	for index, element := range solution {
 		if(!isInteger(element)){
 			for i := 0; i < 2; i++ {
@@ -519,19 +520,19 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Ra
 						tableauBis = append(tableauBis, tabInter)
 					}
 					a,b :=simplex(tableauBis,tabConstBis,tabVar)
-					sol, solBool := branch_bound(a,b, tableauBis, tabConstBis, channelBis)
-					stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
-					channel <- stBAndB
-				}()
-			}
-		}
-		break	
-	}
-	stBAndB := <- channel
-	if(!stBAndB.solBoolStr){
-		stBAndB = <- channel
-	}
-	return stBAndB.solStr, stBAndB.solBoolStr
+                    sol, solBool := branch_bound(a,b, tableauBis, tabConstBis, channelBis)
+                    stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
+                    channel <- stBAndB
+                }()
+            }
+        }  
+        break
+    }
+    stBAndB := <- channel
+    if(!stBAndB.solBoolStr){
+        stBAndB = <- channel
+    }
+    return stBAndB.solStr, stBAndB.solBoolStr
 }
 
 //Verifie que le nombre donné soit un entier
