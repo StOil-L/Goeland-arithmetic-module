@@ -24,8 +24,8 @@ func main() {
 	//var x int
 	//fmt.Scanln(&x)
 	var tabVar = make([]string,0)
-	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
-	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
+	var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
+	var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
 	channel := make(chan bAndB)
 	a,b:=simplex(tableau,tabConst,tabVar)
 	fmt.Println(a,b,"\033[0m ")
