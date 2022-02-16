@@ -9,6 +9,7 @@ import (
 	"bufio"
     "os"
 	"math/big"
+	"math"
 //	"time"
     
 )
@@ -19,6 +20,12 @@ func main() {
 	var x int
 	fmt.Scanln(&x)
 	var tabVar = make([]string,0)
+//	var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}}
+//	var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
+//	channel := make(chan map[string]*big.Rat)
+//	a,b:=simplex(tableau,tabConst,tabVar)
+//	branch_bound(a,b, tableau, tabConst, channel)
+	
 	if x==1 {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
@@ -117,7 +124,8 @@ func main() {
 			tabExe = append(tabExe, equation)
     	}
     	
-    	fmt.Println("tabExe =",tabExe,string(tabExe[0][22]))
+    	//fmt.Println("tabExe =",tabExe,string(tabExe[0][22]))
+		
     //    var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
         
         tabConst, tableau, tabVar = addAllConst(tabExe, tableau, tabConst, tabVar)
@@ -185,7 +193,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 
 //Cherche la premiere contrainte qui n'est pas respectee et retourne le numero de la ligne associee
 func checkConst(alphaTab map[string]*big.Rat,  tabConst []*big.Rat,
-	  PosConst []int) int{
+	PosConst []int) int{
 	var min int
 	min=len(tabConst)
 	for _, position := range PosConst  {
@@ -219,31 +227,23 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 		} 	
 		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) &&
 		 !(coefColumn.Cmp(new(big.Rat))==-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[pivotLine]])<=0)  {
-			var theta = new(big.Rat)/*
-			theta = (tabConst[PosConst[pivotLine]] -
-				 (alphaTab[posVarTableau[pivotLine]]) ) / coefColumn	
-			fmt.Println("Ligne 224: ", tabConst[PosConst[pivotLine]])
-			fmt.Println("Ligne 225: ", alphaTab[posVarTableau[pivotLine]])*/
+			var theta = new(big.Rat)
 			theta.Mul(new(big.Rat).Add(tabConst[PosConst[pivotLine]], new(big.Rat).Neg(alphaTab[posVarTableau[pivotLine]])), new(big.Rat).Inv(coefColumn))
 			var numero_colonne int
 			numero_colonne=index-len(tableau)
-			var alphaColumn = new(big.Rat)	/*
-			alphaColumn = (alphaTab[variablePivot]) + theta*/
+			var alphaColumn = new(big.Rat)	
 			alphaColumn.Add(alphaTab[variablePivot], theta)
 			var alphaLine = new(big.Rat)
 			//on calcule alphaLine
 			for index2, element2 := range tableau[pivotLine] {
-				if coefColumn.Cmp(element2) != 0{/*
-					alphaLine += element2 * 
-					(alphaTab[posVarTableau[index2+len(tableau)]])*/
+				if coefColumn.Cmp(element2) != 0{
 					alphaLine.Add(alphaLine, new(big.Rat).Mul(element2, alphaTab[posVarTableau[index2+len(tableau)]]))
 				}
-			}/*
-			alphaLine += coefColumn * alphaColumn*/
+			}
 			alphaLine.Add(alphaLine, new(big.Rat).Mul(coefColumn, alphaColumn))
 			alphaTab[posVarTableau[pivotLine]].Set(alphaLine)
 			alphaTab[variablePivot].Set(alphaColumn)
-			fmt.Println("variable \033[36m colonne:",variablePivot+"\033[0m","variable \033[36m ligne:",posVarTableau[pivotLine]+"\033[0m")
+			fmt.Println("\033[0m variable \033[36m colonne:",variablePivot+"\033[0m","variable \033[36m ligne:",posVarTableau[pivotLine]+"\033[0m")
 			if variablePivot[0]=='e' {
 				switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine])
 			} else {
@@ -334,8 +334,7 @@ func affectation(tableau [][]*big.Rat, workingLine int,
 	for i := 0; i<len(tableau);i++{
 		if i != workingLine {
 			var calAlpha = new(big.Rat)
-			for j :=0; j<len(tableau[0]);j++{/*
-				calAlpha+= tableau[i][j]*alphaTab[posVarTableau[j + len(tableau)]]*/
+			for j :=0; j<len(tableau[0]);j++{
 				calAlpha.Add(calAlpha, new(big.Rat).Mul(tableau[i][j], alphaTab[posVarTableau[j + len(tableau)]]))
 				IncrementalAff=append(IncrementalAff,alphaTab[posVarTableau[j+len(tableau)]])
 			}
@@ -347,12 +346,8 @@ func affectation(tableau [][]*big.Rat, workingLine int,
 
 func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, IncrementalCoef []*big.Rat){
 	for i := 0; i < len(tableau[0]); i++ {
-		if i == columnPivot {/*
-			tableau[workingLine][i] = 1/tableau[workingLine][i]*/
-			tableau[workingLine][i].Inv(tableau[workingLine][i])
-		} else {/*
-			tableau[workingLine][i] = 
-			-tableau[workingLine][i]/tableau[workingLine][columnPivot]*/
+		if i == columnPivot {tableau[workingLine][i].Inv(tableau[workingLine][i])
+		} else {
 			tableau[workingLine][i].Mul(new(big.Rat).Neg(tableau[workingLine][i]), new(big.Rat).Inv(tableau[workingLine][columnPivot]))
 		}
 	}
@@ -362,14 +357,11 @@ func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, Increm
 		IncrementalCoef=append(IncrementalCoef,tableau[workingLine][columnPivot])
 		if i != workingLine {
 			for j := 0; j < len(tableau[0]); j++ {
-				if j==columnPivot{/*
-					tableau[i][columnPivot]*=tableau[workingLine][columnPivot]*/
+				if j==columnPivot{
 					tableau[i][columnPivot].Mul(tableau[i][columnPivot], tableau[workingLine][columnPivot])
-				} else {/*
-					tableau[i][j] += tableau[workingLine][j] *
-					 tableau[i][columnPivot]		*/
+				} else {
 					tableau[i][j].Add(tableau[i][j], new(big.Rat).Mul(tableau[workingLine][j], tableau[i][columnPivot]))
-					 IncrementalCoef=append(IncrementalCoef,tableau[workingLine][j])
+					IncrementalCoef=append(IncrementalCoef,tableau[workingLine][j])
 		
 				}
 			}
@@ -416,7 +408,7 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
     for i := 0; i < len(tabEle)-2; i++ {
         ligneEq = append(ligneEq, big.NewRat(1,1))
         // nous permet de savoir si notre caractere est un chiffre
-        re := regexp.MustCompile(`[0-9]`)
+        re := regexp.MustCompile(`[0-9.,]`)
         isFig := re.FindString(tabEle[i])
         // nous permet de savoir si notre caractere est une lettre
         re2 := regexp.MustCompile(`[a-z]`)
@@ -452,3 +444,80 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
  
     return lastEleC, ligneEq[0:posTab],TabVar
 }
+
+
+
+func branch_bound(solution map[string]*big.Rat, gotSol bool, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan map[string]*big.Rat) map[string]*big.Rat{
+	var tabVar = make([]string,0)
+
+	//Cas d'arret si solution est fait seulement d'entier
+	if(estSol(solution)){
+		return solution
+	}
+	for index, element := range solution {
+		if(!isInteger(element)){
+			for i := 0; i < 2; i++ {
+				go func() {
+					var tableauBis [][]*big.Rat
+					var tabConstBis []*big.Rat
+					channelBis := make(chan map[string]*big.Rat)
+
+					//Copie de tableau et du tableau de contrainte
+					for j := 0; j < len(tabConst); j++ {
+						tabConstBis = append(tabConstBis, tabConst[i])
+					}
+					for j := 0; j < len(tableau); j++ {
+						tableauBis = append(tableauBis, tableau[i])
+					}
+
+					//Ajout de la nouvelle contrainte dans les copies de tableau
+					if i==0 {
+					    var tabInter []*big.Rat
+					    partiEntiere, _ := element.Float64()
+						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
+						for i := 0; i < len(solution); i++ {
+						    if string(i) == index {
+						        tabInter = append(tabInter, big.NewRat(1,1))
+						    }else {
+						        tabInter = append(tabInter, new(big.Rat))
+						    }
+						}
+						tableauBis = append(tableauBis, tabInter)
+					} else {
+						var tabInter []*big.Rat
+						partiEntiere, _ := element.Float64()
+						tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Ceil(partiEntiere)))
+						for i := 0; i < len(solution); i++ {
+						    if string(i) == index {
+						        tabInter = append(tabInter, big.NewRat(-1,1))
+						    }else {
+						        tabInter = append(tabInter, new(big.Rat))
+						    }
+						}
+						tableauBis = append(tableauBis, tabInter)
+					}
+					a,b :=simplex(tableauBis,tabConstBis,tabVar)
+					channel <- branch_bound(a,b, tableauBis, tabConstBis, channelBis)
+				}()
+			}
+		}	
+	}
+	sol := <- channel
+	return sol	
+}
+
+//Verifie que le nombre donné soit un entier
+func isInteger(nombre *big.Rat) bool{
+		return nombre.IsInt()
+}
+
+//Verifie qu'un tableau contient seulement des entier
+func estSol(solution map[string]*big.Rat) bool{
+	for _, element := range solution {
+		if(!isInteger(element)){
+			return false
+		}
+	}
+	return true
+}
+
