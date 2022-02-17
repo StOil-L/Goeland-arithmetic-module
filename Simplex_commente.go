@@ -29,8 +29,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
+		simplex(tableau, tabConst,tabVar)
 	}
 	
 	if x==2 {
@@ -45,8 +44,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
+		simplex(tableau, tabConst,tabVar)
 	}
 
 	if x==4{
@@ -61,8 +59,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
+		simplex(tableau, tabConst,tabVar)
 
 	}
 
@@ -78,8 +75,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
 		fmt.Println("x>=1/4,x<=1/5")
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
+		simplex(tableau, tabConst,tabVar)
 
 	}
 
@@ -95,8 +91,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
 		fmt.Println("x=1/4")
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
+		simplex(tableau, tabConst,tabVar)
 
 	}
 
@@ -149,9 +144,8 @@ func main() {
 		}
 
 		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tabConst)
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
-		
+		simplex(tableau, tabConst,tabVar)
+
 	}
 	fmt.Println("\033[0m") 
 
@@ -212,9 +206,7 @@ func main() {
         fmt.Println("tableau = ",tableau)
         fmt.Println("tabConst = ",tabConst)
         fmt.Println("tabVar = ",tabVar)
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
-
+		simplex(tableau, tabConst,tabVar)
 	}
 	if x == 14 {
 	    // Creation du tableau de coeff et du tableau de contraintes
@@ -257,9 +249,7 @@ func main() {
         fmt.Println("tableau = ",tableau)
         fmt.Println("tabConst = ",tabConst)
         fmt.Println("tabVar = ",tabVar)
-		affect,solution,_:=simplex(tableau, tabConst,tabVar)
-		fmt.Println(affect,solution)
-
+		simplex(tableau, tabConst,tabVar)
 	}
 	if x == 16 {
 	    // Creation du tableau de coeff et du tableau de contraintes
@@ -298,7 +288,10 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 	//tableau qui nous donne la postion des variables dans le tableau alphaTab
 	var posVarTableau = createPosVarTableau(tableau, tabVar)
 	var bland = make([]string, len(posVarTableau))
-	
+	fmt.Println("\033[0m") 
+	fmt.Println("tableau = ",tableau)
+	fmt.Println("tabConst = ",tabConst)
+
 	for i:=0;i<len(tableau);i++ {
 		bland[i+len(tableau[0])]=posVarTableau[i]
 	}
@@ -321,6 +314,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
+			fmt.Println(alphaTab,true)
 			return  alphaTab,true,bland[:len(tableau[0])]
 		}
 		//on cherche la colonne du pivot
@@ -329,6 +323,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 		if columnPivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
+			fmt.Println(alphaTab,false)
 			return alphaTab,false,bland[:len(tableau[0])] 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
@@ -602,6 +597,9 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 
 func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB) (map[string]*big.Rat, bool){
+	fmt.Println("\033[0m") 
+
+	for i := 0; i < 2; i++ {
 
 	var tabVar = make([]string,0)
 	solutionEntiere,index:=estSol(solution,varInit)
@@ -612,38 +610,41 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
     } else if (solutionEntiere){
         return solution, true
     }
-	for i := 0; i < 2; i++ {
+			
 		go func() {
+			for i := 0; i < 2; i++ {
+
+			fmt.Println("ici ",i)
+	
 			var tableauBis [][]*big.Rat
 			var tabConstBis []*big.Rat
 			channelBis := make(chan bAndB)
-
 			//Copie de tableau et du tableau de contrainte
 			for j := 0; j < len(tabConst); j++ {
-				tabConstBis = append(tabConstBis, tabConst[i])
+				tabConstBis = append(tabConstBis, tabConst[j])
 			}
 			for j := 0; j < len(tableau); j++ {
-				tableauBis = append(tableauBis, tableau[i])
+				tableauBis = append(tableauBis, tableau[j])
 			}
-
 			//Ajout de la nouvelle contrainte dans les copies de tableau
 			if i==0 {
 				var tabInter []*big.Rat
 				partiEntiere, _ := solution[varInit[index]].Float64()
 				tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
-				for i := 0; i < len(solution); i++ {
+				for i := 0; i < len(varInit); i++ {
 					if i == index {
 						tabInter = append(tabInter, big.NewRat(1,1))
 					}else {
 						tabInter = append(tabInter, new(big.Rat))
 					}
 				}
+				fmt.Println("tabConstBis=",tabConstBis)
 				tableauBis = append(tableauBis, tabInter)
 			} else {
 				var tabInter []*big.Rat
 				partiEntiere, _ := solution[varInit[index]].Float64()
-				tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Ceil(partiEntiere)))
-				for i := 0; i < len(solution); i++ {
+				tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Floor(partiEntiere)))
+				for i := 0; i < len(varInit); i++ {
 					if i == index {
 						tabInter = append(tabInter, big.NewRat(-1,1))
 					}else {
@@ -656,8 +657,9 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
 			sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
 			stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 			channel <- stBAndB
+			}		
 		}()
-	}
+		}
 	stBAndB := <- channel
 	if(!stBAndB.solBoolStr){
 		stBAndB = <- channel
