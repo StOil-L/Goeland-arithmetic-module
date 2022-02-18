@@ -608,11 +608,12 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
     } else if (solutionEntiere){
         return solution, true
     }
-
 	for i := 0; i < 2; i++ {
 		fmt.Println("tablAvant",tableau)
 		go func(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat) {
-			fmt.Println("ici",inf_sup)	
+			fmt.Println("inf_sup=",inf_sup)
+			fmt.Println("tabl=",tabl)
+			fmt.Println("tabcont",tabCont)
 			var tableauBis [][]*big.Rat
 			var tabConstBis []*big.Rat
 			channelBis := make(chan bAndB)
@@ -620,11 +621,9 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
 			for j := 0; j < len(tabCont); j++ {
 				tabConstBis = append(tabConstBis, tabCont[j])
 			}
-			fmt.Println("tabl=",tabl)
 			for j := 0; j < len(tabl); j++ {
 				tableauBis = append(tableauBis, tabl[j])
 			}
-			fmt.Println("tableauBis = ",tableauBis)
 			//Ajout de la nouvelle contrainte dans les copies de tableau
 			if inf_sup==0 {
 				var tabInter []*big.Rat
@@ -637,9 +636,8 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
 						tabInter = append(tabInter, new(big.Rat))
 					}
 				}
-				fmt.Println("tabConstBis=",tabConstBis)
 				tableauBis = append(tableauBis, tabInter)
-			} else {
+			} else  {
 				var tabInter []*big.Rat
 				partiEntiere, _ := solution[varInit[index]].Float64()
 				tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(-math.Floor(partiEntiere)))
@@ -657,8 +655,7 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
 			a,b,c :=simplex(tableauBis,tabConstBis,varInit)
 			tabl=deepCopy(tabl2)
 			tableauBis=deepCopy(tabBiBis)
-			sol, solBool := branch_bound(a,b,c, tabBiBis, tabConstBis, channelBis)
-			fmt.Println(tabBiBis)
+			sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
 			stBAndB := bAndB{solBoolStr: solBool, solStr: sol}	
 			channel <- stBAndB	
 		}(i,tableau, tabConst)
