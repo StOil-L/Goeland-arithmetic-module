@@ -610,7 +610,30 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
     }
 	for i := 0; i < 2; i++ {
 		fmt.Println("tablAvant",tableau)
-		go func(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat) {
+		go goBB(i,tableau, tabConst, channel, index, solution, varInit)
+	}
+	stBAndB := <- channel
+	if(!stBAndB.solBoolStr){
+		stBAndB = <- channel
+		if(stBAndB.solBoolStr){
+			close(channel)
+		}
+	} else {
+		select{
+			case <- channel :
+			
+			default :
+				close(channel)
+		}
+	}
+    return stBAndB.solStr, stBAndB.solBoolStr
+}
+
+func goBB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, varInit []string) {
+	select {
+		case <- channel :
+			return
+		default :
 			fmt.Println("inf_sup=",inf_sup)
 			fmt.Println("tabl=",tabl)
 			fmt.Println("tabcont",tabCont)
@@ -618,17 +641,13 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
 			var tabConstBis []*big.Rat
 			channelBis := make(chan bAndB)
 			//Copie de tableau et du tableau de contrainte
-			for j := 0; j < len(tabCont); j++ {
-				tabConstBis = append(tabConstBis, tabCont[j])
-			}
-			for j := 0; j < len(tabl); j++ {
-				tableauBis = append(tableauBis, tabl[j])
-			}
+			tabConstBis = deepCopyTableau(tabCont)
+			tableauBis = deepCopyMatrice(tabl)
 			//Ajout de la nouvelle contrainte dans les copies de tableau
 			if inf_sup==0 {
-				var tabInter []*big.Rat
 				partiEntiere, _ := solution[varInit[index]].Float64()
 				tabConstBis = append(tabConstBis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
+				var tabInter []*big.Rat
 				for i := 0; i < len(varInit); i++ {
 					if i == index {
 						tabInter = append(tabInter, big.NewRat(1,1))
@@ -650,21 +669,19 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
 				}
 				tableauBis = append(tableauBis, tabInter)
 			}
-			tabl2:=deepCopy(tabl)
-			tabBiBis:=deepCopy(tableauBis)
-			a,b,c :=simplex(tableauBis,tabConstBis,varInit)
-			tabl=deepCopy(tabl2)
-			tableauBis=deepCopy(tabBiBis)
-			sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
-			stBAndB := bAndB{solBoolStr: solBool, solStr: sol}	
-			channel <- stBAndB	
-		}(i,tableau, tabConst)
-	}
-	stBAndB := <- channel
-	if(!stBAndB.solBoolStr){
-		stBAndB = <- channel
-	}
-    return stBAndB.solStr, stBAndB.solBoolStr
+			select {
+				case <- channel :
+					return
+				default :
+					a,b,c :=simplex(tableauBis,tabConstBis,varInit)
+					sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
+					stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
+					select {
+						case channel <- stBAndB:
+						case <- channel:
+					}
+			}
+	}	
 }
 
 //Verifie que le nombre donné soit un entier
@@ -685,15 +702,21 @@ func estSol(solution map[string]*big.Rat, varInit []string) (bool,int){
 }
 
 
-func deepCopy( tabl [][]*big.Rat) [][]*big.Rat {
-var tabl2 =make([][]*big.Rat,len(tabl))
-for indiceTabl:=0;indiceTabl<len(tabl);indiceTabl++{
-	var tmp3 =make([]*big.Rat,1)
-	var tmp string
-	tmp=tabl[indiceTabl][0].RatString()
-	tmp2,_:=new(big.Rat).SetString(tmp)
-	tmp3[0]=tmp2
-	tabl2[indiceTabl]=tmp3
+func deepCopyMatrice(tabl [][]*big.Rat) [][]*big.Rat {
+	var tabl2 =make([][]*big.Rat,len(tabl))
+	for indiceTablLigne:=0;indiceTablLigne<len(tabl);indiceTablLigne++{
+		tabl2[indiceTablLigne] = append(tabl2[indiceTablLigne], deepCopyTableau(tabl[indiceTablLigne])...)
+	}
+	return tabl2
 }
-return tabl2
+
+func deepCopyTableau(tabl []*big.Rat) []*big.Rat {
+	var tmp3 =make([]*big.Rat,len(tabl))
+		for indiceTablColonne:=0;indiceTablColonne<len(tabl);indiceTablColonne++{
+			var tmp string
+			tmp=tabl[indiceTablColonne].RatString()
+			tmp2,_:=new(big.Rat).SetString(tmp)
+			tmp3[indiceTablColonne]=tmp2	
+		}
+	return tmp3
 }
