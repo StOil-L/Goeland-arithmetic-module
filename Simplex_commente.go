@@ -610,7 +610,7 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
     }
 	for i := 0; i < 2; i++ {
 		fmt.Println("tablAvant",tableau)
-		go goBB(i,tableau, tabConst, channel, index, solution, varInit)
+		go goBandB(i,tableau, tabConst, channel, index, solution, varInit)
 	}
 	stBAndB := <- channel
 	if(!stBAndB.solBoolStr){
@@ -629,7 +629,7 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
     return stBAndB.solStr, stBAndB.solBoolStr
 }
 
-func goBB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, varInit []string) {
+func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, varInit []string) {
 	select {
 		case <- channel :
 			return
@@ -669,19 +669,14 @@ func goBB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bAndB
 				}
 				tableauBis = append(tableauBis, tabInter)
 			}
-			select {
-				case <- channel :
-					return
-				default :
-					a,b,c :=simplex(tableauBis,tabConstBis,varInit)
-					sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
-					stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
-					select {
-						case channel <- stBAndB:
-						case <- channel:
-					}
-			}
-	}	
+				a,b,c :=simplex(tableauBis,tabConstBis,varInit)
+				sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
+				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
+				select {
+					case channel <- stBAndB:
+					case <- channel:
+				}
+	}
 }
 
 //Verifie que le nombre donné soit un entier
