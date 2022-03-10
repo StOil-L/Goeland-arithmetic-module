@@ -697,21 +697,19 @@ func estSol(solution map[string]*big.Rat, varInit []string) (bool,int){
 }
 
 
-func deepCopyMatrice(tabl [][]*big.Rat) [][]*big.Rat {
-	var tabl2 =make([][]*big.Rat,len(tabl))
-	for indiceTablLigne:=0;indiceTablLigne<len(tabl);indiceTablLigne++{
-		tabl2[indiceTablLigne] = append(tabl2[indiceTablLigne], deepCopyTableau(tabl[indiceTablLigne])...)
+func deepCopyMatrice(tab [][]*big.Rat) [][]*big.Rat {
+	var tab_copy = make([][]*big.Rat,len(tab))
+	for indiceTablLigne := 0 ; indiceTablLigne<len(tab) ; indiceTablLigne++{
+		tab_copy[indiceTablLigne] = append(tab_copy[indiceTablLigne], deepCopyTableau(tab[indiceTablLigne])...)
 	}
-	return tabl2
+	return tab_copy
 }
 
-func deepCopyTableau(tabl []*big.Rat) []*big.Rat {
-	var tmp3 =make([]*big.Rat,len(tabl))
-		for indiceTablColonne:=0;indiceTablColonne<len(tabl);indiceTablColonne++{
-			var tmp string
-			tmp=tabl[indiceTablColonne].RatString()
-			tmp2,_:=new(big.Rat).SetString(tmp)
-			tmp3[indiceTablColonne]=tmp2	
+func deepCopyTableau(tab []*big.Rat) []*big.Rat {
+	var tab_copy =make([]*big.Rat,len(tab))
+		for indiceTablColonne := 0 ; indiceTablColonne<len(tab) ; indiceTablColonne++{
+			tab_copy[indiceTablColonne] = new(big.Rat)
+			tab_copy[indiceTablColonne].Set(tab[indiceTablColonne])
 		}
-	return tmp3
+	return tab_copy
 }
