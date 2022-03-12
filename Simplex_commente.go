@@ -25,11 +25,36 @@ func main() {
 	var x int
 	fmt.Scanln(&x)
 	var tabVar = make([]string,0)	
+	var IncrementalCoef = make([]*big.Rat, 0)
+	var IncrementalAff= make([]*big.Rat,0)
+	
+
 	if x==1 {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
 	}
 	
 	if x==2 {
@@ -37,14 +62,56 @@ func main() {
 		var tabConst = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+	
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
 	}
 	if x==3{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
 	}
 
 	if x==4{
@@ -52,14 +119,56 @@ func main() {
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
 	}
 	if x==5{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
 
 	}
 
@@ -68,14 +177,56 @@ func main() {
 		var tabConst = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
 	}
 	if x==7{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
 		fmt.Println("x>=1/4,x<=1/5")
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
 
 	}
 
@@ -84,14 +235,56 @@ func main() {
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
 		fmt.Println("x>=1/4,x<=1/5")
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
 	}
 	if x==9{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
 		fmt.Println("x=1/4")
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
 
 	}
 
@@ -100,8 +293,29 @@ func main() {
 		var tabConst = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
 		fmt.Println("x=1/4")
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
 	}
 
 	if x==11{
@@ -144,7 +358,28 @@ func main() {
 		}
 
 		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tabConst)
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
 
 	}
 	fmt.Println("\033[0m") 
@@ -190,8 +425,29 @@ func main() {
 
 		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tabConst)
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
 		
 	}
 	fmt.Println("\033[0m")
@@ -206,7 +462,28 @@ func main() {
         fmt.Println("tableau = ",tableau)
         fmt.Println("tabConst = ",tabConst)
         fmt.Println("tabVar = ",tabVar)
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
 	}
 	if x == 14 {
 	    // Creation du tableau de coeff et du tableau de contraintes
@@ -220,8 +497,29 @@ func main() {
         fmt.Println("tabConst = ",tabConst)
         fmt.Println("tabVar = ",tabVar)
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
 		
 	}
 
@@ -249,7 +547,29 @@ func main() {
         fmt.Println("tableau = ",tableau)
         fmt.Println("tabConst = ",tabConst)
         fmt.Println("tabVar = ",tabVar)
-		simplex(tableau, tabConst,tabVar)
+
+	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+	var posVarTableau = createPosVarTableau(tableau, tabVar)
+	var bland = make([]string, len(posVarTableau))
+	fmt.Println("\033[0m") 
+
+	for i:=0;i<len(tableau);i++ {
+		bland[i+len(tableau[0])]=posVarTableau[i]
+	}
+	
+	for i:=0;i<len(tableau[0]);i++{
+		bland[i]=posVarTableau[i+len(tableau)]
+	}
+	
+	var PosConst = make([]int, len(tabConst))
+	for i := 0; i<len(tabConst);i++{
+		PosConst[i]=i
+	}	
+		
+		simplex(tableau, tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+
 	}
 	if x == 16 {
 	    // Creation du tableau de coeff et du tableau de contraintes
@@ -275,22 +595,13 @@ func main() {
         fmt.Println("tabConst = ",tabConst)
         fmt.Println("tabVar = ",tabVar)
 		channel := make(chan bAndB)
-		a,b,c:=simplex(tableau,tabConst,tabVar)
-		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel))
-	}
 
-}
-//donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
-//retour : solution s'il y en a une, sinon nil 
-func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[string]*big.Rat, bool,[]string){
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alphaTab := createAlphaTab(tableau, tabVar)
 	//tableau qui nous donne la postion des variables dans le tableau alphaTab
 	var posVarTableau = createPosVarTableau(tableau, tabVar)
 	var bland = make([]string, len(posVarTableau))
 	fmt.Println("\033[0m") 
-	fmt.Println("tableau = ",tableau)
-	fmt.Println("tabConst = ",tabConst)
 
 	for i:=0;i<len(tableau);i++ {
 		bland[i+len(tableau[0])]=posVarTableau[i]
@@ -305,17 +616,27 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 		PosConst[i]=i
 	}	
 	
-	var IncrementalCoef = make([]*big.Rat, 0)
-	var IncrementalAff= make([]*big.Rat,0)
+		a,b,c,Incremental_Coef,Incremental_Aff,posV,rBland,posC:=simplex(tableau,tabConst,tabVar,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,alphaTab)
+		fmt.Println(branch_bound(a,b,c, tableau, tabConst, channel,Incremental_Coef,Incremental_Aff,posV,rBland,posC))
+	}
 
+}
+//donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
+//retour : solution s'il y en a une, sinon nil 
+func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,IncrementalCoef[]*big.Rat,IncrementalAff[]*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int,alphaTab map[string]*big.Rat) (map[string]*big.Rat, bool,[]string,[]*big.Rat,[]*big.Rat, []string,[]string, []int){
+	
+
+	
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
+		fmt.Println("répare bug ", workingLine, tabConst,posVarTableau)
+
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
 			fmt.Println(alphaTab,true)
-			return  alphaTab,true,bland[:len(tableau[0])]
+			return  alphaTab,true,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst
 		}
 		//on cherche la colonne du pivot
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine,
@@ -324,18 +645,18 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string) (map[str
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
 			fmt.Println(alphaTab,false)
-			return alphaTab,false,bland[:len(tableau[0])] 
+			return alphaTab,false,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
-			coefficients(tableau,columnPivot,workingLine,IncrementalCoef)
+			IncrementalCoef=coefficients(tableau,columnPivot,workingLine,IncrementalCoef)
 			//calcul des nouveaux alpha
-			affectation(tableau,workingLine,alphaTab,posVarTableau,IncrementalAff)
+			IncrementalAff=affectation(tableau,workingLine,alphaTab,posVarTableau,IncrementalAff)
 			//time.Sleep(time.Second)
 			fmt.Println("\033[34m affectations :" ,alphaTab,"\033[0m")
 			fmt.Println("\033[35m matrice des coefficients :",tableau,"\033[0m")
 		}
 	}
-	return alphaTab,false,bland[:len(tableau[0])]
+	return alphaTab,false,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst
 }
 
 
@@ -394,7 +715,7 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 			alphaTab[variablePivot].Set(alphaColumn)
 			fmt.Println("\033[0m variable \033[36m colonne:",variablePivot+"\033[0m","variable \033[36m ligne:",posVarTableau[pivotLine]+"\033[0m")
 			if variablePivot[0]=='e' {
-				switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine])
+				switchContrainte(PosConst,variablePivot,posVarTableau[pivotLine],posVarTableau)
 			} else {
 				metavar := string(posVarTableau[pivotLine][1])
 				var indice int
@@ -459,27 +780,67 @@ func switchVarStringTab(tab []string, pos1 int, pos2 int){
 	tab[pos2] = valeur
 }
 
-func switchContrainte(PosConst []int,variableColonne string,variableLigne string){
-	var1 := string(variableColonne[1])
+func switchContrainte(PosConst []int,variableColonne string,variableLigne string,posVarTableau []string){
+	var1 := string(variableColonne[1:])
 
 	var I1 int
 	if valeur1,err1 := strconv.Atoi(var1); err1==nil{
 		I1=valeur1
-	}
-	var2 := string(variableLigne[1])
 	
+	}
+	var2 := string(variableLigne[1:])
+
 	var I2 int
 	if valeur2,err2 := strconv.Atoi(var2); err2==nil{
 		I2=valeur2
 	}
-
-	PosConst[I1]=I1
+	nouvellePosition :=-1
+	for i,va :=  range posVarTableau{
+		if variableLigne==va{
+			nouvellePosition=i
+		} 
+	}
+	PosConst[I1]=nouvellePosition
 	PosConst[I2]=-1
 
 }
 
+func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, IncrementalCoef []*big.Rat)   []*big.Rat{
+	
+	//ajout numéro colonne pivot 
+	IncrementalCoef=append(IncrementalCoef,big.NewRat(int64(columnPivot), 1))
+	//ajout pivot
+	IncrementalCoef=append(IncrementalCoef,tableau[workingLine][columnPivot])
+	
+	
+	for i := 0; i < len(tableau[0]); i++ {
+		if i == columnPivot {tableau[workingLine][i].Inv(tableau[workingLine][i])
+		} else {
+			tableau[workingLine][i].Mul(new(big.Rat).Neg(tableau[workingLine][i]), new(big.Rat).Inv(tableau[workingLine][columnPivot]))
+			IncrementalCoef=append(IncrementalCoef,tableau[workingLine][i])
+
+		}
+	}
+	//on modifie le tableau des coefficients des autres lignes
+	for i := 0; i < len(tableau); i++ {
+		if i != workingLine {
+			for j := 0; j < len(tableau[0]); j++ {
+				if j==columnPivot{
+					tableau[i][columnPivot].Mul(tableau[i][columnPivot], tableau[workingLine][columnPivot])
+				} else {
+					tableau[i][j].Add(tableau[i][j], new(big.Rat).Mul(tableau[workingLine][j], tableau[i][columnPivot]))
+		
+				}
+			}
+
+		}
+	}
+	return IncrementalCoef
+
+}
+
 func affectation(tableau [][]*big.Rat, workingLine int, 
-	alphaTab map[string]*big.Rat, posVarTableau []string, IncrementalAff []*big.Rat){
+	alphaTab map[string]*big.Rat, posVarTableau []string, IncrementalAff []*big.Rat)  []*big.Rat{
 	for i := 0; i<len(tableau);i++{
 		if i != workingLine {
 			var calAlpha = new(big.Rat)
@@ -490,35 +851,12 @@ func affectation(tableau [][]*big.Rat, workingLine int,
 			alphaTab[posVarTableau[i]].Set(calAlpha)
 		}
 	}
+	for j :=0; j<len(tableau[0]);j++{
+		IncrementalAff=append(IncrementalAff,alphaTab[posVarTableau[j + len(tableau)]])
+	}
+	return IncrementalAff
 }
 
-
-func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, IncrementalCoef []*big.Rat){
-	for i := 0; i < len(tableau[0]); i++ {
-		if i == columnPivot {tableau[workingLine][i].Inv(tableau[workingLine][i])
-		} else {
-			tableau[workingLine][i].Mul(new(big.Rat).Neg(tableau[workingLine][i]), new(big.Rat).Inv(tableau[workingLine][columnPivot]))
-		}
-	}
-	//on modifie le tableau des coefficients des autres lignes
-	for i := 0; i < len(tableau); i++ {
-		IncrementalCoef=append(IncrementalCoef,big.NewRat(int64(columnPivot), 1))
-		IncrementalCoef=append(IncrementalCoef,tableau[workingLine][columnPivot])
-		if i != workingLine {
-			for j := 0; j < len(tableau[0]); j++ {
-				if j==columnPivot{
-					tableau[i][columnPivot].Mul(tableau[i][columnPivot], tableau[workingLine][columnPivot])
-				} else {
-					tableau[i][j].Add(tableau[i][j], new(big.Rat).Mul(tableau[workingLine][j], tableau[i][columnPivot]))
-					IncrementalCoef=append(IncrementalCoef,tableau[workingLine][j])
-		
-				}
-			}
-
-		}
-	}
-	
-}
 
 // fonction qui prend en parametre un tableau d'equation eqs, une matrice de coeff et un tableau de contraintes 
 // et renvoit ces tableaux de coeff et de contraintes remplis
@@ -596,7 +934,7 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 
 
-func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB) (map[string]*big.Rat, bool){
+func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB, incremental_Coef []*big.Rat,incremental_Aff []*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int) (map[string]*big.Rat, bool){
 	fmt.Println("\033[0m") 
 
 
@@ -609,8 +947,7 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
         return solution, true
     }
 	for i := 0; i < 2; i++ {
-		fmt.Println("tablAvant",tableau)
-		go goBandB(i,tableau, tabConst, channel, index, solution, varInit)
+		go goBandB(i,tableau, tabConst, channel, index, solution, varInit, incremental_Coef, incremental_Aff,posVarTableau,bland,PosConst)
 	}
 	stBAndB := <- channel
 	if(!stBAndB.solBoolStr){
@@ -629,14 +966,11 @@ func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, ta
     return stBAndB.solStr, stBAndB.solBoolStr
 }
 
-func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, varInit []string) {
+func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, varInit []string, IncrementalCoef []*big.Rat,IncrementalAff []*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int) {
 	select {
 		case <- channel :
 			return
 		default :
-			fmt.Println("inf_sup=",inf_sup)
-			fmt.Println("tabl=",tabl)
-			fmt.Println("tabcont",tabCont)
 			var tableauBis [][]*big.Rat
 			var tabConstBis []*big.Rat
 			channelBis := make(chan bAndB)
@@ -669,8 +1003,32 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 				}
 				tableauBis = append(tableauBis, tabInter)
 			}
-				a,b,c :=simplex(tableauBis,tabConstBis,varInit)
-				sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis)
+			cpt:=0
+			for cpt < (len(IncrementalCoef)-1)/(len(tableauBis[0])+1){		
+				for j := 0; j < len(tableauBis[0]); j++ {				
+					if int64(j)==IncrementalCoef[0+cpt*len(tableauBis[0])].Num().Int64(){
+						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],IncrementalCoef[1+cpt*len(tableauBis[0])])
+					} else {
+						tableauBis[len(tableauBis)-1][j].Add(tableauBis[len(tableauBis)-1][j],
+						new(big.Rat).Mul(tableauBis[len(tableauBis)-1][IncrementalCoef[0+cpt*len(tableauBis[0])].Num().Int64()],IncrementalCoef[j+2+cpt*(len(tableauBis[0])-1)]))			
+						
+					}
+				}
+
+				//affectation incrémental s'il n'y a eu qu'un pivot
+				var calAlpha = new(big.Rat)
+				for j :=0; j<len(tableauBis[0]);j++{
+					calAlpha.Add(calAlpha,IncrementalAff[j+cpt*len(tableauBis[0])])
+				}
+				
+				solution[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
+				solution[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
+				
+				cpt+=1
+			}
+		
+				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=simplex(tableauBis,tabConstBis,varInit,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,solution)
+				sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis,incremental_Coef,incremental_Aff,posV,rBland,posC)
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {
 					case channel <- stBAndB:
