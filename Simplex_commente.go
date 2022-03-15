@@ -10,7 +10,7 @@ import (
     "os"
 	"math/big"
 	"math"
-//	"time"
+	"time"
     
 )
 
@@ -625,13 +625,31 @@ func main() {
 //retour : solution s'il y en a une, sinon nil 
 func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,IncrementalCoef[]*big.Rat,IncrementalAff[]*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int,alphaTab map[string]*big.Rat) (map[string]*big.Rat, bool,[]string,[]*big.Rat,[]*big.Rat, []string,[]string, []int){
 	
-
+	//tableau :=deepCopyMatrice(tableauB) 
+	if len(tableau)+len(tableau[0])!=len(bland){
+		fmt.Println(len(tableau),len(bland))
+		bland=append(bland,fmt.Sprint("e",len(bland)-1))
+		posVarTableau =append(posVarTableau,fmt.Sprint("e", len(bland)-2))
+		fmt.Println("ici 1",bland,posVarTableau)
+		test:=posVarTableau[len(tableau)-len(tabVar)]
+		posVarTableau[len(tableau)-len(tabVar)]=posVarTableau[len(posVarTableau)-1]
+		posVarTableau[len(posVarTableau)-1]=test
+		fmt.Println(bland,posVarTableau)
+	}else {
+		fmt.Println("ici 2",bland,posVarTableau)
 	
+	}
+	fmt.Println("\033[0m") 
+
+/*
+	alphaTab := createAlphaTab(tableau, tabVar)
+	//tableau qui nous donne la postion des variables dans le tableau alphaTab
+*/
+
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
 		workingLine := checkConst(alphaTab, tabConst, PosConst)
-		fmt.Println("répare bug ", workingLine, tabConst,posVarTableau)
 
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
@@ -1003,6 +1021,29 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 				}
 				tableauBis = append(tableauBis, tabInter)
 			}
+
+
+			time.Sleep(time.Second)
+		
+			if inf_sup==0 {
+				fmt.Println("\033[93m") 
+				fmt.Println("solution1",solution)
+				fmt.Println("\033[0m") 
+
+			} else {
+				fmt.Println("\033[96m") 
+				fmt.Println("solution1",solution)
+				fmt.Println("\033[0m") 
+
+			}
+
+
+
+
+				
+			fmt.Println("tableauBis1",tableauBis);			
+			//incrémental
+			
 			cpt:=0
 			for cpt < (len(IncrementalCoef)-1)/(len(tableauBis[0])+1){		
 				for j := 0; j < len(tableauBis[0]); j++ {				
@@ -1026,8 +1067,48 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 				
 				cpt+=1
 			}
+
+
+			//fin incrémental
 		
+		
+		
+		
+				if inf_sup==0 {
+					fmt.Println("\033[93m") 
+					fmt.Println("tableauBis1",tableauBis)
+					fmt.Println("\033[0m") 
+
+				} else {
+					fmt.Println("\033[96m") 
+					fmt.Println("tableauBis1",tableauBis)
+					fmt.Println("\033[0m") 
+
+				}
+
+
 				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=simplex(tableauBis,tabConstBis,varInit,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,solution)
+				//fmt.Println("\033[0m") 
+
+				if inf_sup==0 {
+					fmt.Println("\033[93m") 
+					fmt.Println("tableauBis2",tableauBis)
+					fmt.Println("\033[0m") 
+					fmt.Println("\033[93m") 
+					fmt.Println("solution2",a)
+					fmt.Println("\033[0m") 
+
+				} else {
+					fmt.Println("\033[96m") 
+					fmt.Println("tableauBis2",tableauBis)
+					fmt.Println("\033[0m") 
+					fmt.Println("\033[96m") 
+					fmt.Println("solution2",a)
+					fmt.Println("\033[0m") 
+				}
+
+
+				
 				sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis,incremental_Coef,incremental_Aff,posV,rBland,posC)
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {
