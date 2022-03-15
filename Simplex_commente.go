@@ -1152,3 +1152,65 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
 		}
 	return tab_copy
 }
+
+//Remplace = par >= avec bool pour savoir si ce n'étais pas déja une inequation
+func remplaceEgal(eq string)(string, bool){
+	tab_ascii := []rune(eq)
+	for index, ascii := range tab_ascii {
+		// 61 -> = | 60 -> < | 62 -> >
+    	if index > 1 && ascii == 61 && eq[index-1] != 60 && eq[index-1] != 62 {
+    		return string(append(tab_ascii[:index],append([]rune{62}, tab_ascii[index:]...)...)), true
+    	}
+	}
+	return eq, false
+}
+
+//Retourne le négatif d'une inéquation
+func negEq(eq string)(string){
+	tab_ascii := []rune(eq)
+
+	//gestion du premier signe
+	if tab_ascii[0] != 45 {
+		if tab_ascii[0] >= 48 && tab_ascii[0] <= 57 {
+			tab_ascii = append([]rune{43} ,tab_ascii...)
+		}else {
+			tab_ascii = append([]rune{43, 32} ,tab_ascii...)
+		}
+	} else {
+		tab_ascii = tab_ascii[2:]
+	}
+
+	//gestion du dernier signe
+	for i:=len(tab_ascii)-1 ; i > 0 ; i--{
+		if tab_ascii[i-1] == 32 && tab_ascii[i] != 45 {
+			tab_ascii = append(tab_ascii[:i], append([]rune{45}, tab_ascii[i:]...)...)
+			i = -1
+		} else if tab_ascii[i-1] == 32 && tab_ascii[i] == 45 {
+			tab_ascii = append(tab_ascii[:i], tab_ascii[i:]...)
+			i = -1
+		}
+	}
+
+	//gestion des autres signe 
+	for index, ascii := range tab_ascii {
+		// 43 -> +
+    	if ascii == 43 {
+    		tab_ascii[index] = 45
+    	// 45 -> -
+    	} else if ascii == 45 {
+    		tab_ascii[index] = 43
+    	}
+	}
+
+	return string(tab_ascii)
+}
+
+//Retourne les inequations correspondante au equation d'entré
+func getIneq(eq string)([]string){
+	ineq, verif := remplaceEgal(eq)
+	if verif {
+		return []string{ineq, negEq(ineq)}
+	} else {
+		return []string{ineq}
+	}
+}
