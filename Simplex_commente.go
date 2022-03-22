@@ -10,6 +10,7 @@ import (
     "os"
 	"math/big"
 	"math"
+	"sync"
 //	"time"
     
 )
@@ -18,6 +19,7 @@ type bAndB struct {
     solBoolStr bool
     solStr  map[string]*big.Rat
 }
+var lock sync.Mutex
 
 
 func main() {
@@ -27,6 +29,7 @@ func main() {
 	var tabVar = make([]string,0)	
 	var IncrementalCoef = make([]*big.Rat, 0)
 	var IncrementalAff= make([]*big.Rat,0)
+	lock = sync.Mutex{}
 	
 
 	if x==1 {
@@ -641,8 +644,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,Increment
 
 	}	
 	fmt.Println("\033[0m") 
-	fmt.Println("cible ")
-
+	
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
@@ -650,7 +652,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,Increment
 
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
-			fmt.Println(alphaTab,true)
+			fmt.Println(alphaTab)
 			return  alphaTab,true,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst
 		}
 		//on cherche la colonne du pivot
@@ -667,8 +669,9 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,Increment
 			//calcul des nouveaux alpha
 			IncrementalAff=affectation(tableau,workingLine,alphaTab,posVarTableau,IncrementalAff)
 			//time.Sleep(time.Second)
-			fmt.Println("\033[34m affectations :" ,alphaTab,"\033[0m")
 			fmt.Println("\033[35m matrice des coefficients :",tableau,"\033[0m")
+			fmt.Println("\033[34m affectations :" ,alphaTab,"\033[0m")
+
 		}
 	}
 	return alphaTab,false,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst
@@ -710,8 +713,10 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 				coefColumn=tableau[pivotLine][index-len(tableau)]
 			}
 		} 	
-		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) &&
-		 !(coefColumn.Cmp(new(big.Rat))==-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[pivotLine]])<=0)  {
+		// à revoir plein de haine
+		fmt.Println("variablePivot",variablePivot)
+		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) && (variablePivot[0] !='e' ||
+		 !(coefColumn.Cmp(new(big.Rat))==-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[pivotLine]])<=0))  {
 			var theta = new(big.Rat)
 			theta.Mul(new(big.Rat).Add(tabConst[PosConst[pivotLine]], new(big.Rat).Neg(alphaTab[posVarTableau[pivotLine]])), new(big.Rat).Inv(coefColumn))
 			var numero_colonne int
@@ -739,7 +744,6 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 				}
 				PosConst[indice]=-1
 			}
-			fmt.Println("cible2")
 
 			switchVarStringTab(posVarTableau, pivotLine,
 				 numero_colonne + len(tableau))
@@ -826,25 +830,34 @@ func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, Increm
 	//ajout numéro colonne pivot 
 	IncrementalCoef=append(IncrementalCoef,big.NewRat(int64(columnPivot), 1))
 	//ajout pivot
-	IncrementalCoef=append(IncrementalCoef,tableau[workingLine][columnPivot])
-	
-	
+	var tabPivot =new(big.Rat)
+	tabPivot.Set(new(big.Rat).Inv(tableau[workingLine][columnPivot]))
 	for i := 0; i < len(tableau[0]); i++ {
-		if i == columnPivot {tableau[workingLine][i].Inv(tableau[workingLine][i])
+		if i == columnPivot {
+			tableau[workingLine][i]=tabPivot
+			IncrementalCoef=append(IncrementalCoef,tabPivot)
 		} else {
-			tableau[workingLine][i].Mul(new(big.Rat).Neg(tableau[workingLine][i]), new(big.Rat).Inv(tableau[workingLine][columnPivot]))
+			var tabNeg =new(big.Rat)
+			tabNeg.Set(new(big.Rat).Neg(tableau[workingLine][i]))
+			tableau[workingLine][i].Mul(tabNeg,tabPivot)
 			IncrementalCoef=append(IncrementalCoef,tableau[workingLine][i])
-
 		}
+
 	}
+
+
+			
 	//on modifie le tableau des coefficients des autres lignes
 	for i := 0; i < len(tableau); i++ {
+		var  tabiPivot=new(big.Rat)
+		tabiPivot.Set(tableau[i][columnPivot])
+	
 		if i != workingLine {
 			for j := 0; j < len(tableau[0]); j++ {
 				if j==columnPivot{
 					tableau[i][columnPivot].Mul(tableau[i][columnPivot], tableau[workingLine][columnPivot])
 				} else {
-					tableau[i][j].Add(tableau[i][j], new(big.Rat).Mul(tableau[workingLine][j], tableau[i][columnPivot]))
+					tableau[i][j].Add(tableau[i][j], new(big.Rat).Mul(tableau[workingLine][j],tabiPivot))
 		
 				}
 			}
@@ -952,9 +965,8 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB, incremental_Coef []*big.Rat,incremental_Aff []*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int) (map[string]*big.Rat, bool){
 	fmt.Println("\033[0m") 
 
-
 	solutionEntiere,index:=estSol(solution,varInit)
-
+	
 	//Cas d'arret si solution est fait seulement d'entier
 	if (!gotSol) {
         return solution, false
@@ -1039,16 +1051,24 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 				var calAlpha = new(big.Rat)
 				for j :=0; j<len(tableauBis[0]);j++{
 					calAlpha.Add(calAlpha,IncrementalAff[j+cpt2])
-				}	
+				}
+
 				solution[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
-				solution[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
 				
+				lock.Lock()					
+				solution[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
+				lock.Unlock()
+
 				cpt+=1+len(tableauBis[0])
 				cpt2+=len(tableauBis[0])
 			}
 			//fin incrémental
+
+			//faire deep copy solution car elle écrit et est lu en même temps ce qui n'est pas le bon comportement
+
+
 				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=simplex(tableauBis,tabConstBis,varInit,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,solution)
-		
+				
 				sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis,incremental_Coef,incremental_Aff,posV,rBland,posC)
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {
@@ -1066,7 +1086,7 @@ func isInteger(nombre *big.Rat) bool{
 //Verifie qu'un tableau contient seulement des entier
 func estSol(solution map[string]*big.Rat, varInit []string) (bool,int){
 	index:=0
-	for( index < len(varInit) && isInteger(solution[varInit[index]]) ){
+	for ( index < len(varInit) && isInteger(solution[varInit[index]]) ){
 		index+=1
 	}
 	if index < len(varInit){
