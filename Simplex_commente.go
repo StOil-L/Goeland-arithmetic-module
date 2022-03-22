@@ -10,7 +10,7 @@ import (
     "os"
 	"math/big"
 	"math"
-	"time"
+//	"time"
     
 )
 
@@ -624,27 +624,24 @@ func main() {
 //donnees: le "Tableau" des coeffs et un tableau contenant les contraintes
 //retour : solution s'il y en a une, sinon nil 
 func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,IncrementalCoef[]*big.Rat,IncrementalAff[]*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int,alphaTab map[string]*big.Rat) (map[string]*big.Rat, bool,[]string,[]*big.Rat,[]*big.Rat, []string,[]string, []int){
-	
-	//tableau :=deepCopyMatrice(tableauB) 
-	if len(tableau)+len(tableau[0])!=len(bland){
-		fmt.Println(len(tableau),len(bland))
-		bland=append(bland,fmt.Sprint("e",len(bland)-1))
-		posVarTableau =append(posVarTableau,fmt.Sprint("e", len(bland)-2))
-		fmt.Println("ici 1",bland,posVarTableau)
-		test:=posVarTableau[len(tableau)-len(tabVar)]
-		posVarTableau[len(tableau)-len(tabVar)]=posVarTableau[len(posVarTableau)-1]
-		posVarTableau[len(posVarTableau)-1]=test
-		fmt.Println(bland,posVarTableau)
-	}else {
-		fmt.Println("ici 2",bland,posVarTableau)
-	
-	}
-	fmt.Println("\033[0m") 
 
-/*
-	alphaTab := createAlphaTab(tableau, tabVar)
-	//tableau qui nous donne la postion des variables dans le tableau alphaTab
-*/
+	//time.Sleep(time.Second)
+
+	if len(tableau)+len(tableau[0])!=len(bland){
+		bland=append(bland,fmt.Sprint("e",len(bland) -len(tableau[0])))
+		posVarTableau =append(posVarTableau,fmt.Sprint("e", len(bland)-len(tableau[0])-1))
+		PosConst=append(PosConst,len(tableau)-1)
+		cpt:=0
+		for cpt<len(tableau[0]){
+			tmp:=posVarTableau[len(posVarTableau)-1-cpt]
+			posVarTableau[len(posVarTableau)-1-cpt]=posVarTableau[len(posVarTableau)-cpt-2]
+			posVarTableau[len(posVarTableau)-cpt-2]=tmp
+			cpt+=1
+		}
+
+	}	
+	fmt.Println("\033[0m") 
+	fmt.Println("cible ")
 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
@@ -742,6 +739,7 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 				}
 				PosConst[indice]=-1
 			}
+			fmt.Println("cible2")
 
 			switchVarStringTab(posVarTableau, pivotLine,
 				 numero_colonne + len(tableau))
@@ -864,7 +862,6 @@ func affectation(tableau [][]*big.Rat, workingLine int,
 			var calAlpha = new(big.Rat)
 			for j :=0; j<len(tableau[0]);j++{
 				calAlpha.Add(calAlpha, new(big.Rat).Mul(tableau[i][j], alphaTab[posVarTableau[j + len(tableau)]]))
-				IncrementalAff=append(IncrementalAff,alphaTab[posVarTableau[j+len(tableau)]])
 			}
 			alphaTab[posVarTableau[i]].Set(calAlpha)
 		}
@@ -1021,94 +1018,37 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 				}
 				tableauBis = append(tableauBis, tabInter)
 			}
-
-
-			time.Sleep(time.Second)
-		
-			if inf_sup==0 {
-				fmt.Println("\033[93m") 
-				fmt.Println("solution1",solution)
-				fmt.Println("\033[0m") 
-
-			} else {
-				fmt.Println("\033[96m") 
-				fmt.Println("solution1",solution)
-				fmt.Println("\033[0m") 
-
-			}
-
-
-
-
 				
-			fmt.Println("tableauBis1",tableauBis);			
 			//incrémental
 			
 			cpt:=0
-			for cpt < (len(IncrementalCoef)-1)/(len(tableauBis[0])+1){		
+			cpt2:=0
+			for cpt < len(IncrementalCoef){		
+				var test =new(big.Rat)
+				test.Set(tableauBis[len(tableauBis)-1][IncrementalCoef[cpt].Num().Int64()])
 				for j := 0; j < len(tableauBis[0]); j++ {				
-					if int64(j)==IncrementalCoef[0+cpt*len(tableauBis[0])].Num().Int64(){
-						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],IncrementalCoef[1+cpt*len(tableauBis[0])])
+					if int64(j)==IncrementalCoef[cpt].Num().Int64(){
+						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],IncrementalCoef[int64(cpt)+IncrementalCoef[cpt].Num().Int64()+1])
 					} else {
 						tableauBis[len(tableauBis)-1][j].Add(tableauBis[len(tableauBis)-1][j],
-						new(big.Rat).Mul(tableauBis[len(tableauBis)-1][IncrementalCoef[0+cpt*len(tableauBis[0])].Num().Int64()],IncrementalCoef[j+2+cpt*(len(tableauBis[0])-1)]))			
-						
+						new(big.Rat).Mul(test,IncrementalCoef[j+1]))			
 					}
-				}
 
+				}		
 				//affectation incrémental s'il n'y a eu qu'un pivot
 				var calAlpha = new(big.Rat)
 				for j :=0; j<len(tableauBis[0]);j++{
-					calAlpha.Add(calAlpha,IncrementalAff[j+cpt*len(tableauBis[0])])
-				}
-				
+					calAlpha.Add(calAlpha,IncrementalAff[j+cpt2])
+				}	
 				solution[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
 				solution[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
 				
-				cpt+=1
+				cpt+=1+len(tableauBis[0])
+				cpt2+=len(tableauBis[0])
 			}
-
-
 			//fin incrémental
-		
-		
-		
-		
-				if inf_sup==0 {
-					fmt.Println("\033[93m") 
-					fmt.Println("tableauBis1",tableauBis)
-					fmt.Println("\033[0m") 
-
-				} else {
-					fmt.Println("\033[96m") 
-					fmt.Println("tableauBis1",tableauBis)
-					fmt.Println("\033[0m") 
-
-				}
-
-
 				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=simplex(tableauBis,tabConstBis,varInit,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,solution)
-				//fmt.Println("\033[0m") 
-
-				if inf_sup==0 {
-					fmt.Println("\033[93m") 
-					fmt.Println("tableauBis2",tableauBis)
-					fmt.Println("\033[0m") 
-					fmt.Println("\033[93m") 
-					fmt.Println("solution2",a)
-					fmt.Println("\033[0m") 
-
-				} else {
-					fmt.Println("\033[96m") 
-					fmt.Println("tableauBis2",tableauBis)
-					fmt.Println("\033[0m") 
-					fmt.Println("\033[96m") 
-					fmt.Println("solution2",a)
-					fmt.Println("\033[0m") 
-				}
-
-
-				
+		
 				sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis,incremental_Coef,incremental_Aff,posV,rBland,posC)
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {
