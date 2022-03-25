@@ -11,7 +11,7 @@ import (
 	"math/big"
 	"math"
 	"sync"
-//	"time"
+	"time"
     
 )
 
@@ -628,53 +628,69 @@ func main() {
 //retour : solution s'il y en a une, sinon nil 
 func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,IncrementalCoef[]*big.Rat,IncrementalAff[]*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int,alphaTab map[string]*big.Rat) (map[string]*big.Rat, bool,[]string,[]*big.Rat,[]*big.Rat, []string,[]string, []int){
 
-	//time.Sleep(time.Second)
+	time.Sleep(time.Second)
+	fmt.Println("tabConst",tabConst)
+	fmt.Println("alphaTab",alphaTab)
+	fmt.Println("tableau",tableau)
 
+	var posVarTableau_bis =make([]string,len(posVarTableau))
+	for i:=0;i<len(posVarTableau);i++{
+		posVarTableau_bis[i] = posVarTableau[i]
+	}
+	var PosConst_bis= make([]int,len(PosConst))
+	for i:=0;i<len(PosConst);i++{
+		PosConst_bis[i]=PosConst[i]
+	}
+	
+	
 	if len(tableau)+len(tableau[0])!=len(bland){
-		bland=append(bland,fmt.Sprint("e",len(bland) -len(tableau[0])))
-		posVarTableau =append(posVarTableau,fmt.Sprint("e", len(bland)-len(tableau[0])-1))
-		PosConst=append(PosConst,len(tableau)-1)
+		bland=append(bland,fmt.Sprint("e",len(tableau)-1))
+		posVarTableau_bis =append(posVarTableau_bis,fmt.Sprint("e",len(tableau)-1))
+		PosConst_bis=append(PosConst_bis,len(tableau)-1)
 		cpt:=0
 		for cpt<len(tableau[0]){
-			tmp:=posVarTableau[len(posVarTableau)-1-cpt]
-			posVarTableau[len(posVarTableau)-1-cpt]=posVarTableau[len(posVarTableau)-cpt-2]
-			posVarTableau[len(posVarTableau)-cpt-2]=tmp
+			var tmp string
+			tmp=posVarTableau_bis[len(posVarTableau)-cpt]
+			posVarTableau_bis[len(posVarTableau_bis)-1-cpt]=posVarTableau_bis[len(posVarTableau_bis)-cpt-2]
+			posVarTableau_bis[len(posVarTableau_bis)-cpt-2]=tmp
 			cpt+=1
 		}
 
-	}	
+	}
+	fmt.Println("posVarTableau : ",posVarTableau_bis)
+	fmt.Println("PosConst :", PosConst_bis)	
+	//incrémental aff ? 
+
 	fmt.Println("\033[0m") 
-	
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
-		workingLine := checkConst(alphaTab, tabConst, PosConst)
-
+		workingLine := checkConst(alphaTab, tabConst, PosConst_bis)
+			
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
 			fmt.Println(alphaTab)
-			return  alphaTab,true,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst
+			return  alphaTab,true,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau_bis,bland,PosConst_bis
 		}
 		//on cherche la colonne du pivot
 		columnPivot := pivot(tableau, tabConst, alphaTab, workingLine,
-			 posVarTableau, bland, PosConst)
+			 posVarTableau_bis, bland, PosConst_bis)
 		if columnPivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			fmt.Println(alphaTab,false)
-			return alphaTab,false,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst 
+			return alphaTab,false,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau_bis,bland,PosConst_bis 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			IncrementalCoef=coefficients(tableau,columnPivot,workingLine,IncrementalCoef)
 			//calcul des nouveaux alpha
-			IncrementalAff=affectation(tableau,workingLine,alphaTab,posVarTableau,IncrementalAff)
+			IncrementalAff=affectation(tableau,workingLine,alphaTab,posVarTableau_bis,IncrementalAff)
 			//time.Sleep(time.Second)
 			fmt.Println("\033[35m matrice des coefficients :",tableau,"\033[0m")
 			fmt.Println("\033[34m affectations :" ,alphaTab,"\033[0m")
-
+			
 		}
 	}
-	return alphaTab,false,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst
+	return alphaTab,false,bland[:len(tableau[0])],IncrementalCoef,IncrementalAff,posVarTableau_bis,bland,PosConst_bis
 }
 
 
@@ -714,7 +730,6 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 			}
 		} 	
 		// à revoir plein de haine
-		fmt.Println("variablePivot",variablePivot)
 		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) && (variablePivot[0] !='e' ||
 		 !(coefColumn.Cmp(new(big.Rat))==-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[pivotLine]])<=0))  {
 			var theta = new(big.Rat)
@@ -744,7 +759,7 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 				}
 				PosConst[indice]=-1
 			}
-
+			
 			switchVarStringTab(posVarTableau, pivotLine,
 				 numero_colonne + len(tableau))
 			fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
@@ -759,7 +774,6 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 func createAlphaTab(tableau [][]*big.Rat, tabVar []string) map[string]*big.Rat{
 	alphaTab := make(map[string]*big.Rat)
 	for i := 0; i < len(tableau); i++ {
-	    //fmt.Println(alphaTab[fmt.Sprint("e", i)]) //pour debug
 		alphaTab[fmt.Sprint("e", i)] = new(big.Rat)
 	}
 	if len(tabVar) == 0 {
@@ -834,7 +848,6 @@ func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, Increm
 	tabPivot.Set(new(big.Rat).Inv(tableau[workingLine][columnPivot]))
 	for i := 0; i < len(tableau[0]); i++ {
 		if i == columnPivot {
-			tableau[workingLine][i]=tabPivot
 			IncrementalCoef=append(IncrementalCoef,tabPivot)
 		} else {
 			var tabNeg =new(big.Rat)
@@ -964,7 +977,7 @@ func addOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
 
 func branch_bound(solution map[string]*big.Rat, gotSol bool,varInit []string, tableau [][]*big.Rat, tabConst []*big.Rat, channel chan bAndB, incremental_Coef []*big.Rat,incremental_Aff []*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int) (map[string]*big.Rat, bool){
 	fmt.Println("\033[0m") 
-
+	
 	solutionEntiere,index:=estSol(solution,varInit)
 	
 	//Cas d'arret si solution est fait seulement d'entier
@@ -1032,44 +1045,56 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 			}
 				
 			//incrémental
-			
+			solution_bis := make(map[string]*big.Rat)		
 			cpt:=0
 			cpt2:=0
 			for cpt < len(IncrementalCoef){		
-				var test =new(big.Rat)
-				test.Set(tableauBis[len(tableauBis)-1][IncrementalCoef[cpt].Num().Int64()])
+				var case_pivot =new(big.Rat)
+				case_pivot.Set(tableauBis[len(tableauBis)-1][IncrementalCoef[cpt].Num().Int64()])
 				for j := 0; j < len(tableauBis[0]); j++ {				
 					if int64(j)==IncrementalCoef[cpt].Num().Int64(){
-						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],IncrementalCoef[int64(cpt)+IncrementalCoef[cpt].Num().Int64()+1])
+						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],
+						IncrementalCoef[int64(cpt)+IncrementalCoef[cpt].Num().Int64()+1])
 					} else {
 						tableauBis[len(tableauBis)-1][j].Add(tableauBis[len(tableauBis)-1][j],
-						new(big.Rat).Mul(test,IncrementalCoef[j+1]))			
+						new(big.Rat).Mul(case_pivot,IncrementalCoef[j+1]))			
 					}
 
 				}		
-				//affectation incrémental s'il n'y a eu qu'un pivot
 				var calAlpha = new(big.Rat)
 				for j :=0; j<len(tableauBis[0]);j++{
 					calAlpha.Add(calAlpha,IncrementalAff[j+cpt2])
 				}
 
-				solution[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
-				
-				lock.Lock()					
-				solution[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
-				lock.Unlock()
+
+				for i := 0; i < len(tableauBis)-1; i++ {
+					solution_bis[fmt.Sprint("e", i)] = new(big.Rat)
+					solution_bis[fmt.Sprint("e", i)].Set(solution[fmt.Sprint("e", i)]) 
+				}
+				solution_bis[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
+				solution_bis[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
+				if len(varInit) == 0 {
+					for i := 0; i < len(tableauBis[0]); i++ {
+					solution_bis[fmt.Sprint("x", i)] = new(big.Rat)
+					solution_bis[fmt.Sprint("x", i)].Set(solution[fmt.Sprint("x", i)])
+					}
+				} else {
+					for i := 0; i < len(tableauBis[0]); i++ {
+						solution_bis[varInit[i]] = new(big.Rat)
+						solution_bis[varInit[i]].Set(solution[varInit[i]])
+					
+					}
+				}
 
 				cpt+=1+len(tableauBis[0])
 				cpt2+=len(tableauBis[0])
 			}
 			//fin incrémental
 
-			//faire deep copy solution car elle écrit et est lu en même temps ce qui n'est pas le bon comportement
-
-
-				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=simplex(tableauBis,tabConstBis,varInit,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,solution)
+				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=simplex(tableauBis,tabConstBis,varInit,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,solution_bis)
 				
 				sol, solBool := branch_bound(a,b,c, tableauBis, tabConstBis, channelBis,incremental_Coef,incremental_Aff,posV,rBland,posC)
+
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {
 					case channel <- stBAndB:
