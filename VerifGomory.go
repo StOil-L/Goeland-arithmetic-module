@@ -1,3 +1,14 @@
+package main
+
+
+import (
+    "fmt"
+    "regexp"
+  "math/big"
+  "math"
+  "strconv"
+)
+
 // déclaration de la structure Gomory
  type Gomory struct {
 	valide bool
@@ -7,21 +18,26 @@
 
 //Verifier si on a les conditions pour faire une Gomory cut
 //NombreVariables = len(TabVar)
-func VerifGomory(NombreVariables int ,posVarTableau []string, alphaTab map[string]*big.Rat )(Gomory){
+func VerifGomory(NombreVariables int ,posVarTableau []string, alphaTab map[string]*big.Rat,tabConst []*big.Rat )(Gomory){
 
   GomoryStruct := Gomory{false,"0",0}
   
   var valideVariableEcart = regexp.MustCompile(`[e][0-9]`)
-  var TestEcart = true
+  var cpt int
+  
   
   //Test tous les variables dans la base
   for i := len(posVarTableau)-1; i >= len(posVarTableau)- NombreVariables;i--{
-    
+    var contraint string
+    contraint = posVarTableau[i][1:]
+    Contrainte,_ := strconv.Atoi(contraint)
     //Vérifie si ce sont que des variables d'écarts
-    if !valideVariableEcart.MatchString(posVarTableau[i]){
-      TestEcart = false;
+    if valideVariableEcart.MatchString(posVarTableau[i]) && (alphaTab[posVarTableau[i]] == tabConst[Contrainte]) {
+      cpt++
     }
   }
+  var TestEcart bool
+  TestEcart = (cpt == NombreVariables) 
   
   //Si c'est vrai, deuxième vérification, il faut que l'affectation d'une des variables initiales soit non entières
   if(TestEcart){
@@ -43,3 +59,7 @@ func VerifGomory(NombreVariables int ,posVarTableau []string, alphaTab map[strin
   
   return GomoryStruct
 } 
+
+func main (){
+  //VerifGomory(3,[x0,x1,e0,e1],[x0:2/1,x1:1/1,e0:1/1,e1:0:1])
+}
