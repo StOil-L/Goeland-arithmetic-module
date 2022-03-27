@@ -11,7 +11,7 @@ import (
 	"math/big"
 	"math"
 	"sync"
-	"time"
+//	"time"
     
 )
 
@@ -628,7 +628,7 @@ func main() {
 //retour : solution s'il y en a une, sinon nil 
 func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,IncrementalCoef[]*big.Rat,IncrementalAff[]*big.Rat,posVarTableau[]string,bland[]string,PosConst[]int,alphaTab map[string]*big.Rat) (map[string]*big.Rat, bool,[]string,[]*big.Rat,[]*big.Rat, []string,[]string, []int){
 
-	time.Sleep(time.Second)
+//	time.Sleep(time.Second)
 	fmt.Println("tabConst",tabConst)
 	fmt.Println("alphaTab",alphaTab)
 	fmt.Println("tableau",tableau)
@@ -665,8 +665,7 @@ func simplex(tableau [][]*big.Rat, tabConst []*big.Rat, tabVar[]string,Increment
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//workingLine est la ligne qui ne respecte pas sa contrainte
-		workingLine := checkConst(alphaTab, tabConst, PosConst_bis)
-			
+		workingLine := checkConst(alphaTab, tabConst, PosConst_bis)		
 		if workingLine == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
 			fmt.Println(alphaTab)
@@ -728,10 +727,17 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 				index=j
 				coefColumn=tableau[pivotLine][index-len(tableau)]
 			}
-		} 	
-		// à revoir plein de haine
+		}
+
+		var vide string
+		var numero_variable_pivot int 	
+		if variablePivot != vide {
+			varPiv, _ := strconv.Atoi(variablePivot[1:])
+			numero_variable_pivot=varPiv
+		}
 		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) && (variablePivot[0] !='e' ||
-		 !(coefColumn.Cmp(new(big.Rat))==-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[pivotLine]])<=0))  {
+		 (variablePivot!=vide && coefColumn.Cmp(new(big.Rat))==-1 && PosConst[numero_variable_pivot]>-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[numero_variable_pivot]])>0))  {
+		//	 time.Sleep(time.Second)
 			var theta = new(big.Rat)
 			theta.Mul(new(big.Rat).Add(tabConst[PosConst[pivotLine]], new(big.Rat).Neg(alphaTab[posVarTableau[pivotLine]])), new(big.Rat).Inv(coefColumn))
 			var numero_colonne int
@@ -1063,7 +1069,7 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 				}		
 				var calAlpha = new(big.Rat)
 				for j :=0; j<len(tableauBis[0]);j++{
-					calAlpha.Add(calAlpha,IncrementalAff[j+cpt2])
+					calAlpha.Add(calAlpha,new(big.Rat).Mul(IncrementalAff[j+cpt2],tableauBis[len(tableauBis)-1][j]))
 				}
 
 
