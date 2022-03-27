@@ -1051,50 +1051,7 @@ func goBandB(inf_sup int, tabl [][]*big.Rat, tabCont []*big.Rat, channel chan bA
 			}
 				
 			//incrémental
-			solution_bis := make(map[string]*big.Rat)		
-			cpt:=0
-			cpt2:=0
-			for cpt < len(IncrementalCoef){		
-				var case_pivot =new(big.Rat)
-				case_pivot.Set(tableauBis[len(tableauBis)-1][IncrementalCoef[cpt].Num().Int64()])
-				for j := 0; j < len(tableauBis[0]); j++ {				
-					if int64(j)==IncrementalCoef[cpt].Num().Int64(){
-						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],
-						IncrementalCoef[int64(cpt)+IncrementalCoef[cpt].Num().Int64()+1])
-					} else {
-						tableauBis[len(tableauBis)-1][j].Add(tableauBis[len(tableauBis)-1][j],
-						new(big.Rat).Mul(case_pivot,IncrementalCoef[j+1]))			
-					}
-
-				}		
-				var calAlpha = new(big.Rat)
-				for j :=0; j<len(tableauBis[0]);j++{
-					calAlpha.Add(calAlpha,new(big.Rat).Mul(IncrementalAff[j+cpt2],tableauBis[len(tableauBis)-1][j]))
-				}
-
-
-				for i := 0; i < len(tableauBis)-1; i++ {
-					solution_bis[fmt.Sprint("e", i)] = new(big.Rat)
-					solution_bis[fmt.Sprint("e", i)].Set(solution[fmt.Sprint("e", i)]) 
-				}
-				solution_bis[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
-				solution_bis[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
-				if len(varInit) == 0 {
-					for i := 0; i < len(tableauBis[0]); i++ {
-					solution_bis[fmt.Sprint("x", i)] = new(big.Rat)
-					solution_bis[fmt.Sprint("x", i)].Set(solution[fmt.Sprint("x", i)])
-					}
-				} else {
-					for i := 0; i < len(tableauBis[0]); i++ {
-						solution_bis[varInit[i]] = new(big.Rat)
-						solution_bis[varInit[i]].Set(solution[varInit[i]])
-					
-					}
-				}
-
-				cpt+=1+len(tableauBis[0])
-				cpt2+=len(tableauBis[0])
-			}
+			solution_bis:=incremental(IncrementalCoef,tableauBis,solution,IncrementalAff,varInit) 
 			//fin incrémental
 
 				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=simplex(tableauBis,tabConstBis,varInit,IncrementalCoef,IncrementalAff,posVarTableau,bland,PosConst,solution_bis)
@@ -1204,4 +1161,53 @@ func getIneq(eq string)([]string){
 	} else {
 		return []string{ineq}
 	}
+}
+
+
+func incremental(IncrementalCoef []*big.Rat,tableauBis [][]*big.Rat,solution map[string]*big.Rat,IncrementalAff []*big.Rat, varInit []string) (map[string]*big.Rat){
+	solution_bis := make(map[string]*big.Rat)		
+			cpt:=0
+			cpt2:=0
+			for cpt < len(IncrementalCoef){		
+				var case_pivot =new(big.Rat)
+				case_pivot.Set(tableauBis[len(tableauBis)-1][IncrementalCoef[cpt].Num().Int64()])
+				for j := 0; j < len(tableauBis[0]); j++ {				
+					if int64(j)==IncrementalCoef[cpt].Num().Int64(){
+						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],
+						IncrementalCoef[int64(cpt)+IncrementalCoef[cpt].Num().Int64()+1])
+					} else {
+						tableauBis[len(tableauBis)-1][j].Add(tableauBis[len(tableauBis)-1][j],
+						new(big.Rat).Mul(case_pivot,IncrementalCoef[j+1]))			
+					}
+
+				}		
+				var calAlpha = new(big.Rat)
+				for j :=0; j<len(tableauBis[0]);j++{
+					calAlpha.Add(calAlpha,new(big.Rat).Mul(IncrementalAff[j+cpt2],tableauBis[len(tableauBis)-1][j]))
+				}
+
+
+				for i := 0; i < len(tableauBis)-1; i++ {
+					solution_bis[fmt.Sprint("e", i)] = new(big.Rat)
+					solution_bis[fmt.Sprint("e", i)].Set(solution[fmt.Sprint("e", i)]) 
+				}
+				solution_bis[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
+				solution_bis[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
+				if len(varInit) == 0 {
+					for i := 0; i < len(tableauBis[0]); i++ {
+					solution_bis[fmt.Sprint("x", i)] = new(big.Rat)
+					solution_bis[fmt.Sprint("x", i)].Set(solution[fmt.Sprint("x", i)])
+					}
+				} else {
+					for i := 0; i < len(tableauBis[0]); i++ {
+						solution_bis[varInit[i]] = new(big.Rat)
+						solution_bis[varInit[i]].Set(solution[varInit[i]])
+					
+					}
+				}
+
+				cpt+=1+len(tableauBis[0])
+				cpt2+=len(tableauBis[0])
+			}
+			return solution_bis
 }
