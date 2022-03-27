@@ -735,8 +735,8 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 			varPiv, _ := strconv.Atoi(variablePivot[1:])
 			numero_variable_pivot=varPiv
 		}
-		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) && (variablePivot[0] !='e' ||
-		 (variablePivot!=vide && coefColumn.Cmp(new(big.Rat))==-1 && PosConst[numero_variable_pivot]>-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[numero_variable_pivot]])>0))  {
+		for index< len(tableau)+len(tableau[0])  && (coefColumn.Cmp(new(big.Rat))!=0) && variablePivot!=vide && (variablePivot[0] !='e' || coefColumn.Cmp(new(big.Rat))==1 ||
+		 ( coefColumn.Cmp(new(big.Rat))==-1 && PosConst[numero_variable_pivot]>-1 && alphaTab[variablePivot].Cmp(tabConst[PosConst[numero_variable_pivot]])>0))  {
 		//	 time.Sleep(time.Second)
 			var theta = new(big.Rat)
 			theta.Mul(new(big.Rat).Add(tabConst[PosConst[pivotLine]], new(big.Rat).Neg(alphaTab[posVarTableau[pivotLine]])), new(big.Rat).Inv(coefColumn))
@@ -744,14 +744,14 @@ func pivot(tableau [][]*big.Rat,  tabConst []*big.Rat,
 			numero_colonne=index-len(tableau)
 			var alphaColumn = new(big.Rat)	
 			alphaColumn.Add(alphaTab[variablePivot], theta)
+			alphaTab[variablePivot]=alphaColumn
 			var alphaLine = new(big.Rat)
 			//on calcule alphaLine
 			for index2, element2 := range tableau[pivotLine] {
-				if coefColumn.Cmp(element2) != 0{
 					alphaLine.Add(alphaLine, new(big.Rat).Mul(element2, alphaTab[posVarTableau[index2+len(tableau)]]))
-				}
 			}
-			alphaLine.Add(alphaLine, new(big.Rat).Mul(coefColumn, alphaColumn))
+			fmt.Println("alphaColumn", alphaColumn)
+			fmt.Println("alphaline",alphaLine)
 			alphaTab[posVarTableau[pivotLine]].Set(alphaLine)
 			alphaTab[variablePivot].Set(alphaColumn)
 			fmt.Println("\033[0m variable \033[36m colonne:",variablePivot+"\033[0m","variable \033[36m ligne:",posVarTableau[pivotLine]+"\033[0m")
@@ -855,6 +855,7 @@ func coefficients(tableau [][]*big.Rat, columnPivot int, workingLine int, Increm
 	for i := 0; i < len(tableau[0]); i++ {
 		if i == columnPivot {
 			IncrementalCoef=append(IncrementalCoef,tabPivot)
+			tableau[workingLine][i]=tabPivot
 		} else {
 			var tabNeg =new(big.Rat)
 			tabNeg.Set(new(big.Rat).Neg(tableau[workingLine][i]))
