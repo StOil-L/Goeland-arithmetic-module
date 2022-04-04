@@ -1,0 +1,23 @@
+incremental commentaire fonction a faire
+
+Simplexe
+	pos_var_tab_bis dans simplexe utile ?
+	pos_cont_bis dans simplexe utile ?
+	Pas besoin de retrun les varaible deja presente en param ?
+
+pivot
+	ligne 772 for en if
+
+updatePosContrainte
+	Remplacer l'utilisation de pos_cont par celle de pos_var_tab et une fonction
+	Peut etre erreur dans la mise a jour a la fin
+
+coefficients / affectation
+	Normalement pas besoin de return incremental_coef, ce met a jour tous seul
+
+addAllConst
+	Les parametres "tab_coef", "tab_cont", "tab_nom_var" ne sont pas necessaire
+
+checkCont
+	Peut etre erreur : ligne 71 la comparaison ne correspond pas forcement ci les varaibles d'ecart on etait bougé
+					   ligne 726 condition inutile
