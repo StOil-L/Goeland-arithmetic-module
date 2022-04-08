@@ -81,9 +81,9 @@ func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, i
 			return alpha_tab,false,bland[:len(tab_coef[0])],incremental_coef,incremental_aff,pos_var_tab_bis,bland,pos_cont_bis 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
-			incremental_coef=updateMatrice(tab_coef,colonne_pivot,ligne_pivot,incremental_coef)
+			updateMatrice(tab_coef,colonne_pivot,ligne_pivot,incremental_coef)
 			//calcul des nouveaux alpha
-			incremental_aff=updateAlpha(tab_coef,ligne_pivot,alpha_tab,pos_var_tab_bis,incremental_aff)
+			updateAlpha(tab_coef,ligne_pivot,alpha_tab,pos_var_tab_bis,incremental_aff)
 			//time.Sleep(time.Second)
 			fmt.Println("\033[35m matrice des coefficients :",tab_coef,"\033[0m")
 			fmt.Println("\033[34m affectations :" ,alpha_tab,"\033[0m")
@@ -155,7 +155,7 @@ func pivot(tab_coef [][]*big.Rat,  tab_cont []*big.Rat,
 		}
 
 		//Check if the pivot is suitable
-		for colonne_pivot < len(tab_coef)+len(tab_coef[0])  && (coef_colonne.Cmp(new(big.Rat))!=0) && var_pivot!=vide 
+		if colonne_pivot < len(tab_coef)+len(tab_coef[0])  && (coef_colonne.Cmp(new(big.Rat))!=0) && var_pivot!=vide 
 		&& (var_pivot[0] !='e' || coef_colonne.Cmp(new(big.Rat))==1 ||
 		(coef_colonne.Cmp(new(big.Rat))==-1 && pos_cont[numero_variable_pivot]>-1 
 		&& alpha_tab[var_pivot].Cmp(tab_cont[pos_cont[numero_variable_pivot]])>0))  {
@@ -238,7 +238,7 @@ func updatePosContrainte(pos_cont []int, variable_colonne string, variable_ligne
  *   - `ligne_pivot`, line of the matrice where the pivot occur
  *   - `incremental_coef`,
  **/
-func updateMatrice(tab_coef [][]*big.Rat, colonne_pivot int, ligne_pivot int, incremental_coef []*big.Rat)   []*big.Rat{
+func updateMatrice(tab_coef [][]*big.Rat, colonne_pivot int, ligne_pivot int, incremental_coef []*big.Rat) {
 	
 	//ajout numéro colonne pivot 
 	incremental_coef=append(incremental_coef,big.NewRat(int64(colonne_pivot), 1))
@@ -272,10 +272,8 @@ func updateMatrice(tab_coef [][]*big.Rat, colonne_pivot int, ligne_pivot int, in
 		
 				}
 			}
-
 		}
 	}
-	return incremental_coef
 }
 
 /** 
@@ -288,7 +286,7 @@ func updateMatrice(tab_coef [][]*big.Rat, colonne_pivot int, ligne_pivot int, in
  *   - `incremental_aff`,
  **/
 func updateAlpha(tab_coef [][]*big.Rat, ligne_pivot int, 
-	alpha_tab map[string]*big.Rat, pos_var_tab []string, incremental_aff []*big.Rat)  []*big.Rat{
+	alpha_tab map[string]*big.Rat, pos_var_tab []string, incremental_aff []*big.Rat){
 	for i := 0; i<len(tab_coef);i++{
 		if i != ligne_pivot {
 			var cal_alpha = new(big.Rat)
@@ -301,7 +299,6 @@ func updateAlpha(tab_coef [][]*big.Rat, ligne_pivot int,
 	for j :=0; j<len(tab_coef[0]);j++{
 		incremental_aff=append(incremental_aff,alpha_tab[pos_var_tab[j + len(tab_coef)]])
 	}
-	return incremental_aff
 }
 
 /** 
@@ -310,14 +307,13 @@ func updateAlpha(tab_coef [][]*big.Rat, ligne_pivot int,
  *   - `eqs`, a string which represent a system of equations
  * It returns the matrice of coefficient, the array of constraint and table of the system's starting variable
  **/
-func addAllConst(eqs []string, tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var []string) ([]*big.Rat, [][]*big.Rat, []string){
+func AddAllConst(eqs []string, tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var []string) {
     for _, element := range eqs {
         dernier_element, tab, liste_nom_var := parseOneConst(element)
         tab_coef = append(tab_coef, tab)
         tab_cont = append(tab_cont, dernier_element)
         addVarIfNotExists(liste_nom_var, tab_nom_var)
     }
-    return tab_cont, tab_coef, tab_nom_var
 }
 
 /** 

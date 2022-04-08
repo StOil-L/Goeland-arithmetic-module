@@ -456,7 +456,7 @@ func main() {
         var tab_var = make([]string,0)
         var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
         
-        tab_cont, tableau, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
+        addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
@@ -490,7 +490,7 @@ func main() {
         var tab_var = make([]string,0)
         var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
         
-        tab_cont, tableau, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
+        addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
@@ -541,7 +541,7 @@ func main() {
 			tabExe = append(tabExe, equation)
     	}
     	
-        tab_cont, tableau, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
+        addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
@@ -588,7 +588,7 @@ func main() {
 			tabExe = append(tabExe, equation)
     	}
     	
-        tab_cont, tableau, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
+        addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
