@@ -22,7 +22,7 @@ func constRule1(o operation) bool {
 	// En fonction du type de mon opération
 	switch opType := o.(type) {
 
-	// Cas entier
+	// Cas entier 
 	case operationInt:
 		switch opType.getOperator() {
 		case EQ:
@@ -31,8 +31,14 @@ func constRule1(o operation) bool {
 			return opType.getArg1() != opType.getArg2()
 		}
 
-	// Cas rationnel
+	// Cas rationnel (rien a changer grace a Julie)
 	case operationRat:
+		switch opType.getOperator() {
+		case EQ:
+			return opType.getArg1() == opType.getArg2()
+		case NEQ:
+			return opType.getArg1() != opType.getArg2()
+		}
 
 	default:
 		println("Error constRule1")
@@ -52,7 +58,9 @@ func NormalizationRuleEq(p types.Pred) []types.FormList {
 	switch p.GetID().GetName() {
 	case types.Id_eq.GetName():
 		res_form_list := types.MakeEmptyFormList()
+		// Mettre un greateq de arg2 vers arg1 ?
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg1.Copy(), arg2.Copy()}))
+		// Ajouter les "-" pour etre conforme a notre implémentation
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg2.Copy(), arg1.Copy()}))
 		return append(res, res_form_list)
 	}
@@ -62,6 +70,22 @@ func NormalizationRuleEq(p types.Pred) []types.FormList {
 		res_form_list := types.MakeEmptyFormList()
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("less"), []types.Term{arg1.Copy(), arg2.Copy()}))
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greater"), []types.Term{arg2.Copy(), arg1.Copy()}))
+		return append(res, res_form_list)
+	}
+
+	switch p.GetID().GetName() {
+	case types.Id_Lt.GetName():
+		res_form_list := types.MakeEmptyFormList()
+		// Il faut mettre -1 sur le arg2 et ajouter les "-" pour etre conforme a notre implémentation 
+		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{arg1.Copy(), arg2.Copy()}))
+		return append(res, res_form_list)
+	}
+
+	switch p.GetID().GetName() {
+	case types.Id_Gt.GetName():
+		res_form_list := types.MakeEmptyFormList()
+		// Il faut mettre +1 sur le arg2
+		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{arg2.Copy(), arg1.Copy()}))
 		return append(res, res_form_list)
 	}
 

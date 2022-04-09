@@ -46,7 +46,10 @@ func PredToConst(p types.Pred) operation {
 		createOperation(arg1, arg2, tScheme, LESS)
 	case "lesseq":
 		createOperation(arg1, arg2, tScheme, LESSEQ)
-
+	case "great":
+		createOperation(arg1, arg2, tScheme, GREAT)
+	case "greateq":
+		createOperation(arg1, arg2, tScheme, GREATEQ)
 	}
 	fmt.Println("Error parse")
 	return nil
@@ -120,6 +123,17 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 		return res1 + res2, nil
+	case "difference":
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		res2, err2 := TermToInt(arg2)
+		if err2 != nil {
+			return 0, err2
+		}
+		return res1 - res2, nil
+	}
 	case "product":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -131,10 +145,119 @@ func funToInt(f types.Fun) (int, error) {
 		}
 		return res1 * res2, nil
 	}
+	// Que faire dans le cas d'un quotient réél : 1. Renvoi un réél 2. Revoi la division entière
+	// cas 1
+	case "quotient_t":
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		res2, err2 := TermToInt(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || res2 == 0 {
+			return 0, err2
+		}
+		return res1 / res2, nil
+	}
+	// cas 2
+	case "quotient_t":
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		res2, err2 := TermToInt(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || res2 == 0 {
+			return 0, err2
+		}
+		return (res1 / res2) - (res1 / res2)%1, nil
+	}
+	case "remainder_t":
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		res2, err2 := TermToInt(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || res2 == 0 {
+			return 0, err2
+		}
+		return res1 % res2, nil
+	}
 	return 0, nil
 }
 
 // TODO : tout
 func TermToRat(t types.Term) (*big.Rat, error) {
+	switch ttypes := t.(type) {
+	case types.Fun:
+		// Constante
+		if len(ttypes.GetArgs()) == 0 {
+			strconv.Atoi(ttypes.GetID().GetName())
+		} else {
+			if res, err := funToRat(ttypes); err == nil {
+				return res, nil
+			} else {
+				return new(big.Rat), err
+			}
+		}
+	default:
+		fmt.Println("Error in conversion Rat: format not found")
+		return new(big.Rat), errors.New("Error Rat")
+	}
+
+	return new(big.Rat), errors.New("Error Rat")
+}
+
+func funToRat(f types.Fun) (*big.Rat, error) {
+	arg1 := f.GetArgs()[0]
+	arg2 := f.GetArgs()[1]
+	switch f.GetID().GetName() {
+	case "sum":
+		res1, err1 := TermToRat(arg1)
+		if err1 != nil {
+			return new(big.Rat), err1
+		}
+		res2, err2 := TermToRat(arg2)
+		if err2 != nil {
+			return new(big.Rat), err2
+		}
+		// On créé un nouveau rationnel ou on on met le resultat dans rat1 ?
+		return res1.Add(res1, res2), nil
+	case "difference":
+		res1, err1 := TermToRat(arg1)
+		if err1 != nil {
+			return new(big.Rat), err1
+		}
+		res2, err2 := TermToRat(arg2)
+		if err2 != nil {
+			return new(big.Rat), err2
+		}
+		return res1.Add(res1, new(big.Rat).Mul(res2, big.NewRat(-1,1))), nil
+	}
+	case "product":
+		res1, err1 := TermToRat(arg1)
+		if err1 != nil {
+			return new(big.Rat), err1
+		}
+		res2, err2 := TermToRat(arg2)
+		if err2 != nil {
+			return new(big.Rat), err2
+		}
+		return res1.Mul(res1, res2), nil
+	}
+	case "quotient_t":
+		res1, err1 := TermToRat(arg1)
+		if err1 != nil {
+			return new(big.Rat), err1
+		}
+		res2, err2 := TermToRat(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || res2 == 0 {
+			return new(big.Rat), err2
+		}
+		return res1.Mul(res1, new(big.Rat).Inv(res2)), nil
+	}
+	
 	return new(big.Rat), nil
 }
