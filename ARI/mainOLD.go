@@ -2,7 +2,6 @@ package main
 
 import (
 	typing "ARI/polymorphism"
-	ari "ARI/rules"
 	"fmt"
 
 	"ARI/types"
@@ -17,7 +16,6 @@ func main() {
 
 	// Initialisation des types de TPTP
 	typing.Init()
-	ari.Init()
 
 	// Déclaration des types nécessaires pour les tests
 	tInt = typing.MkTypeHint("int")
@@ -27,7 +25,6 @@ func main() {
 	// Tests
 	TestInt1()
 	TestRat1()
-	TestNormalizationEQ()
 
 }
 
@@ -61,17 +58,4 @@ func TestRat1() {
 	x := types.MakeMeta(0, "X", -1, tRat)
 	greater := types.MakePred(types.MakerId("greater"), []types.Term{x, un_quart}, typing.GetTypeScheme("greater", typing.MkTypeCross(tRat, tRat)))
 	fmt.Printf("%v\n", greater.ToString())
-}
-
-func TestNormalizationEQ() {
-	fmt.Println(" -------- TEST 3 -------- ")
-	fmt.Println(" 3 = 3")
-	trois := types.MakerConst(types.MakerId("3"), tInt)
-	eq := types.MakePred(types.Id_eq, []types.Term{trois, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-	fmt.Printf("%v\n", eq.ToString())
-	fmt.Printf("On applique la règle de normalisation (égalité)\n")
-	res := ari.NormalizationRule(eq)
-	for _, result_rule := range res {
-		fmt.Printf("Resultat : %v\n", result_rule.ToString())
-	}
 }

@@ -22,7 +22,7 @@ func constRule1(o operation) bool {
 	// En fonction du type de mon opération
 	switch opType := o.(type) {
 
-	// Cas entier
+	// Cas entier 
 	case operationInt:
 		switch opType.getOperator() {
 		case EQ:
@@ -50,7 +50,7 @@ func constRule1(o operation) bool {
 }
 
 // TODO : Compléter avec les règle int-LT et INt-GT
-func NormalizationRule(p types.Pred) []types.FormList {
+func NormalizationRuleEq(p types.Pred) []types.FormList {
 	res := []types.FormList{}
 	arg1 := p.GetArgs()[0]
 	arg2 := p.GetArgs()[1]
@@ -63,19 +63,25 @@ func NormalizationRule(p types.Pred) []types.FormList {
 		// Ajouter les "-" pour etre conforme a notre implémentation
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg2.Copy(), arg1.Copy()}))
 		return append(res, res_form_list)
+	}
 
+	switch p.GetID().GetName() {
 	case types.Id_neq.GetName():
 		res_form_list := types.MakeEmptyFormList()
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("less"), []types.Term{arg1.Copy(), arg2.Copy()}))
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greater"), []types.Term{arg2.Copy(), arg1.Copy()}))
 		return append(res, res_form_list)
+	}
 
+	switch p.GetID().GetName() {
 	case types.Id_Lt.GetName():
 		res_form_list := types.MakeEmptyFormList()
-		// Il faut mettre -1 sur le arg2 et ajouter les "-" pour etre conforme a notre implémentation
+		// Il faut mettre -1 sur le arg2 et ajouter les "-" pour etre conforme a notre implémentation 
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{arg1.Copy(), arg2.Copy()}))
 		return append(res, res_form_list)
+	}
 
+	switch p.GetID().GetName() {
 	case types.Id_Gt.GetName():
 		res_form_list := types.MakeEmptyFormList()
 		// Il faut mettre +1 sur le arg2

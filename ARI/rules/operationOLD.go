@@ -21,11 +21,11 @@ const (
 	GREATEQ
 )
 
-var tInt typing.TypeHint          // typing.MkTypeHint("int")
-var tRat typing.TypeHint          //typing.MkTypeHint("rat")
-var tProp typing.TypeHint         // = typing.MkTypeHint("o")
-var tIntIntProp typing.TypeScheme // typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp)
-var tRatRatProp typing.TypeScheme // typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp)
+var tInt = typing.MkTypeHint("int")
+var tRat = typing.MkTypeHint("rat")
+var tProp = typing.MkTypeHint("o")
+var tIntIntProp = typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp)
+var tRatRatProp = typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp)
 
 type operation interface {
 	getOperator() int
@@ -58,14 +58,6 @@ func (or operationRat) getArg2() *big.Rat {
 }
 func (or operationRat) getOperator() int {
 	return or.operator
-}
-
-func Init() {
-	tInt = typing.MkTypeHint("int")
-	tRat = typing.MkTypeHint("rat")
-	tProp = typing.MkTypeHint("o")
-	tIntIntProp = typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp)
-	tRatRatProp = typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp)
 }
 
 func checkIntIntToProp(ts typing.TypeScheme) bool {
