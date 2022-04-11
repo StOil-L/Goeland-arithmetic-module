@@ -27,8 +27,6 @@ var lock_meta sync.Mutex
 // Global id
 var Id_eq = MakerId("=")
 var Id_neq = MakerId("!=")
-var Id_Lt = MakerId("<")
-var Id_Gt = MakerId(">")
 
 /* Reset all the maps and counters */
 func Reset() {
