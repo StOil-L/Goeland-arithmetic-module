@@ -24,7 +24,6 @@ import (
  *	 - `incremental_aff`,
  * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
  * 	 - `bland`, an array containing the Bland order of variable
- * 	 - `pos_cont`, an array containing the position of constraint, the posiotion is -1 when the constraint is in base
  * 	 - `alpha_tab`, a map associating the name of the variable and his alpha value
  * It returns an affectation that satisfies the constraints. 
  * In case the system has no solutions, the boolean return value is set to false.
@@ -92,13 +91,13 @@ func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, i
  * It takes the following parameters:
  *   - `alpha_tab`, a map associating the name of the variable and his alpha value
  *   - `tab_cont`, an array containing the constraints, tab_cont[0] contains the constraint of the first line of the matrice
- *   - `pos_cont`, an array containing the position of constraint, the posiotion is -1 when the constraint is in base
+ * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
  * It return the `tab_coef`'s line where the constraints isn't respect
  * If all constraints are respected, return -1
  **/
-func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab []int) int{
+func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab []string) int{
 	for index, variable := range pos_var_tab[:len(tab_cont)]  {
-		if variable[0] == "e" {
+		if variable[0] == 101 {
 			if alpha_tab[variable].Cmp(tab_cont[index]) == -1 {
 				return index
 			}	
@@ -106,6 +105,16 @@ func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab 
 	}
 	return -1
 }
+
+func checkContHorsBase(tab_cont []*big.Rat, pos_var_tab []string, nom_var string) bool{
+	for index, variable := range pos_var_tab[:len(tab_cont)]  {
+		if variable == nom_var {
+			return true
+		}
+	}
+	return false
+}
+
 
 /**
  * This function search the pivot and update the alpha and position of the switched varaible
@@ -116,13 +125,12 @@ func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab 
  * 	- `pivot_line`, an int which indacate the pivot line in `tab_coef`
  * 	- `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
  *	- `bland`, an array containing the Bland order of variable
- * 	- `pos_cont`, an array containing the position of constraint, the posiotion is -1 when the constraint is in base
  * It return the line of the pivot
  * If any pivot is found, return -1
  **/
 func pivot(tab_coef [][]*big.Rat,  tab_cont []*big.Rat,
 	 alpha_tab map[string]*big.Rat, pivot_line int, pos_var_tab []string,
-	  bland []string, pos_cont []int) int{
+	  bland []string) int{
 
 	var var_pivot string
 	var colonne_pivot int
@@ -138,20 +146,27 @@ func pivot(tab_coef [][]*big.Rat,  tab_cont []*big.Rat,
 		}
 
 		var vide string
-		var numero_variable_pivot int 	
+		var numero_variable_pivot int	
 		if var_pivot != vide {
-			var_pivot, _ := strconv.Atoi(var_pivot[1:])
-			numero_variable_pivot = var_pivot
+			numero_variable_pivot, _ := strconv.Atoi(var_pivot[1:])
 		}
+
+		var var_ecart int
+		if var_pivot[0] == 'e' {
+			var_ecart = var_pivot
+		} else {
+			var_ecart = pos_var_tab[pivot_line]
+		}
+		num_var_ecart := strconv.Atoi(var_ecart[1:])
 
 		//Check if the pivot is suitable
 		if colonne_pivot < len(tab_coef)+len(tab_coef[0])  && (coef_colonne.Cmp(new(big.Rat))!=0) && var_pivot!=vide 
 		&& (var_pivot[0] !='e' || coef_colonne.Cmp(new(big.Rat))==1 ||
-		(coef_colonne.Cmp(new(big.Rat))==-1 && pos_cont[numero_variable_pivot]>-1 
-		&& alpha_tab[var_pivot].Cmp(tab_cont[pos_cont[numero_variable_pivot]])>0))  {
+		(coef_colonne.Cmp(new(big.Rat))==-1 && checkContHorsBase(tab_cont, pos_var_tab, var_ecart)>-1 
+		&& alpha_tab[var_pivot].Cmp(tab_cont[num_var_ecart])>0))  {
 		//	 time.Sleep(time.Second)
 			var theta = new(big.Rat)
-			theta.Mul(new(big.Rat).Add(tab_cont[pos_cont[pivot_line]], new(big.Rat).Neg(alpha_tab[pos_var_tab[pivot_line]])), 
+			theta.Mul(new(big.Rat).Add(tab_cont[num_var_ecart], new(big.Rat).Neg(alpha_tab[pos_var_tab[pivot_line]])), 
 				new(big.Rat).Inv(coef_colonne))
 			var alpha_colonne = new(big.Rat)	
 			alpha_colonne.Add(alpha_tab[var_pivot], theta)
@@ -167,57 +182,12 @@ func pivot(tab_coef [][]*big.Rat,  tab_cont []*big.Rat,
 			alpha_tab[variablePivot].Set(alpha_colonne)
 			fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",
 			posVarTableau[pivot_line]+"\033[0m")
-			if var_pivot[0]=='e' {
-				updatePosContrainte(pos_cont,var_pivot,pos_var_tab[pivot_line],pos_var_tab)
-			} else {
-				metavar := string(pos_var_tab[pivot_line][1])
-				var indice int
-				if valeur,err := strconv.Atoi(metavar); err==nil{
-					indice=valeur
-				}
-				pos_cont[indice]=-1
-			}
 			pos_var_tab[pivot_line], pos_var_tab[colonne_pivot] = pos_var_tab[colonne_pivot], pos_var_tab[pivot_line]
 			fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
 			return colonne_pivot-len(tab_coef)
 		}
 	}
 	return -1	 
-}
-
-/** 
- * This function update pos_cont.
- * It takes the following parameters:
- * 	 - `pos_cont`, an array containing the position of constraint, the posiotion is -1 when the constraint is in base
- *   - `variable_colonne`, name of the column switch variable
- *   - `variable_ligne`, name of the column switch variable
- * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
- **/
-func updatePosContrainte(pos_cont []int, variable_colonne string, variable_ligne string, pos_var_tab []string){
-	nom_var_colonne := string(variable_colonne[1:])
-
-	var num_var_colonne int
-	if valeur1,err1 := strconv.Atoi(nom_var_colonne); err1==nil{
-		num_var_colonne = valeur1
-	
-	}
-	nom_var_ligne := string(variable_ligne[1:])
-
-	var num_var_ligne int
-	if valeur2,err2 := strconv.Atoi(nom_var_ligne); err2==nil{
-		num_var_ligne = valeur2
-	}
-
-	nouvelle_position := -1
-	for i,va :=  range pos_var_tab{
-		if variable_ligne==va{
-			nouvelle_position=i
-		} 
-	}
-
-	pos_cont[num_var_colonne]=nouvelle_position
-	pos_cont[num_var_ligne]=-1
-
 }
 
 /** 

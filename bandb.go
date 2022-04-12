@@ -32,11 +32,10 @@ type bAndB struct {
  *	 - `incremental_aff`,
  * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
  * 	 - `bland`, an array containing the Bland order of variable
- * 	 - `pos_cont`, an array containing the position of constraint, the posiotion is -1 when the constraint is in base
  * It returns a boolean which says if it exist a solution and the `alpha_tab` which represent the solution of the system
  **/
 func Branch_bound(solution map[string]*big.Rat, gotSol bool,tab_nom_var []string, tab_coef [][]*big.Rat, tab_cont []*big.Rat, 
-	channel chan bAndB, incremental_Coef []*big.Rat,incremental_Aff []*big.Rat,pos_var_tab[]string,bland[]string,pos_cont[]int) 
+	channel chan bAndB, incremental_Coef []*big.Rat,incremental_Aff []*big.Rat,pos_var_tab[]string,bland[]string) 
 	(map[string]*big.Rat, bool){
 	fmt.Println("\033[0m") 
 	
@@ -48,8 +47,8 @@ func Branch_bound(solution map[string]*big.Rat, gotSol bool,tab_nom_var []string
     } else if (solutionEntiere){
         return solution, true
     }
-	go goBandB(false,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland,pos_cont)
-	go goBandB(true,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland,pos_cont)
+	go goBandB(false,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland)
+	go goBandB(true,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland)
 	
 	stBAndB := <- channel
 	if(!stBAndB.solBoolStr){
@@ -69,7 +68,7 @@ func Branch_bound(solution map[string]*big.Rat, gotSol bool,tab_nom_var []string
 }
 
 func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, 
-	tab_nom_var []string, incremental_coef []*big.Rat,incremental_aff []*big.Rat,pos_var_tab[]string,bland[]string,pos_cont[]int) {
+	tab_nom_var []string, incremental_coef []*big.Rat,incremental_aff []*big.Rat,pos_var_tab[]string,bland[]string) {
 	select {
 		case <- channel :
 			return
@@ -111,7 +110,7 @@ func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel c
 			solution_bis:=incremental(incremental_coef,tab_coef_bis,solution,incremental_aff,tab_nom_var) 
 			//fin incrémental
 
-				gotSol, pos_v, pos_c := Simplexe(tab_coef_bis,tab_cont_bis,tab_nom_var,incremental_coef,incremental_aff,pos_var_tab,bland,pos_cont,solution_bis)
+				gotSol, pos_v, pos_c := Simplexe(tab_coef_bis,tab_cont_bis,tab_nom_var,incremental_coef,incremental_aff,pos_var_tab,bland,solution_bis)
 				
 				sol, solBool := branch_bound(solution_bis, gotSol, bland[:len(tab_coef[0])], tab_coef_bis, tab_cont_bis, channelBis, incremental_Coef, incremental_Aff, pos_v, bland, pos_c)
 
