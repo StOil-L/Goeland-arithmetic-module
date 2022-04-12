@@ -48,8 +48,8 @@ func Branch_bound(solution map[string]*big.Rat, gotSol bool,tab_nom_var []string
     } else if (solutionEntiere){
         return solution, true
     }
-	go goBandB(0,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland,pos_cont)
-	go goBandB(1,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland,pos_cont)
+	go goBandB(false,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland,pos_cont)
+	go goBandB(true,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland,pos_cont)
 	
 	stBAndB := <- channel
 	if(!stBAndB.solBoolStr){
@@ -68,7 +68,7 @@ func Branch_bound(solution map[string]*big.Rat, gotSol bool,tab_nom_var []string
     return stBAndB.solStr, stBAndB.solBoolStr
 }
 
-func goBandB(inf_sup int, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, 
+func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, 
 	tab_nom_var []string, incremental_coef []*big.Rat,incremental_aff []*big.Rat,pos_var_tab[]string,bland[]string,pos_cont[]int) {
 	select {
 		case <- channel :
@@ -81,7 +81,7 @@ func goBandB(inf_sup int, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel ch
 			tab_cont_bis = deepCopyTableau(tab_cont)
 			tab_coef_bis = deepCopyMatrice(tab_coef)
 			//Ajout de la nouvelle contrainte dans les copies de tableau
-			if inf_sup==0 {
+			if inf_sup {
 				partiEntiere, _ := solution[tab_nom_var[index]].Float64()
 				tab_cont_bis = append(tab_cont_bis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
 				var tabInter []*big.Rat
@@ -111,9 +111,9 @@ func goBandB(inf_sup int, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel ch
 			solution_bis:=incremental(incremental_coef,tab_coef_bis,solution,incremental_aff,tab_nom_var) 
 			//fin incrémental
 
-				a,b,c,incremental_Coef,incremental_Aff,posV,rBland,posC :=Simplexe(tab_coef_bis,tab_cont_bis,tab_nom_var,incremental_coef,incremental_aff,pos_var_tab,bland,pos_cont,solution_bis)
+				gotSol, pos_v, pos_c := Simplexe(tab_coef_bis,tab_cont_bis,tab_nom_var,incremental_coef,incremental_aff,pos_var_tab,bland,pos_cont,solution_bis)
 				
-				sol, solBool := branch_bound(a,b,c, tab_coef_bis, tab_cont_bis, channelBis,incremental_Coef,incremental_Aff,posV,rBland,posC)
+				sol, solBool := branch_bound(solution_bis, gotSol, tab_nom_var, tab_coef_bis, tab_cont_bis, channelBis, incremental_Coef, incremental_Aff, pos_v, bland, pos_c)
 
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {

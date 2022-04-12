@@ -31,7 +31,7 @@ import (
  **/
 func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, incremental_coef[]*big.Rat,
 	incremental_aff[]*big.Rat, pos_var_tab[]string, bland[]string, pos_cont[]int, alpha_tab map[string]*big.Rat) 
-	(map[string]*big.Rat, bool,[]string,[]*big.Rat,[]*big.Rat, []string,[]string, []int){
+	(bool, []string, []int){
 
 	fmt.Println("tab_cont",tab_cont)
 	fmt.Println("alpha_tab",alpha_tab)
@@ -70,7 +70,7 @@ func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, i
 		if ligne_pivot == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
 			fmt.Println(alpha_tab)
-			return  alpha_tab,true,bland[:len(tab_coef[0])],incremental_coef,incremental_aff,pos_var_tab_bis,bland,pos_cont_bis
+			return  true,pos_var_tab_bis, pos_cont_bis
 		}
 		//on cherche la colonne du pivot
 		colonne_pivot := pivot(tab_coef, tab_cont, alpha_tab, ligne_pivot,
@@ -78,7 +78,7 @@ func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, i
 		if colonne_pivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			return alpha_tab,false,bland[:len(tab_coef[0])],incremental_coef,incremental_aff,pos_var_tab_bis,bland,pos_cont_bis 
+			return false,pos_var_tab_bis, pos_cont_bis 
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			updateMatrice(tab_coef,colonne_pivot,ligne_pivot,incremental_coef)
