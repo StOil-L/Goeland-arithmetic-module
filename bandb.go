@@ -113,7 +113,7 @@ func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel c
 
 				gotSol, pos_v, pos_c := Simplexe(tab_coef_bis,tab_cont_bis,tab_nom_var,incremental_coef,incremental_aff,pos_var_tab,bland,pos_cont,solution_bis)
 				
-				sol, solBool := branch_bound(solution_bis, gotSol, tab_nom_var, tab_coef_bis, tab_cont_bis, channelBis, incremental_Coef, incremental_Aff, pos_v, bland, pos_c)
+				sol, solBool := branch_bound(solution_bis, gotSol, bland[:len(tab_coef[0])], tab_coef_bis, tab_cont_bis, channelBis, incremental_Coef, incremental_Aff, pos_v, bland, pos_c)
 
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {

@@ -30,7 +30,7 @@ import (
  * In case the system has no solutions, the boolean return value is set to false.
  **/
 func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, incremental_coef[]*big.Rat,
-	incremental_aff[]*big.Rat, pos_var_tab[]string, bland[]string, pos_cont[]int, alpha_tab map[string]*big.Rat) 
+	incremental_aff[]*big.Rat, pos_var_tab[]string, bland[]string, alpha_tab map[string]*big.Rat) 
 	(bool, []string, []int){
 
 	fmt.Println("tab_cont",tab_cont)
@@ -41,16 +41,11 @@ func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, i
 	for i:=0;i<len(pos_var_tab);i++{
 		pos_var_tab_bis[i] = pos_var_tab[i]
 	}
-	var pos_cont_bis= make([]int,len(pos_cont))
-	for i:=0;i<len(pos_cont);i++{
-		pos_cont_bis[i]=pos_cont[i]
-	}
 	
 	
 	if len(tab_coef)+len(tab_coef[0]) != len(bland){
 		bland=append(bland,fmt.Sprint("e",len(tab_coef)-1))
 		pos_var_tab_bis = append(pos_var_tab_bis,fmt.Sprint("e",len(tab_coef)-1))
-		pos_cont_bis = append(pos_cont_bis,len(tab_coef)-1)
 		for cpt := 0; cpt < len(tab_coef[0]); cpt++{
 			tmp := pos_var_tab_bis[len(pos_var_tab)-cpt]
 			pos_var_tab_bis[len(pos_var_tab_bis)-1-cpt]=pos_var_tab_bis[len(pos_var_tab_bis)-cpt-2]
@@ -59,26 +54,25 @@ func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, i
 
 	}
 	fmt.Println("pos_var_tab_bis : ",pos_var_tab_bis)
-	fmt.Println("pos_cont :", pos_cont_bis)	
 	//incrémental aff ? 
 
 	fmt.Println("\033[0m") 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//ligne_pivot est la ligne qui ne respecte pas sa contrainte
-		ligne_pivot := checkCont(alpha_tab, tab_cont, pos_cont_bis)		
+		ligne_pivot := checkCont(alpha_tab, tab_cont, pos_var_tab_bis)		
 		if ligne_pivot == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
 			fmt.Println(alpha_tab)
-			return  true,pos_var_tab_bis, pos_cont_bis
+			return true, pos_var_tab_bis
 		}
 		//on cherche la colonne du pivot
 		colonne_pivot := pivot(tab_coef, tab_cont, alpha_tab, ligne_pivot,
-			 pos_var_tab_bis, bland, pos_cont_bis)
+			 pos_var_tab_bis, bland)
 		if colonne_pivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			return false,pos_var_tab_bis, pos_cont_bis 
+			return false, pos_var_tab_bis
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			updateMatrice(tab_coef,colonne_pivot,ligne_pivot,incremental_coef)
@@ -102,17 +96,13 @@ func Simplexe(tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var[]string, i
  * It return the `tab_coef`'s line where the constraints isn't respect
  * If all constraints are respected, return -1
  **/
-func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_cont []int) int{
-	nb_contrainte:=len(tab_cont)
-	for _, position := range pos_cont  {
-		if position != -1 {
-			if nb_contrainte > position && alpha_tab[fmt.Sprint("e", position)].Cmp(tab_cont[position]) == -1 {
-				nb_contrainte = position
+func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab []int) int{
+	for index, variable := range pos_var_tab[:len(tab_cont)]  {
+		if variable[0] == "e" {
+			if alpha_tab[variable].Cmp(tab_cont[index]) == -1 {
+				return index
 			}	
 		}	
-	}
-	if nb_contrainte != len(tab_cont) && nb_contrainte != -1{
-		return nb_contrainte
 	}
 	return -1
 }
