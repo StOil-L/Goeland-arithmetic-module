@@ -28,7 +28,8 @@ func main() {
 	TestInt1()
 	TestRat1()
 	TestNormalizationEQ()
-
+	TestNormalizationLess()
+	TestNormalizationGreater()
 }
 
 /* Tests INT */
@@ -75,3 +76,36 @@ func TestNormalizationEQ() {
 		fmt.Printf("Resultat : %v\n", result_rule.ToString())
 	}
 }
+
+
+
+func TestNormalizationLess() {
+	fmt.Println(" -------- TEST 5 -------- ")
+	fmt.Println(" 2 < 3")
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois := types.MakerConst(types.MakerId("3"), tInt)
+	ineq := types.MakePred(types.MakerId("less"), []types.Term{deux, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+
+	fmt.Printf("%v\n", ineq.ToString())
+	fmt.Printf("On applique la règle de normalisation (inf)\n")
+	res := ari.NormalizationRule(ineq)
+	for _, result_rule := range res {
+		fmt.Printf("Resultat : %v\n", result_rule.ToString())
+	}
+}
+
+func TestNormalizationGreater() {
+	fmt.Println(" -------- TEST 6 -------- ")
+	fmt.Println(" 3 > 2")
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois := types.MakerConst(types.MakerId("3"), tInt)
+	ineq := types.MakePred(types.MakerId("greater"), []types.Term{trois, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+
+	fmt.Printf("%v\n", ineq.ToString())
+	fmt.Printf("On applique la règle de normalisation (inf)\n")
+	res := ari.NormalizationRule(ineq)
+	for _, result_rule := range res {
+		fmt.Printf("Resultat : %v\n", result_rule.ToString())
+	}
+}
+

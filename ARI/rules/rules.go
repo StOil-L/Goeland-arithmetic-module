@@ -8,7 +8,7 @@
 package ari
 
 import "ARI/types"
-import "fmt" 
+//import "fmt" 
 
 func ApplyConstRule(p types.Pred) bool {
 	o := PredToConst(p)
@@ -58,24 +58,13 @@ func NormalizationRule(p types.Pred) []types.FormList {
 
 	switch p.GetID().GetName() {
 	case types.Id_eq.GetName():
+	
+
+
 		res_form_list := types.MakeEmptyFormList()
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg1.Copy(), arg2.Copy()}))
 
-/*	
-		jeu sur valeur Métavariables 
 
-		x:=int(arg1.GetName()[0])-1
-
-		y:=arg1.GetName()
-
-		y=string(int(arg1.GetName()[0])-1)
-
-		fmt.Printf(" %v test \n",arg1.GetName())
-
-		fmt.Printf("%v test2 \n",y)
-
-
-*/
 
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg2.Copy(), arg1.Copy()}))
 		return append(res, res_form_list)
@@ -89,15 +78,29 @@ func NormalizationRule(p types.Pred) []types.FormList {
 	case "less":
 		res_form_list := types.MakeEmptyFormList()
 		// Il faut mettre -1 sur le arg2 
-		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg1.Copy(), arg2.Copy()}))
+		y:=arg1.GetName()
+		y=string(int(arg2.GetName()[0])-1)
+	
+		nouveau_arg2 := types.MakerConst(types.MakerId(y), tInt)
+	
+		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg1.Copy(), nouveau_arg2.Copy()}))
 		return append(res, res_form_list)
 
 	case "greater":
 		res_form_list := types.MakeEmptyFormList()
 		// Il faut mettre +1 sur le arg2
-		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{arg2.Copy(), arg1.Copy()}))
+		y:=arg2.GetName()
+		y=string(int(arg2.GetName()[0])+1)
+	
+		nouveau_arg2 := types.MakerConst(types.MakerId(y), tInt)
+
+		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{nouveau_arg2.Copy(), arg1.Copy()}))
 		return append(res, res_form_list)
 	}
+
+
+
+
 
 	return res
 }

@@ -165,7 +165,7 @@ func funToInt(f types.Fun) (int, error) {
 		return 0, nil
 
 
-
+/*
 	case "quotient_e":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -179,8 +179,7 @@ func funToInt(f types.Fun) (int, error) {
 
 		if(res1/res2 >0){
 			return (res1 / res2) - (res1/res2)%1, nil
-			}
-		else {
+			} else {
 			return (res1 / res2) - 1* (res1/res2)%1, nil
 			
 		}
@@ -196,13 +195,13 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 		return (res1 / res2) - (res1/res2)%1, nil
-/*
+
 		res1= 5
 		res2=-2
 
 		5/-2 = -2.5  -  +0.5  = -3
 
-*/
+
 
 	case "remainder_e":
 		res1, err1 := TermToInt(arg1)
@@ -244,7 +243,7 @@ func funToInt(f types.Fun) (int, error) {
 		}
 
 		return res1 -(quotient_f(res1, res2) * res2), nil
-	
+*/	
 	
 	
 	}
