@@ -33,8 +33,6 @@ func main() {
 	TestNormalizationNotSup()
 	TestNormalizationNotInfEq()
 	TestNormalizationNotSupEq()
-
-	fmt.Printf("reste positif? %d \n",5%-2)
 }
 
 /* Tests INT */
@@ -134,11 +132,14 @@ func TestNormalizationNotInf() {
 	fmt.Println(" ! (3 < 2)")
 	deux := types.MakerConst(types.MakerId("2"), tInt)
 	trois := types.MakerConst(types.MakerId("3"), tInt)
-	NotIneq := types.MakePred(types.MakerId("NotInf"), []types.Term{trois, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-
+	Ineq := types.MakePred(types.MakerId("¬less"), []types.Term{trois, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+	Ineq2 := types.MakePred(types.MakerId("less"), []types.Term{trois, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+	//pour montrer que Not(Pred) == Pred : notInf
+	NotIneq := types.RefuteForm(Ineq2)
+	fmt.Printf("%v\n", Ineq.ToString())
 	fmt.Printf("%v\n", NotIneq.ToString())
 	fmt.Printf("On applique la règle de normalisation (negInf))\n")
-	res := ari.NormalizationRule(NotIneq)
+	res := ari.NormalizationNegRule(NotIneq)
 	for _, result_rule := range res {
 		fmt.Printf("Resultat : %v\n", result_rule.ToString())
 	}
@@ -149,11 +150,11 @@ func TestNormalizationNotSup() {
 	fmt.Println(" ! (2 > 3)")
 	deux := types.MakerConst(types.MakerId("2"), tInt)
 	trois := types.MakerConst(types.MakerId("3"), tInt)
-	NotIneq := types.MakePred(types.MakerId("NotSup"), []types.Term{deux, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-
+	Ineq := types.MakePred(types.MakerId("greater"), []types.Term{deux, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+	NotIneq := types.RefuteForm(Ineq)
 	fmt.Printf("%v\n", NotIneq.ToString())
 	fmt.Printf("On applique la règle de normalisation (negSup))\n")
-	res := ari.NormalizationRule(NotIneq)
+	res := ari.NormalizationNegRule(NotIneq)
 	for _, result_rule := range res {
 		fmt.Printf("Resultat : %v\n", result_rule.ToString())
 	}
@@ -164,11 +165,11 @@ func TestNormalizationNotInfEq() {
 	fmt.Println(" ! (3 <= 2)")
 	deux := types.MakerConst(types.MakerId("2"), tInt)
 	trois := types.MakerConst(types.MakerId("3"), tInt)
-	NotIneq := types.MakePred(types.MakerId("NotInfEq"), []types.Term{trois, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-
+	Ineq := types.MakePred(types.MakerId("lessereq"), []types.Term{trois, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+	NotIneq := types.RefuteForm(Ineq)
 	fmt.Printf("%v\n", NotIneq.ToString())
 	fmt.Printf("On applique la règle de normalisation (negInfEq))\n")
-	res := ari.NormalizationRule(NotIneq)
+	res := ari.NormalizationNegRule(NotIneq)
 	for _, result_rule := range res {
 		fmt.Printf("Resultat : %v\n", result_rule.ToString())
 	}
@@ -179,11 +180,11 @@ func TestNormalizationNotSupEq() {
 	fmt.Println(" ! (2 >= 3)")
 	deux := types.MakerConst(types.MakerId("2"), tInt)
 	trois := types.MakerConst(types.MakerId("3"), tInt)
-	NotIneq := types.MakePred(types.MakerId("NotSupEq"), []types.Term{deux, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-
+	Ineq := types.MakePred(types.MakerId("greatereq"), []types.Term{deux, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+	NotIneq := types.RefuteForm(Ineq)
 	fmt.Printf("%v\n", NotIneq.ToString())
 	fmt.Printf("On applique la règle de normalisation (negSupEq))\n")
-	res := ari.NormalizationRule(NotIneq)
+	res := ari.NormalizationNegRule(NotIneq)
 	for _, result_rule := range res {
 		fmt.Printf("Resultat : %v\n", result_rule.ToString())
 	}

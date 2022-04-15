@@ -32,6 +32,15 @@ var zero_rat = &big.Rat{}
 **/
 
 // TODO : compléter les cas (greater, greatereq, ...)
+
+func FormToPred(f types.Form) /*types.Pred*/ int{
+
+	fmt.Printf("ici \n")
+
+	return 0
+}
+
+
 func PredToConst(p types.Pred) operation {
 	arg1 := p.GetArgs()[0]
 	arg2 := p.GetArgs()[1]
@@ -248,14 +257,14 @@ func funToInt(f types.Fun) (int, error) {
 		}
 
 		return /*res1/(res2*quotient_f(res1,res2))*/res1, nil
-
+/*
 	case "uminus":
 		arg := f.GetArgs()[0]
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
 			return 0, err1
 		}
-		if(res1 = 0){
+		if res1 == 0{
 			res1 = 0
 		} 
 		else{
@@ -310,7 +319,7 @@ func funToInt(f types.Fun) (int, error) {
 		} 
 
 		return res1,nil
-	
+*/	
 	}
 	return 0, nil
 }

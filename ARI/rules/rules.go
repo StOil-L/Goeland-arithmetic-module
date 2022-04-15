@@ -8,7 +8,7 @@
 package ari
 
 import ("ARI/types"
-    	"strconv"
+		"strconv"
 )
 func ApplyConstRule(p types.Pred) bool {
 	o := PredToConst(p)
@@ -88,32 +88,41 @@ func NormalizationRule(p types.Pred) []types.FormList {
 
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{arg1.Copy(), nouveau_arg2.Copy()}))
 		return append(res, res_form_list)
-	
+	}
+	return res
+}
 
-	case "NotInf":
-		res_form_list := types.MakeEmptyFormList()
-		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{arg1.Copy(), arg2.Copy()}))
-		return append(res, res_form_list)
-	
 
-	case "NotSup":
-		res_form_list := types.MakeEmptyFormList()
-		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg1.Copy(), arg2.Copy()}))
-		return append(res, res_form_list)
-	
-	
-	case "NotInfEq" :
-		res_form_list := types.MakeEmptyFormList()
-		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greater"), []types.Term{arg1.Copy(), arg2.Copy()}))
-		return append(res, res_form_list)
-	
+func NormalizationNegRule(f types.Form) []types.FormList{
+	res := []types.FormList{}
+	if typeNot, isNot:= f.(types.Not); isNot {
+		if typePred,isPred:= typeNot.GetForm().(types.Pred); isPred{
+			arg1 := typePred.GetArgs()[0]
+			arg2 := typePred.GetArgs()[1]
+			switch typePred.GetID().GetName(){
+				case "less":
+					res_form_list := types.MakeEmptyFormList()
+					res_form_list = append(res_form_list, types.MakePred(types.MakerId("greateq"), []types.Term{arg1.Copy(), arg2.Copy()}))
+					return append(res, res_form_list)
+			
+				case "greater":
+					res_form_list := types.MakeEmptyFormList()
+					res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg1.Copy(), arg2.Copy()}))
+					return append(res, res_form_list)
+			
+				case "lesseq":
+					res_form_list := types.MakeEmptyFormList()
+					res_form_list = append(res_form_list, types.MakePred(types.MakerId("greater"), []types.Term{arg1.Copy(), arg2.Copy()}))
+					return append(res, res_form_list)
+			
+				case "greatereq":
+					res_form_list := types.MakeEmptyFormList()
+					res_form_list = append(res_form_list, types.MakePred(types.MakerId("less"), []types.Term{arg1.Copy(), arg2.Copy()}))
+					return append(res, res_form_list)
+			
+			}
+	}
 
-	case "NotSupEq":
-		res_form_list := types.MakeEmptyFormList()
-		res_form_list = append(res_form_list, types.MakePred(types.MakerId("less"), []types.Term{arg1.Copy(), arg2.Copy()}))
-		return append(res, res_form_list)
-		
-	
 	}
 	return res
 }
