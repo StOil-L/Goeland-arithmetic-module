@@ -249,8 +249,67 @@ func funToInt(f types.Fun) (int, error) {
 
 		return /*res1/(res2*quotient_f(res1,res2))*/res1, nil
 
+	case "uminus":
+		arg := f.GetArgs()[0]
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if(res1 = 0){
+			res1 = 0
+		} 
+		else{
+			res1 = res1*-1
+		} 
 
+		return res1,nil
+
+	case "floor":
+		arg := f.GetArgs()[0]
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+
+		return int(math.Floor(res1)),nil
+
+	case "ceiling":
+		arg := f.GetArgs()[0]
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+
+		return int(math.Ceil(res1)), res1
 	
+	case "truncate":
+		arg := f.GetArgs()[0]
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if(res1 > 0){
+			res1 = int(math.Floor(res1))
+		} 
+		else{
+			res1 = int(math.Ceil(res1))
+		} 
+
+	case "round":
+		arg := f.GetArgs()[0]
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+
+		if(res1 - int(math.Floor(res1)) >= 0.5){
+			res1 = int(math.Floor(res1)+1)
+		} 
+		else{
+			res1 = int(math.Floor(res1))
+		} 
+
+		return res1,nil
 	
 	}
 	return 0, nil
