@@ -101,7 +101,7 @@ func NormalizationRule(p types.Pred) []types.FormList {
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("lesseq"), []types.Term{arg1.Copy(), arg2.Copy()}))
 		return append(res, res_form_list)
 	
-
+	
 	case "NotInfEq" :
 		res_form_list := types.MakeEmptyFormList()
 		res_form_list = append(res_form_list, types.MakePred(types.MakerId("greater"), []types.Term{arg1.Copy(), arg2.Copy()}))

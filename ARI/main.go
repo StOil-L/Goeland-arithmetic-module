@@ -4,7 +4,6 @@ import (
 	typing "ARI/polymorphism"
 	ari "ARI/rules"
 	"fmt"
-
 	"ARI/types"
 )
 
@@ -34,6 +33,8 @@ func main() {
 	TestNormalizationNotSup()
 	TestNormalizationNotInfEq()
 	TestNormalizationNotSupEq()
+
+	fmt.Printf("reste positif? %d \n",5%-2)
 }
 
 /* Tests INT */
@@ -81,6 +82,19 @@ func TestNormalizationEQ() {
 	}
 }
 
+func TestNormalizationNotEQ() {
+	fmt.Println(" -------- TEST 4 -------- ")
+	fmt.Println(" 3 != 2")
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois := types.MakerConst(types.MakerId("3"), tInt)
+	eq := types.MakePred(types.Id_neq, []types.Term{trois, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+	fmt.Printf("%v\n", eq.ToString())
+	fmt.Printf("On applique la règle de normalisation (négalité)\n")
+	res := ari.NormalizationRule(eq)
+	for _, result_rule := range res {
+		fmt.Printf("Resultat : %v\n", result_rule.ToString())
+	}
+}
 
 
 func TestNormalizationLess() {

@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -115,6 +116,7 @@ func funToInt(f types.Fun) (int, error) {
 	arg1 := f.GetArgs()[0]
 	arg2 := f.GetArgs()[1]
 	switch f.GetID().GetName() {
+
 	case "sum":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -125,6 +127,8 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 		return res1 + res2, nil
+
+
 	case "difference":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -135,6 +139,8 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 		return res1 - res2, nil
+
+
 	case "product":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -145,27 +151,13 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 		return res1 * res2, nil
-	// Que faire dans le cas d'un quotient réél : 1. Renvoi un réél 2. Revoi la division entière
-	// cas 1
-	// case "quotient_t":
-	// 	res1, err1 := TermToInt(arg1)
-	// 	if err1 != nil {
-	// 		return 0, err1
-	// 	}
-	// 	res2, err2 := TermToInt(arg2)
-	// 	// Rajout du cas : res2 == 0
-	// 	if err2 != nil || res2 == 0 {
-	// 		return 0, err2
-	// 	}
-	// 	return res1 / res2, nil
 
-	// cas 2
+
 	case "quotient":
 		fmt.Printf("erreur quotient pas défini sur les entiers \n")
-		return 0, nil
+		var err error
+		return 0, err
 
-
-/*
 	case "quotient_e":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -176,13 +168,26 @@ func funToInt(f types.Fun) (int, error) {
 		if err2 != nil || res2 == 0 {
 			return 0, err2
 		}
-
-		if(res1/res2 >0){
-			return (res1 / res2) - (res1/res2)%1, nil
-			} else {
-			return (res1 / res2) - 1* (res1/res2)%1, nil
-			
+		quo := res1/res2
+		if(res1/res2 < 0){
+			quo= res1/res2 -1 
 		}
+		return quo,nil
+
+
+	case "quotient_t":
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		res2, err2 := TermToInt(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || res2 == 0 {
+			return 0, err2
+		}
+		
+		return res1/res2,nil
+
 
 	case "quotient_f":
 		res1, err1 := TermToInt(arg1)
@@ -194,13 +199,8 @@ func funToInt(f types.Fun) (int, error) {
 		if err2 != nil || res2 == 0 {
 			return 0, err2
 		}
-		return (res1 / res2) - (res1/res2)%1, nil
-
-		res1= 5
-		res2=-2
-
-		5/-2 = -2.5  -  +0.5  = -3
-
+		
+		return int(math.Floor(float64((res1*1.)/res2))),nil
 
 
 	case "remainder_e":
@@ -214,9 +214,15 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 
-		return res1 -(quotient_e(res1,res2) * res2), nil
+		remain:= res1%res2
+
+		if(res1/res2<0){
+			remain+=res2
+		}
+
+		return remain, nil
 	
-	
+
 	case "remainder_t":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -228,9 +234,8 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 
-		return res1 -(quotient_t(res1, res2) * res2), nil
-	
-	
+		return res1%res2, nil
+
 	case "remainder_f":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
@@ -242,8 +247,9 @@ func funToInt(f types.Fun) (int, error) {
 			return 0, err2
 		}
 
-		return res1 -(quotient_f(res1, res2) * res2), nil
-*/	
+		return /*res1/(res2*quotient_f(res1,res2))*/res1, nil
+
+
 	
 	
 	}
