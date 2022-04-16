@@ -1,8 +1,0 @@
-incremental commentaire fonction a faire
-
-updatePosContrainte
-	Remplacer l'utilisation de pos_cont par celle de pos_var_tab et une fonction -> enlever pos_cont et se servire de pos_var_tab + fonction
-
-checkCont
-	Peut etre erreur : ligne 71 la comparaison ne correspond pas forcement ci les varaibles d'ecart on etait bougé
-					   ligne 726 condition inutile

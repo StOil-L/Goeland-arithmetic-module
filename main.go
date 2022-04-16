@@ -7,7 +7,6 @@ import (
     "os"
 	"math/big"
 	"sync"
-	"arith"
 )
 
 type bAndB struct {
@@ -33,7 +32,7 @@ func main() {
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -62,7 +61,7 @@ func main() {
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -90,7 +89,7 @@ func main() {
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -119,7 +118,7 @@ func main() {
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -147,7 +146,7 @@ func main() {
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -177,7 +176,7 @@ func main() {
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -205,7 +204,7 @@ func main() {
 		fmt.Println("x>=1/4,x<=1/5")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -235,7 +234,7 @@ func main() {
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -263,7 +262,7 @@ func main() {
 		fmt.Println("x=1/4")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -293,7 +292,7 @@ func main() {
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -358,7 +357,7 @@ func main() {
 		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tab_cont)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -425,7 +424,7 @@ func main() {
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -456,13 +455,13 @@ func main() {
         var tab_var = make([]string,0)
         var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
         
-        addAllConst(tabExe, tableau, tab_cont, tab_var)
+        tableau, tab_cont, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -490,14 +489,14 @@ func main() {
         var tab_var = make([]string,0)
         var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
         
-        addAllConst(tabExe, tableau, tab_cont, tab_var)
+        tableau, tab_cont, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -541,13 +540,13 @@ func main() {
 			tabExe = append(tabExe, equation)
     	}
     	
-        addAllConst(tabExe, tableau, tab_cont, tab_var)
+        tableau, tab_cont, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -588,14 +587,14 @@ func main() {
 			tabExe = append(tabExe, equation)
     	}
     	
-        addAllConst(tabExe, tableau, tab_cont, tab_var)
+        tableau, tab_cont, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
 		channel := make(chan bAndB)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := createalpha_tab(tableau, tab_var)
+	alpha_tab := create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -626,7 +625,7 @@ func main() {
  *   - `tab_nom_var`, an array of the system's starting variable
  * It returns the create map 
  **/
-func createalpha_tab(tab_coef [][]*big.Rat, tab_nom_var []string) map[string]*big.Rat{
+func create_alpha_tab(tab_coef [][]*big.Rat, tab_nom_var []string) map[string]*big.Rat{
 	alpha_tab := make(map[string]*big.Rat)
 	//Creation variable d'ecart
 	for i := 0; i < len(tab_coef); i++ {
@@ -732,4 +731,95 @@ func getIneq(eq string)([]string){
 	} else {
 		return []string{ineq}
 	}
+}
+
+/** 
+ * This function transform a system of equations on different varaible needed for the simplex
+ * It takes the following parameters:
+ *   - `eqs`, a string which represent a system of equations
+ * It returns the matrice of coefficient, the array of constraint and table of the system's starting variable
+ **/
+func addAllConst(eqs []string, tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_nom_var []string) ([][]*big.Rat, []*big.Rat, []string){
+    for _, element := range eqs {
+        dernier_element, tab, liste_nom_var := parseOneConst(element)
+        tab_coef = append(tab_coef, tab)
+        tab_cont = append(tab_cont, dernier_element)
+        tab_nom_var = addVarIfNotExists(liste_nom_var, tab_nom_var)
+    }
+    return tab_coef, tab_cont, tab_nom_var
+}
+
+/** 
+ * This function add the element of an array of string that doesn't exist in the other one
+ * It takes the following parameters:
+ *   - `liste_nom_var`, an array of string that will give his new element
+ * 	 - `tab_nom_var`, an array of string that will receive the new element
+ **/
+func addVarIfNotExists(liste_nom_var []string, tab_nom_var []string) []string{
+	for i := 0; i < len(liste_nom_var); i++ {
+		present := false
+		for j := 0; j < len(tab_nom_var); j++ {
+			if liste_nom_var[i] == tab_nom_var[j] {
+				present = true
+			}
+			if !present {
+				tab_nom_var = append(tab_nom_var, liste_nom_var[i])
+			}
+		}
+	}
+	return tab_nom_var
+}
+
+/** 
+ * This function transform one equations on different varaible needed for the simplex
+ * It takes the following parameters:
+ *   - `eq`, a string which represent one equation
+ * It returns a line of the matrice of coefficient, the constraint of the equation and the table of the equation's starting variable
+ **/
+func parseOneConst(eq string) (*big.Rat, []*big.Rat,[]string){
+    // on split la string avec les espaces, ce qui nous donne un tableaux avec tous les elements de la string
+    tab_element := strings.Split(eq, " ")
+    // tableau qui va contenir les coefficients de l'equation
+    var ligneEq []*big.Rat
+    var tab_nom_var []string
+    // indique notre position dans le tableau
+    posTab := 0
+    for i := 0; i < len(tab_element)-2; i++ {
+        ligneEq = append(ligneEq, big.NewRat(1,1))
+        // nous permet de savoir si notre caractere est un chiffre
+        re := regexp.MustCompile(`[0-9.,]`)
+        isFig := re.FindString(tab_element[i])
+        // nous permet de savoir si notre caractere est une lettre
+        re2 := regexp.MustCompile(`[a-z]`)
+        isLet := re2.FindString(tab_element[i])
+
+        if isLet != "" {
+          tab_nom_var = append(tab_nom_var,isLet)
+        }       
+
+
+        // si on a un chiffre
+        if isFig != "" {
+            // on converti notre caractere qui est une string en float64
+            conv,_ := new(big.Rat).SetString(tab_element[i])
+           // on l'insere dans notre tableau a la position "posTab"
+            ligneEq[posTab]=conv
+
+            
+        } else {
+            // le cas du -
+            if tab_element[i] == "-"{
+                ligneEq[posTab].SetFloat64(-1.0)
+            // le cas du +
+            } else if tab_element[i] != "+" {
+                posTab += 1
+            }
+        }
+    }
+
+    // On ajoute la contraintes dans le tableau de contraintes en l'a convertissant d'abord
+    lastEle := tab_element[len(tab_element)-1]
+	lastEleC,_ := new(big.Rat).SetString(lastEle)
+ 
+    return lastEleC, ligneEq[0:posTab],tab_nom_var
 }

@@ -14,6 +14,23 @@ import (
     
 )
 
+/*
+`tab_coef`, the matrice with the normalized inequations
+`tab_cont`, an array containing the constraints, tab_cont[0] contains the constraint of the first line of the matrice
+`tab_nom_var`, an array of the system's starting variable
+`pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
+`bland`, an array containing the Bland order of variable
+`alpha_tab`, a map associating the name of the variable and his alpha value
+*/
+type info_system struct {
+    tab_coef [][]*big.Rat
+    tab_cont []*big.Rat
+    tab_nom_var []string
+	pos_var_tab []string
+	bland []string
+	alpha_tab map[string]*big.Rat
+}
+
 type bAndB struct {
     solBoolStr bool
     solStr  map[string]*big.Rat
@@ -110,8 +127,11 @@ func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel c
 			solution_bis:=incremental(incremental_coef,tab_coef_bis,solution,incremental_aff,tab_nom_var) 
 			//fin incrémental
 
-				gotSol, pos_v, pos_c := Simplexe(tab_coef_bis,tab_cont_bis,tab_nom_var,incremental_coef,incremental_aff,pos_var_tab,bland,solution_bis)
-				
+				nv_system := info_system{tab_coef: tab_coef_bis, tab_cont: tab_cont_bis, tab_nom_var: tab_nom_var,
+					pos_var_tab: pos_var_tab, bland: bland, alpha_tab: solution_bis}
+
+				gotSol, pos_v := Simplexe(nv_system, incremental_coef, incremental_aff)
+
 				sol, solBool := branch_bound(solution_bis, gotSol, bland[:len(tab_coef[0])], tab_coef_bis, tab_cont_bis, channelBis, incremental_Coef, incremental_Aff, pos_v, bland, pos_c)
 
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
@@ -136,7 +156,7 @@ func estSol(solution map[string]*big.Rat, tab_nom_var []string) (bool,int){
 	}
 	if index < len(tab_nom_var){
 			return false,index
-		}
+	}
 	return true,index
 }
 
