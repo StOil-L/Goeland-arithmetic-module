@@ -2,39 +2,9 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-    "strings"
-    "regexp"
-	"bufio"
-    "os"
 	"math/big"
-	"math"
-	"sync"
-//	"time"
-    
+	"math"  
 )
-
-/*
-`tab_coef`, the matrice with the normalized inequations
-`tab_cont`, an array containing the constraints, tab_cont[0] contains the constraint of the first line of the matrice
-`tab_nom_var`, an array of the system's starting variable
-`pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
-`bland`, an array containing the Bland order of variable
-`alpha_tab`, a map associating the name of the variable and his alpha value
-*/
-type info_system struct {
-    tab_coef [][]*big.Rat
-    tab_cont []*big.Rat
-    tab_nom_var []string
-	pos_var_tab []string
-	bland []string
-	alpha_tab map[string]*big.Rat
-}
-
-type bAndB struct {
-    solBoolStr bool
-    solStr  map[string]*big.Rat
-}
 
 /** 
  * This function applies the main logic of the branch and bound algorithm
@@ -51,21 +21,21 @@ type bAndB struct {
  * 	 - `bland`, an array containing the Bland order of variable
  * It returns a boolean which says if it exist a solution and the `alpha_tab` which represent the solution of the system
  **/
-func Branch_bound(solution map[string]*big.Rat, gotSol bool,tab_nom_var []string, tab_coef [][]*big.Rat, tab_cont []*big.Rat, 
-	channel chan bAndB, incremental_Coef []*big.Rat,incremental_Aff []*big.Rat,pos_var_tab[]string,bland[]string) 
-	(map[string]*big.Rat, bool){
+func Branch_bound(gotSol bool, channel chan bAndB, incremental_coef []*big.Rat,
+		incremental_aff []*big.Rat, system info_system) (map[string]*big.Rat, bool){
+
 	fmt.Println("\033[0m") 
 	
-	solutionEntiere,index:=estSol(solution,tab_nom_var)
+	solutionEntiere,index:=estSol(system.alpha_tab,system.tab_nom_var)
 	
 	//Cas d'arret si solution est fait seulement d'entier
 	if (!gotSol) {
-        return solution, false
+        return system.alpha_tab, false
     } else if (solutionEntiere){
-        return solution, true
+        return system.alpha_tab, true
     }
-	go goBandB(false,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland)
-	go goBandB(true,tab_coef, tab_cont, channel, index, solution, tab_nom_var, incremental_Coef, incremental_Aff,pos_var_tab,bland)
+	go goBandB(false, channel, index, incremental_coef, incremental_aff, system)
+	go goBandB(true, channel, index, incremental_coef, incremental_aff, system)
 	
 	stBAndB := <- channel
 	if(!stBAndB.solBoolStr){
@@ -84,8 +54,8 @@ func Branch_bound(solution map[string]*big.Rat, gotSol bool,tab_nom_var []string
     return stBAndB.solStr, stBAndB.solBoolStr
 }
 
-func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel chan bAndB, index int, solution map[string]*big.Rat, 
-	tab_nom_var []string, incremental_coef []*big.Rat,incremental_aff []*big.Rat,pos_var_tab[]string,bland[]string) {
+func goBandB(inf_sup bool, channel chan bAndB, index int, incremental_coef []*big.Rat, 
+		incremental_aff []*big.Rat, system info_system) {
 	select {
 		case <- channel :
 			return
@@ -94,14 +64,14 @@ func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel c
 			var tab_cont_bis []*big.Rat
 			channelBis := make(chan bAndB)
 			//Copie de tableau et du tableau de contrainte
-			tab_cont_bis = deepCopyTableau(tab_cont)
-			tab_coef_bis = deepCopyMatrice(tab_coef)
+			tab_cont_bis = deepCopyTableau(system.tab_cont)
+			tab_coef_bis = deepCopyMatrice(system.tab_coef)
 			//Ajout de la nouvelle contrainte dans les copies de tableau
 			if inf_sup {
-				partiEntiere, _ := solution[tab_nom_var[index]].Float64()
+				partiEntiere, _ := system.alpha_tab[system.tab_nom_var[index]].Float64()
 				tab_cont_bis = append(tab_cont_bis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
 				var tabInter []*big.Rat
-				for i := 0; i < len(tab_nom_var); i++ {
+				for i := 0; i < len(system.tab_nom_var); i++ {
 					if i == index {
 						tabInter = append(tabInter, big.NewRat(1,1))
 					}else {
@@ -111,9 +81,9 @@ func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel c
 				tab_coef_bis = append(tab_coef_bis, tabInter)
 			} else  {
 				var tabInter []*big.Rat
-				partiEntiere, _ := solution[tab_nom_var[index]].Float64()
+				partiEntiere, _ := system.alpha_tab[system.tab_nom_var[index]].Float64()
 				tab_cont_bis = append(tab_cont_bis, new(big.Rat).SetFloat64(-math.Floor(partiEntiere)))
-				for i := 0; i < len(tab_nom_var); i++ {
+				for i := 0; i < len(system.tab_nom_var); i++ {
 					if i == index {
 						tabInter = append(tabInter, big.NewRat(-1,1))
 					}else {
@@ -124,15 +94,19 @@ func goBandB(inf_sup bool, tab_coef [][]*big.Rat, tab_cont []*big.Rat, channel c
 			}
 				
 			//incrémental
-			solution_bis:=incremental(incremental_coef,tab_coef_bis,solution,incremental_aff,tab_nom_var) 
+			alpha_tab_bis := incremental(incremental_coef,tab_coef_bis,system.alpha_tab,incremental_aff,system.tab_nom_var) 
 			//fin incrémental
 
-				nv_system := info_system{tab_coef: tab_coef_bis, tab_cont: tab_cont_bis, tab_nom_var: tab_nom_var,
-					pos_var_tab: pos_var_tab, bland: bland, alpha_tab: solution_bis}
+				system.tab_coef = tab_coef_bis
+				system.tab_cont = tab_cont_bis
+				system.alpha_tab = alpha_tab_bis
 
-				gotSol, pos_v := Simplexe(nv_system, incremental_coef, incremental_aff)
+				system, gotSol := Simplexe(system, incremental_coef, incremental_aff)
 
-				sol, solBool := branch_bound(solution_bis, gotSol, bland[:len(tab_coef[0])], tab_coef_bis, tab_cont_bis, channelBis, incremental_Coef, incremental_Aff, pos_v, bland, pos_c)
+				system.tab_coef = tab_coef_bis
+				system.tab_cont = tab_cont_bis
+
+				sol, solBool := Branch_bound(gotSol, channelBis, incremental_coef, incremental_aff, system)
 
 				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
 				select {

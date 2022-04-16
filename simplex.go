@@ -3,31 +3,8 @@ package main
 import (
 	"fmt"
 	"strconv"
-    "strings"
-    "regexp"
-	"bufio"
-    "os"
-	"math/big"
-	"math"
-	"sync"    
+	"math/big"    
 )
-
-/*
-`tab_coef`, the matrice with the normalized inequations
-`tab_cont`, an array containing the constraints, tab_cont[0] contains the constraint of the first line of the matrice
-`tab_nom_var`, an array of the system's starting variable
-`pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
-`bland`, an array containing the Bland order of variable
-`alpha_tab`, a map associating the name of the variable and his alpha value
-*/
-type info_system struct {
-    tab_coef [][]*big.Rat
-    tab_cont []*big.Rat
-    tab_nom_var []string
-	pos_var_tab []string
-	bland []string
-	alpha_tab map[string]*big.Rat
-}
 
 /** 
  * This function applies the main logic of the simplex algorithm (without objective function).
@@ -38,7 +15,7 @@ type info_system struct {
  * It returns an affectation that satisfies the constraints. 
  * In case the system has no solutions, the boolean return value is set to false.
  **/
-func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*big.Rat) (info_system, bool, []string, []int){
+func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*big.Rat) (info_system, bool){
 
 	fmt.Println("tab_cont",system.tab_cont)
 	fmt.Println("alpha_tab",system.alpha_tab)
@@ -71,14 +48,15 @@ func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*
 		if ligne_pivot == -1 {
 			fmt.Println(" \033[33m La solution est : ") 
 			fmt.Println(system.alpha_tab)
-			return system, true, pos_var_tab_bis
+			system.pos_var_tab = pos_var_tab_bis
+			return system, true
 		}
 		//on cherche la colonne du pivot
 		system, colonne_pivot := pivot(system, ligne_pivot, pos_var_tab_bis)
 		if colonne_pivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			return system, false, pos_var_tab_bis
+			return system, false
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			system.tab_coef, incremental_coef = updateMatrice(system.tab_coef,colonne_pivot,ligne_pivot,incremental_coef)
@@ -90,6 +68,7 @@ func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*
 			
 		}
 	}
+	return system, false
 }
 
 
@@ -114,7 +93,7 @@ func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab 
 }
 
 func checkContHorsBase(tab_cont []*big.Rat, pos_var_tab []string, nom_var string) bool{
-	for index, variable := range pos_var_tab[:len(tab_cont)]  {
+	for _, variable := range pos_var_tab[:len(tab_cont)]  {
 		if variable == nom_var {
 			return true
 		}
@@ -147,24 +126,24 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 		}
 
 		var vide string
-		var numero_variable_pivot int	
+		/*var numero_variable_pivot int	
 		if var_pivot != vide {
 			numero_variable_pivot, _ := strconv.Atoi(var_pivot[1:])
-		}
+		}*/
 
-		var var_ecart int
-		if var_pivot[0] == 'e' {
-			var_ecart = var_pivot
-		} else {
-			var_ecart = pos_var_tab[pivot_line]
+		var var_ecart string
+		var num_var_ecart int
+		if var_pivot != vide {
+			if var_pivot[0] == 'e' {
+				var_ecart = var_pivot
+			} else {
+				var_ecart = pos_var_tab[pivot_line]
+			}
+			num_var_ecart, _ = strconv.Atoi(var_ecart[1:])
 		}
-		num_var_ecart := strconv.Atoi(var_ecart[1:])
 
 		//Check if the pivot is suitable
-		if colonne_pivot < len(system.tab_coef)+len(system.tab_coef[0])  && (coef_colonne.Cmp(new(big.Rat))!=0) && var_pivot!=vide 
-		&& (var_pivot[0] !='e' || coef_colonne.Cmp(new(big.Rat))==1 ||
-		(coef_colonne.Cmp(new(big.Rat))==-1 && checkContHorsBase(system.tab_cont, pos_var_tab, var_ecart)>-1 
-		&& system.alpha_tab[var_pivot].Cmp(system.tab_cont[num_var_ecart])>0))  {
+		if colonne_pivot < len(system.tab_coef)+len(system.tab_coef[0]) && (coef_colonne.Cmp(new(big.Rat))!=0) && var_pivot!=vide && (var_pivot[0] !='e' || coef_colonne.Cmp(new(big.Rat))==1 || (coef_colonne.Cmp(new(big.Rat))==-1 && checkContHorsBase(system.tab_cont, pos_var_tab, var_ecart) && system.alpha_tab[var_pivot].Cmp(system.tab_cont[num_var_ecart])>0))  {
 		//	 time.Sleep(time.Second)
 			var theta = new(big.Rat)
 			theta.Mul(new(big.Rat).Add(system.tab_cont[num_var_ecart], new(big.Rat).Neg(system.alpha_tab[pos_var_tab[pivot_line]])), 
@@ -179,16 +158,16 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 			}
 			fmt.Println("alpha_colonne", alpha_colonne)
 			fmt.Println("alpha_ligne",alpha_ligne)
-			system.alpha_tab[posVarTableau[pivot_line]].Set(alpha_ligne)
-			system.alpha_tab[variablePivot].Set(alpha_colonne)
+			system.alpha_tab[pos_var_tab[pivot_line]].Set(alpha_ligne)
+			system.alpha_tab[var_pivot].Set(alpha_colonne)
 			fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",
-			posVarTableau[pivot_line]+"\033[0m")
+			pos_var_tab[pivot_line]+"\033[0m")
 			pos_var_tab[pivot_line], pos_var_tab[colonne_pivot] = pos_var_tab[colonne_pivot], pos_var_tab[pivot_line]
 			fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
 			return system, colonne_pivot-len(system.tab_coef)
 		}
 	}
-	return info_system, -1	 
+	return system, -1	 
 }
 
 /** 
