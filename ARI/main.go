@@ -33,6 +33,10 @@ func main() {
 	TestNormalizationNotSup()
 	TestNormalizationNotInfEq()
 	TestNormalizationNotSupEq()
+	TestParserRemainder_f()
+
+
+
 }
 
 /* Tests INT */
@@ -51,7 +55,6 @@ func TestInt1() {
 	eq := types.MakePred(types.Id_eq, []types.Term{sum, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", eq.ToString())
 }
-
 /* Tests RAT */
 
 /* Test rat 1
@@ -190,3 +193,21 @@ func TestNormalizationNotSupEq() {
 	}
 }
 
+func TestParserRemainder_f() {
+	fmt.Println(" -------- TEST 11 -------- ")
+	fmt.Println("  (8%3)")
+	huit := types.MakerConst(types.MakerId("8"), tInt)
+	trois := types.MakerConst(types.MakerId("3"), tInt)
+	modulo:=types.MakeFun(types.MakerId("remainder_f"), []types.Term{huit, trois}, typing.GetTypeScheme("remainder_f", typing.MkTypeCross(tInt, tInt)))		
+	res,_ := ari.FunToInt(modulo)
+	fmt.Printf("8 modulo floor 3 = %d \n",res)
+}
+func TestParserUminus() {
+	fmt.Println(" -------- TEST 12 -------- ")
+	fmt.Println("  (8%3)")
+	huit := types.MakerConst(types.MakerId("8"), tInt)
+	trois := types.MakerConst(types.MakerId("3"), tInt)
+	modulo:=types.MakeFun(types.MakerId("remainder_f"), []types.Term{huit, trois}, typing.GetTypeScheme("remainder_f", typing.MkTypeCross(tInt, tInt)))		
+	res,_ := ari.FunToInt(modulo)
+	fmt.Printf("8 modulo floor 3 = %d \n",res)
+}

@@ -108,7 +108,7 @@ func TermToInt(t types.Term) (int, error) {
 		if len(ttypes.GetArgs()) == 0 {
 			return strconv.Atoi(ttypes.GetID().GetName())
 		} else {
-			if res, err := funToInt(ttypes); err == nil {
+			if res, err := FunToInt(ttypes); err == nil {
 				return res, nil
 			} else {
 				return 0, err
@@ -121,7 +121,7 @@ func TermToInt(t types.Term) (int, error) {
 }
 
 // TODO : compléter avec les fonction (voir tptp_native)
-func funToInt(f types.Fun) (int, error) {
+func FunToInt(f types.Fun) (int, error) {
 	arg1 := f.GetArgs()[0]
 	arg2 := f.GetArgs()[1]
 	switch f.GetID().GetName() {
@@ -161,7 +161,7 @@ func funToInt(f types.Fun) (int, error) {
 		}
 		return res1 * res2, nil
 
-
+//à voir`
 	case "quotient":
 		fmt.Printf("erreur quotient pas défini sur les entiers \n")
 		var err error
@@ -208,7 +208,7 @@ func funToInt(f types.Fun) (int, error) {
 		if err2 != nil || res2 == 0 {
 			return 0, err2
 		}
-		
+		fmt.Printf("%d \n",int(math.Floor(float64((res1*1.)/res2))))
 		return int(math.Floor(float64((res1*1.)/res2))),nil
 
 
@@ -255,72 +255,112 @@ func funToInt(f types.Fun) (int, error) {
 		if err2 != nil || res2 == 0 {
 			return 0, err2
 		}
+		//peut être faire ça sur chaque remainder ? 
+		Rquotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
+		quotient_f,_ := FunToInt(Rquotient_f)
+		return res1-(res2*quotient_f), nil
+	
 
-		return /*res1/(res2*quotient_f(res1,res2))*/res1, nil
-/*
+
+		
 	case "uminus":
-		arg := f.GetArgs()[0]
+//a voir si on peut avoir A = -1 +3 devient uminus(A)= 1 -3
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
 			return 0, err1
 		}
 		if res1 == 0{
 			res1 = 0
-		} 
-		else{
+		}else{
 			res1 = res1*-1
 		} 
 
 		return res1,nil
 
 	case "floor":
-		arg := f.GetArgs()[0]
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
 			return 0, err1
 		}
 
-		return int(math.Floor(res1)),nil
+		return int(math.Floor(float64(res1))),nil
 
 	case "ceiling":
-		arg := f.GetArgs()[0]
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
 			return 0, err1
 		}
 
-		return int(math.Ceil(res1)), res1
+		return int(math.Ceil(float64(res1))), err1
 	
 	case "truncate":
-		arg := f.GetArgs()[0]
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
 			return 0, err1
 		}
 		if(res1 > 0){
-			res1 = int(math.Floor(res1))
-		} 
-		else{
-			res1 = int(math.Ceil(res1))
+			res1 = int(math.Floor(float64(res1)))
+		}else{
+			//pas sur de ça
+			res1 = int(math.Ceil(float64(res1)))
 		} 
 
 	case "round":
-		arg := f.GetArgs()[0]
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if(float64(res1 - int(math.Floor(float64(res1)))) >= 0.5){
+			res1 = int(math.Ceil(float64(res1)))
+		}else{
+			res1 = int(math.Floor(float64(res1)))
+		} 
+		return res1,nil
+		
+
+	case "round":
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if(float64(res1 - int(math.Floor(float64(res1)))) >= 0.5){
+			res1 = int(math.Ceil(float64(res1)))
+		}else{
+			res1 = int(math.Floor(float64(res1)))
+		} 
+		return res1,nil
+	
+
+	case "is_int":
+		res1, err1 := TermToInt(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if res1-res1%1==0{
+			return 1,nil
+		}
+
+		return 0,nil
+
+
+	case "is_rat":
 		res1, err1 := TermToInt(arg1)
 		if err1 != nil {
 			return 0, err1
 		}
 
-		if(res1 - int(math.Floor(res1)) >= 0.5){
-			res1 = int(math.Floor(res1)+1)
-		} 
-		else{
-			res1 = int(math.Floor(res1))
-		} 
+		return res1-res1%1,nil
 
-		return res1,nil
-*/	
+	/*
+		recordConversion("to_int", tInt)
+		recordConversion("to_rat", tRat)
+		
+	*/
+
+
 	}
+
+
 	return 0, nil
 }
 
