@@ -17,6 +17,7 @@ import (
  **/
 func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*big.Rat) (info_system, bool){
 
+	fmt.Println("system.tab_nom_var",system.tab_nom_var)
 	fmt.Println("tab_cont",system.tab_cont)
 	fmt.Println("alpha_tab",system.alpha_tab)
 	fmt.Println("tab_coef",system.tab_coef)

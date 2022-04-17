@@ -788,8 +788,9 @@ func addAllConst(eqs []string, tab_coef [][]*big.Rat, tab_cont []*big.Rat, tab_n
         tab_coef = append(tab_coef, tab)
         tab_cont = append(tab_cont, dernier_element)
         tab_nom_var = addVarIfNotExists(liste_nom_var, tab_nom_var)
+		
     }
-    return tab_coef, tab_cont, tab_nom_var
+	return tab_coef, tab_cont, tab_nom_var
 }
 
 /** 
@@ -803,11 +804,13 @@ func addVarIfNotExists(liste_nom_var []string, tab_nom_var []string) []string{
 		present := false
 		for j := 0; j < len(tab_nom_var); j++ {
 			if liste_nom_var[i] == tab_nom_var[j] {
+				fmt.Println("ici")
 				present = true
 			}
-			if !present {
-				tab_nom_var = append(tab_nom_var, liste_nom_var[i])
-			}
+		}
+		if !present {
+			fmt.Println("la")
+			tab_nom_var = append(tab_nom_var, liste_nom_var[i])
 		}
 	}
 	return tab_nom_var

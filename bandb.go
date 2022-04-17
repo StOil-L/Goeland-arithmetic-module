@@ -24,7 +24,7 @@ import (
 func Branch_bound(gotSol bool, channel chan bAndB, incremental_coef []*big.Rat,
 		incremental_aff []*big.Rat, system info_system) (map[string]*big.Rat, bool){
 
-	fmt.Println("\033[0m") 
+	fmt.Println("\033[0m ") 
 	
 	solutionEntiere,index:=estSol(system.alpha_tab,system.tab_nom_var)
 	
@@ -131,6 +131,7 @@ func estSol(solution map[string]*big.Rat, tab_nom_var []string) (bool,int){
 	if index < len(tab_nom_var){
 			return false,index
 	}
+	fmt.Printf("test %d \n", len(tab_nom_var))
 	return true,index
 }
 
