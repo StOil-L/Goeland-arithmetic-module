@@ -804,12 +804,10 @@ func addVarIfNotExists(liste_nom_var []string, tab_nom_var []string) []string{
 		present := false
 		for j := 0; j < len(tab_nom_var); j++ {
 			if liste_nom_var[i] == tab_nom_var[j] {
-				fmt.Println("ici")
 				present = true
 			}
 		}
 		if !present {
-			fmt.Println("la")
 			tab_nom_var = append(tab_nom_var, liste_nom_var[i])
 		}
 	}
