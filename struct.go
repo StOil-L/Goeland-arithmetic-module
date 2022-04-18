@@ -17,6 +17,8 @@ type info_system struct {
 	pos_var_tab []string
 	bland []string
 	alpha_tab map[string]*big.Rat
+    incremental_coef []*big.Rat
+    incremental_aff []*big.Rat
 }
 
 type bAndB struct {

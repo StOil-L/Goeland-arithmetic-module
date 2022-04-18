@@ -15,7 +15,7 @@ import (
  * It returns an affectation that satisfies the constraints. 
  * In case the system has no solutions, the boolean return value is set to false.
  **/
-func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*big.Rat) (info_system, bool){
+func Simplexe(system info_system) (info_system, bool){
 
 	fmt.Println("system.tab_nom_var",system.tab_nom_var)
 	fmt.Println("tab_cont",system.tab_cont)
@@ -44,12 +44,16 @@ func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*
 	fmt.Println("\033[0m") 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
+		fmt.Println("Incre coef depart = ", system.incremental_coef, "\n")
+		fmt.Println("Incre aff depart = ", system.incremental_aff, "\n")
 		//ligne_pivot est la ligne qui ne respecte pas sa contrainte
 		ligne_pivot := checkCont(system.alpha_tab, system.tab_cont, pos_var_tab_bis)		
 		if ligne_pivot == -1 {
-			fmt.Println(" \033[33m La solution est : ") 
-			fmt.Println(system.alpha_tab)
+			fmt.Println(" \033[33m La solution est : ")
+			fmt.Println("alpha_tab_bis ", system.alpha_tab, "\n")
 			system.pos_var_tab = pos_var_tab_bis
+			fmt.Println("Incre coef return = ", system.incremental_coef, "\n")
+			fmt.Println("Incre aff return = ", system.incremental_aff, "\n")
 			return system, true
 		}
 		//on cherche la colonne du pivot
@@ -60,9 +64,12 @@ func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*
 			return system, false
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
-			system.tab_coef, incremental_coef = updateMatrice(system.tab_coef,colonne_pivot,ligne_pivot,incremental_coef)
+			system = updateMatrice(system,colonne_pivot,ligne_pivot)
 			//calcul des nouveaux alpha
-			system.alpha_tab, incremental_aff = updateAlpha(system.tab_coef,ligne_pivot,system.alpha_tab,pos_var_tab_bis,incremental_aff)
+			system = updateAlpha(system,ligne_pivot,pos_var_tab_bis)
+			fmt.Println("Incre coef update = ", system.incremental_coef, "\n")
+			fmt.Println("Incre aff update = ", system.incremental_aff, "\n")
+
 			//time.Sleep(time.Second)
 			fmt.Println("\033[35m matrice des coefficients :",system.tab_coef,"\033[0m")
 			fmt.Println("\033[34m affectations :" ,system.alpha_tab,"\033[0m")
@@ -84,7 +91,10 @@ func Simplexe(system info_system, incremental_coef[]*big.Rat, incremental_aff[]*
  **/
 func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab []string) int{
 	for index, variable := range pos_var_tab[:len(tab_cont)]  {
-		if variable[0] == 101 {
+		if variable[0] == 'e' {
+			fmt.Println("alpha_tab = ", alpha_tab, "\n")
+			fmt.Println("tab_cont = ", tab_cont, "\n")
+			fmt.Println("variable = ", variable, "\n")
 			if alpha_tab[variable].Cmp(tab_cont[index]) == -1 {
 				return index
 			}	
@@ -179,42 +189,42 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
  *   - `ligne_pivot`, line of the matrice where the pivot occur
  *   - `incremental_coef`,
  **/
-func updateMatrice(tab_coef [][]*big.Rat, colonne_pivot int, ligne_pivot int, incremental_coef []*big.Rat) ([][]*big.Rat, []*big.Rat){
+func updateMatrice(system info_system, colonne_pivot int, ligne_pivot int) (info_system){
 	
 	//ajout numéro colonne pivot 
-	incremental_coef=append(incremental_coef,big.NewRat(int64(colonne_pivot), 1))
+	system.incremental_coef=append(system.incremental_coef,big.NewRat(int64(colonne_pivot), 1))
 	//ajout pivot
 	var inv_pivot = new(big.Rat)
-	inv_pivot.Set(new(big.Rat).Inv(tab_coef[ligne_pivot][colonne_pivot]))
-	for i := 0; i < len(tab_coef[0]); i++ {
+	inv_pivot.Set(new(big.Rat).Inv(system.tab_coef[ligne_pivot][colonne_pivot]))
+	for i := 0; i < len(system.tab_coef[0]); i++ {
 		if i == colonne_pivot {
-			incremental_coef=append(incremental_coef,inv_pivot)
-			tab_coef[ligne_pivot][i]=inv_pivot
+			system.incremental_coef=append(system.incremental_coef,inv_pivot)
+			system.tab_coef[ligne_pivot][i]=inv_pivot
 		} else {
-			tab_coef[ligne_pivot][i].Mul(new(big.Rat).Neg(tab_coef[ligne_pivot][i]), inv_pivot)
-			incremental_coef=append(incremental_coef,tab_coef[ligne_pivot][i])
+			system.tab_coef[ligne_pivot][i].Mul(new(big.Rat).Neg(system.tab_coef[ligne_pivot][i]), inv_pivot)
+			system.incremental_coef=append(system.incremental_coef,system.tab_coef[ligne_pivot][i])
 		}
 
 	}
 		
 	//on modifie le tableau des coefficients des autres lignes
-	for i := 0; i < len(tab_coef); i++ {
+	for i := 0; i < len(system.tab_coef); i++ {
 		//conservation du coefficient non modifier ligne actuel/colonne pivot
 		//necessaire pour les prochains calcul de coef de la ligne
 		var  tab_i_pivot=new(big.Rat)
-		tab_i_pivot.Set(tab_coef[i][colonne_pivot])
+		tab_i_pivot.Set(system.tab_coef[i][colonne_pivot])
 	
 		if i != ligne_pivot {
-			for j := 0; j < len(tab_coef[0]); j++ {
+			for j := 0; j < len(system.tab_coef[0]); j++ {
 				if j==colonne_pivot{
-					tab_coef[i][colonne_pivot].Mul(tab_coef[i][colonne_pivot], tab_coef[ligne_pivot][colonne_pivot])
+					system.tab_coef[i][colonne_pivot].Mul(system.tab_coef[i][colonne_pivot], system.tab_coef[ligne_pivot][colonne_pivot])
 				} else {
-					tab_coef[i][j].Add(tab_coef[i][j], new(big.Rat).Mul(tab_coef[ligne_pivot][j],tab_i_pivot))
+					system.tab_coef[i][j].Add(system.tab_coef[i][j], new(big.Rat).Mul(system.tab_coef[ligne_pivot][j],tab_i_pivot))
 				}
 			}
 		}
 	}
-	return tab_coef, incremental_coef
+	return system
 }
 
 /** 
@@ -226,20 +236,19 @@ func updateMatrice(tab_coef [][]*big.Rat, colonne_pivot int, ligne_pivot int, in
  * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
  *   - `incremental_aff`,
  **/
-func updateAlpha(tab_coef [][]*big.Rat, ligne_pivot int, 
-	alpha_tab map[string]*big.Rat, pos_var_tab []string, incremental_aff []*big.Rat) (map[string]*big.Rat, []*big.Rat){
+func updateAlpha(system info_system, ligne_pivot int, pos_var_tab []string) (info_system){
 
-	for i := 0; i<len(tab_coef);i++{
+	for i := 0; i<len(system.tab_coef);i++{
 		if i != ligne_pivot {
 			var cal_alpha = new(big.Rat)
-			for j :=0; j<len(tab_coef[0]);j++{
-				cal_alpha.Add(cal_alpha, new(big.Rat).Mul(tab_coef[i][j], alpha_tab[pos_var_tab[j + len(tab_coef)]]))
+			for j :=0; j<len(system.tab_coef[0]);j++{
+				cal_alpha.Add(cal_alpha, new(big.Rat).Mul(system.tab_coef[i][j], system.alpha_tab[pos_var_tab[j + len(system.tab_coef)]]))
 			}
-			alpha_tab[pos_var_tab[i]].Set(cal_alpha)
+			system.alpha_tab[pos_var_tab[i]].Set(cal_alpha)
 		}
 	}
-	for j :=0; j<len(tab_coef[0]);j++{
-		incremental_aff=append(incremental_aff,alpha_tab[pos_var_tab[j + len(tab_coef)]])
+	for j :=0; j<len(system.tab_coef[0]);j++{
+		system.incremental_aff=append(system.incremental_aff,system.alpha_tab[pos_var_tab[j + len(system.tab_coef)]])
 	}
-	return alpha_tab, incremental_aff
+	return system
 }

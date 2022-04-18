@@ -21,8 +21,7 @@ import (
  * 	 - `bland`, an array containing the Bland order of variable
  * It returns a boolean which says if it exist a solution and the `alpha_tab` which represent the solution of the system
  **/
-func Branch_bound(gotSol bool, channel chan bAndB, incremental_coef []*big.Rat,
-		incremental_aff []*big.Rat, system info_system) (map[string]*big.Rat, bool){
+func Branch_bound(gotSol bool, channel chan bAndB, system info_system) (map[string]*big.Rat, bool){
 
 	fmt.Println("\033[0m ") 
 	
@@ -34,8 +33,8 @@ func Branch_bound(gotSol bool, channel chan bAndB, incremental_coef []*big.Rat,
     } else if (solutionEntiere){
         return system.alpha_tab, true
     }
-	go goBandB(false, channel, index, incremental_coef, incremental_aff, system)
-	go goBandB(true, channel, index, incremental_coef, incremental_aff, system)
+	go goBandB(false, channel, index, system)
+	go goBandB(true, channel, index, system)
 	
 	stBAndB := <- channel
 	if(!stBAndB.solBoolStr){
@@ -54,8 +53,7 @@ func Branch_bound(gotSol bool, channel chan bAndB, incremental_coef []*big.Rat,
     return stBAndB.solStr, stBAndB.solBoolStr
 }
 
-func goBandB(inf_sup bool, channel chan bAndB, index int, incremental_coef []*big.Rat, 
-		incremental_aff []*big.Rat, system info_system) {
+func goBandB(inf_sup bool, channel chan bAndB, index int, system info_system) {
 	select {
 		case <- channel :
 			return
@@ -93,26 +91,25 @@ func goBandB(inf_sup bool, channel chan bAndB, index int, incremental_coef []*bi
 				tab_coef_bis = append(tab_coef_bis, tabInter)
 			}
 				
+			system.tab_coef = tab_coef_bis
+			system.tab_cont = tab_cont_bis
+
 			//incrémental
-			alpha_tab_bis := incremental(incremental_coef,tab_coef_bis,system.alpha_tab,incremental_aff,system.tab_nom_var) 
+			system = incremental(system) 
 			//fin incrémental
 
-				system.tab_coef = tab_coef_bis
-				system.tab_cont = tab_cont_bis
-				system.alpha_tab = alpha_tab_bis
+			system, gotSol := Simplexe(system)
 
-				system, gotSol := Simplexe(system, incremental_coef, incremental_aff)
+			system.tab_coef = tab_coef_bis
+			system.tab_cont = tab_cont_bis
 
-				system.tab_coef = tab_coef_bis
-				system.tab_cont = tab_cont_bis
+			sol, solBool := Branch_bound(gotSol, channelBis, system)
 
-				sol, solBool := Branch_bound(gotSol, channelBis, incremental_coef, incremental_aff, system)
-
-				stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
-				select {
-					case channel <- stBAndB:
-					case <- channel:
-				}
+			stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
+			select {
+				case channel <- stBAndB:
+				case <- channel:
+			}
 	}
 }
 
@@ -164,50 +161,50 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
 	return tab_copy
 }
 
-func incremental(incremental_coef []*big.Rat,tableauBis [][]*big.Rat,solution map[string]*big.Rat,incremental_aff []*big.Rat, varInit []string) (map[string]*big.Rat){
-	solution_bis := make(map[string]*big.Rat)		
+func incremental(system info_system) (info_system){
+	alpha_tab_bis := make(map[string]*big.Rat)		
 			cpt:=0
 			cpt2:=0
-			for cpt < len(incremental_coef){		
+			for cpt < len(system.incremental_coef){		
 				var case_pivot =new(big.Rat)
-				case_pivot.Set(tableauBis[len(tableauBis)-1][incremental_coef[cpt].Num().Int64()])
-				for j := 0; j < len(tableauBis[0]); j++ {				
-					if int64(j)==incremental_coef[cpt].Num().Int64(){
-						tableauBis[len(tableauBis)-1][j].Mul(tableauBis[len(tableauBis)-1][j],
-						incremental_coef[int64(cpt)+incremental_coef[cpt].Num().Int64()+1])
+				case_pivot.Set(system.tab_coef[len(system.tab_coef)-1][system.incremental_coef[cpt].Num().Int64()])
+				for j := 0; j < len(system.tab_coef[0]); j++ {				
+					if int64(j)==system.incremental_coef[cpt].Num().Int64(){
+						system.tab_coef[len(system.tab_coef)-1][j].Mul(system.tab_coef[len(system.tab_coef)-1][j],
+						system.incremental_coef[int64(cpt)+system.incremental_coef[cpt].Num().Int64()+1])
 					} else {
-						tableauBis[len(tableauBis)-1][j].Add(tableauBis[len(tableauBis)-1][j],
-						new(big.Rat).Mul(case_pivot,incremental_coef[j+1]))			
+						system.tab_coef[len(system.tab_coef)-1][j].Add(system.tab_coef[len(system.tab_coef)-1][j],
+						new(big.Rat).Mul(case_pivot,system.incremental_coef[j+1]))			
 					}
 
 				}		
 				var calAlpha = new(big.Rat)
-				for j :=0; j<len(tableauBis[0]);j++{
-					calAlpha.Add(calAlpha,new(big.Rat).Mul(incremental_aff[j+cpt2],tableauBis[len(tableauBis)-1][j]))
+				for j :=0; j<len(system.tab_coef[0]);j++{
+					calAlpha.Add(calAlpha,new(big.Rat).Mul(system.incremental_aff[j+cpt2],system.tab_coef[len(system.tab_coef)-1][j]))
 				}
 
 
-				for i := 0; i < len(tableauBis)-1; i++ {
-					solution_bis[fmt.Sprint("e", i)] = new(big.Rat)
-					solution_bis[fmt.Sprint("e", i)].Set(solution[fmt.Sprint("e", i)]) 
+				for i := 0; i < len(system.tab_coef)-1; i++ {
+					alpha_tab_bis[fmt.Sprint("e", i)] = new(big.Rat)
+					alpha_tab_bis[fmt.Sprint("e", i)].Set(system.alpha_tab[fmt.Sprint("e", i)]) 
 				}
-				solution_bis[fmt.Sprint("e", len(tableauBis)-1)]=new(big.Rat)
-				solution_bis[fmt.Sprint("e", len(tableauBis)-1)].Set(calAlpha)
-				if len(varInit) == 0 {
-					for i := 0; i < len(tableauBis[0]); i++ {
-					solution_bis[fmt.Sprint("x", i)] = new(big.Rat)
-					solution_bis[fmt.Sprint("x", i)].Set(solution[fmt.Sprint("x", i)])
+				alpha_tab_bis[fmt.Sprint("e", len(system.tab_coef)-1)]=new(big.Rat)
+				alpha_tab_bis[fmt.Sprint("e", len(system.tab_coef)-1)].Set(calAlpha)
+				if len(system.tab_nom_var) == 0 {
+					for i := 0; i < len(system.tab_coef[0]); i++ {
+					alpha_tab_bis[fmt.Sprint("x", i)] = new(big.Rat)
+					alpha_tab_bis[fmt.Sprint("x", i)].Set(system.alpha_tab[fmt.Sprint("x", i)])
 					}
 				} else {
-					for i := 0; i < len(tableauBis[0]); i++ {
-						solution_bis[varInit[i]] = new(big.Rat)
-						solution_bis[varInit[i]].Set(solution[varInit[i]])
+					for i := 0; i < len(system.tab_coef[0]); i++ {
+						alpha_tab_bis[system.tab_nom_var[i]] = new(big.Rat)
+						alpha_tab_bis[system.tab_nom_var[i]].Set(system.alpha_tab[system.tab_nom_var[i]])
 					
 					}
 				}
 
-				cpt+=1+len(tableauBis[0])
-				cpt2+=len(tableauBis[0])
+				cpt+=1+len(system.tab_coef[0])
+				cpt2+=len(system.tab_coef[0])
 			}
-			return solution_bis
+			return system
 }
