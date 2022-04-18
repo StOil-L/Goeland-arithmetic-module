@@ -82,8 +82,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 	}
 	if x==3{
@@ -147,8 +145,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 	}
 	if x==5{
@@ -213,8 +209,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 	}
 	if x==7{
@@ -279,8 +273,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 	}
 	if x==9{
@@ -345,8 +337,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 	}
 
@@ -485,8 +475,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 		
 	}
@@ -565,8 +553,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 		
 	}
@@ -671,8 +657,6 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		system.tab_coef = tableau
-		system.tab_cont = tab_cont
 		fmt.Println(Branch_bound(gotSol, channel, system))
 	}
 }

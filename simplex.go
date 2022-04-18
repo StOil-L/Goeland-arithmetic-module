@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"math/big"    
+	"math/big"   
 )
 
 /** 
@@ -44,20 +44,17 @@ func Simplexe(system info_system) (info_system, bool){
 	fmt.Println("\033[0m") 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
-		fmt.Println("Incre coef depart = ", system.incremental_coef, "\n")
-		fmt.Println("Incre aff depart = ", system.incremental_aff, "\n")
 		//ligne_pivot est la ligne qui ne respecte pas sa contrainte
 		ligne_pivot := checkCont(system.alpha_tab, system.tab_cont, pos_var_tab_bis)		
 		if ligne_pivot == -1 {
 			fmt.Println(" \033[33m La solution est : ")
 			fmt.Println("alpha_tab_bis ", system.alpha_tab, "\n")
 			system.pos_var_tab = pos_var_tab_bis
-			fmt.Println("Incre coef return = ", system.incremental_coef, "\n")
-			fmt.Println("Incre aff return = ", system.incremental_aff, "\n")
 			return system, true
 		}
 		//on cherche la colonne du pivot
-		system, colonne_pivot := pivot(system, ligne_pivot, pos_var_tab_bis)
+		colonne_pivot := 0
+		system, colonne_pivot = pivot(system, ligne_pivot, pos_var_tab_bis)
 		if colonne_pivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
@@ -67,8 +64,6 @@ func Simplexe(system info_system) (info_system, bool){
 			system = updateMatrice(system,colonne_pivot,ligne_pivot)
 			//calcul des nouveaux alpha
 			system = updateAlpha(system,ligne_pivot,pos_var_tab_bis)
-			fmt.Println("Incre coef update = ", system.incremental_coef, "\n")
-			fmt.Println("Incre aff update = ", system.incremental_aff, "\n")
 
 			//time.Sleep(time.Second)
 			fmt.Println("\033[35m matrice des coefficients :",system.tab_coef,"\033[0m")

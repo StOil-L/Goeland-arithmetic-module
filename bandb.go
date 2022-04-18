@@ -100,9 +100,6 @@ func goBandB(inf_sup bool, channel chan bAndB, index int, system info_system) {
 
 			system, gotSol := Simplexe(system)
 
-			system.tab_coef = tab_coef_bis
-			system.tab_cont = tab_cont_bis
-
 			sol, solBool := Branch_bound(gotSol, channelBis, system)
 
 			stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
@@ -206,5 +203,6 @@ func incremental(system info_system) (info_system){
 				cpt+=1+len(system.tab_coef[0])
 				cpt2+=len(system.tab_coef[0])
 			}
+			system.alpha_tab = alpha_tab_bis
 			return system
 }
