@@ -64,6 +64,8 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 	arg2 := f.GetArgs()[1]
 	switch f.GetID().GetName() {
 	case "sum":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToRat(arg1)
 		if err1 != nil {
 			return nil, err1
@@ -75,6 +77,8 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 		// On créé un nouveau rationnel ou on on met le resultat dans rat1 ?
 		return res1.Add(res1, res2), nil
 	case "difference":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToRat(arg1)
 		if err1 != nil {
 			return nil, err1
@@ -86,6 +90,8 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 		return res1.Add(res1, res2.Mul(res2, big.NewRat(-1, 1))), nil
 
 	case "product":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToRat(arg1)
 		if err1 != nil {
 			return nil, err1
@@ -97,6 +103,8 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 		return res1.Mul(res1, res2), nil
 
 	case "quotient_t":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToRat(arg1)
 		if err1 != nil {
 			return nil, err1
@@ -108,6 +116,21 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 		}
 		return res1.Mul(res1, new(big.Rat).Inv(res2)), nil
 	}
+
+	// Rien ne change ?
+	case "uminus":
+		arg1 := f.GetArgs()[0]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if res1 == 0 {
+			res1 = 0
+		} else {
+			res1 = res1 * -1
+		}
+
+		return res1, nil
 
 	return new(big.Rat), nil
 }
