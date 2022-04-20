@@ -41,6 +41,7 @@ func termToInt(t types.Term) (int, error) {
 * TODO : vous devez definir arg1 et agr2 dans chaque sous fonction.
 * En effet, votre functino peut ête uniare (genre uminus), et dans ce cas ça va planter si vous faites f.GetArgs()[1]
 * Parce que dans le cas d'une fonction unaire, g.GetArgs est de taille 1 !
+*	===> Fais par Margaux
 * Les 2 returns sur la dernière ligne, c'est pour qu'ils se sentent moins seuls ?
 **/
 func FunToInt(f types.Fun) (int, error) {
