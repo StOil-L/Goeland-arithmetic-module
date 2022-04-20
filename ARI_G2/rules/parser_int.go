@@ -44,11 +44,11 @@ func termToInt(t types.Term) (int, error) {
 * Les 2 returns sur la dernière ligne, c'est pour qu'ils se sentent moins seuls ?
 **/
 func FunToInt(f types.Fun) (int, error) {
-	arg1 := f.GetArgs()[0]
-	arg2 := f.GetArgs()[1]
 	switch f.GetID().GetName() {
 
 	case "sum":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -60,6 +60,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return res1 + res2, nil
 
 	case "difference":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -71,6 +73,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return res1 - res2, nil
 
 	case "product":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -88,6 +92,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return 0, err
 
 	case "quotient_e":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -104,6 +110,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return quo, nil
 
 	case "quotient_t":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -117,6 +125,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return res1 / res2, nil
 
 	case "quotient_f":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -130,6 +140,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return int(math.Floor(float64((res1 * 1.) / res2))), nil
 
 	case "remainder_e":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -149,6 +161,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return remain, nil
 
 	case "remainder_t":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -162,6 +176,8 @@ func FunToInt(f types.Fun) (int, error) {
 		return res1 % res2, nil
 
 	case "remainder_f":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -177,6 +193,7 @@ func FunToInt(f types.Fun) (int, error) {
 		return res1 - (res2 * quotient_f), nil
 
 	case "uminus":
+		arg1 := f.GetArgs()[0]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -190,6 +207,7 @@ func FunToInt(f types.Fun) (int, error) {
 		return res1, nil
 
 	case "floor":
+		arg1 := f.GetArgs()[0]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -198,6 +216,7 @@ func FunToInt(f types.Fun) (int, error) {
 		return int(math.Floor(float64(res1))), nil
 
 	case "ceiling":
+		arg1 := f.GetArgs()[0]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -206,6 +225,7 @@ func FunToInt(f types.Fun) (int, error) {
 		return int(math.Ceil(float64(res1))), err1
 
 	case "truncate":
+		arg1 := f.GetArgs()[0]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
@@ -218,6 +238,7 @@ func FunToInt(f types.Fun) (int, error) {
 		}
 
 	case "round":
+		arg1 := f.GetArgs()[0]
 		res1, err1 := termToInt(arg1)
 		if err1 != nil {
 			return 0, err1
