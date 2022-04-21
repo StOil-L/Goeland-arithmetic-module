@@ -381,10 +381,17 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			} else {
 				res_1_f64, _ := res1.Float64()
 				// Pas sure de moi
-				diff := newRat().Sub(res_1_f64, float64(int(res_1_f64)))
+
+				//Rfloor := types.MakeFun(types.MakerId("floor"), []types.Term{arg1}, typing.GetTypeScheme("floor", typing.MkTypeCross(tRat)))
+				//floor, _ := FunToRat(Rfloor)
+				//return res1 - (res2 * quotient_f), nil
+
+				res_1_f64_floor := newRat().SetFloat64(math.Floor(res_1_f64))
+				
+				diff := newRat().Sub(res_1_f64, res_1_f64_floor)
 				res := newRat()
 
-				if diff.Cmp(0.5) == 1 || res1.Cmp(0.5) == 0 {
+				if diff.Cmp(big.NewRat(1,2)) == 1 || res1.Cmp(big.NewRat(1,2)) == 0 {
 					res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
 					//return newRat().res.SetFloat64(math.Ceil(float64(res_1_f64)))
 				} else {
