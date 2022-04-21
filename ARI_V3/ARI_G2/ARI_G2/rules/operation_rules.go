@@ -305,46 +305,35 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 		default:
 			return zero_rat, errors.New("Error in evaluate : uminus")
 		}
+	// Pour les cas suivants, je regroupe tout en un cas car les opérations sont les memes
 	case "floor":
 		switch f.GetTypeHint() {
-		case tInt:
+		case tInt, tRat:
 			if res1, err := checkError1Arg(arg1); err != nil {
 				return zero_rat, err
 			} else {
 				res_1_f64, _ := res1.Float64()
 				return newRat().SetFloat64(math.Floor(res_1_f64)), nil
 			}
-		case tRat:
-			// if res1, err := checkError1Arg(arg1); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : floor on rat
-			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : floor")
 		}
 	case "ceiling":
 
 		switch f.GetTypeHint() {
-		case tInt:
+		case tInt, tRat:
 			if res1, err := checkError1Arg(arg1); err != nil {
 				return zero_rat, err
 			} else {
 				res_1_f64, _ := res1.Float64()
 				return newRat().SetFloat64(math.Ceil(float64(res_1_f64))), nil
 			}
-		case tRat:
-			// if res1, err := checkError1Arg(arg1); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : ceil on rat
-			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : floor")
 		}
 	case "truncate":
 		switch f.GetTypeHint() {
-		case tInt:
+		case tInt, tRat:
 			if res1, err := checkError1Arg(arg1); err != nil {
 				return zero_rat, err
 			} else {
@@ -358,8 +347,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 					return newRat().SetFloat64(math.Ceil(float64(res_1_f64))), nil
 				}
 			}
-		case tRat:
-			// TODO : truncate on rat
+
 		default:
 			return zero_rat, errors.New("Error in evaluate : floor")
 		}
@@ -380,12 +368,34 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 					res = res.SetFloat64(math.Floor(float64(res_1_f64)))
 				}
 
+				return res, nil
 				// TODO : ?
 				// return res1, nil
 				// return res1 - res1%1, nil
 			}
 		case tRat:
 			// TODO : round on rat
+			
+			if res1, err := checkError1Arg(arg1); err != nil {
+				return zero_rat, err
+			} else {
+				res_1_f64, _ := res1.Float64()
+				// Pas sure de moi
+				diff := newRat().Sub(res_1_f64, float64(rat(res_1_f64)))
+				res := newRat()
+
+				if diff >= 0.5 {
+					res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
+				} else {
+					res = res.SetFloat64(math.Floor(float64(res_1_f64)))
+				}
+				
+				return res, nil
+				// TODO : ?
+				// return res1, nil
+				// return res1 - res1%1, nil
+			}
+			
 		default:
 			return zero_rat, errors.New("Error in evaluate : floor")
 		}

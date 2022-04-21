@@ -132,5 +132,49 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 
 		return res1, nil
 
+	case "floor":
+		arg1 := f.GetArgs()[0]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+
+		return rat(math.Floor(float64(res1))), nil	
+		
+	case "ceiling":
+		arg1 := f.GetArgs()[0]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+
+		return rat(math.Ceil(float64(res1))), err1
+
+	case "truncate":
+		arg1 := f.GetArgs()[0]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if res1 > 0 {
+			res1 = rat(math.Floor(float64(res1)))
+		} else {
+			//pas sur de ça
+			res1 = rat(math.Ceil(float64(res1)))
+		}
+
+	case "round":
+		arg1 := f.GetArgs()[0]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return 0, err1
+		}
+		if float64(res1-int(math.Floor(float64(res1)))) >= 0.5 {
+			res1 = rat(math.Ceil(float64(res1)))
+		} else {
+			res1 = rat(math.Floor(float64(res1)))
+		}
+		return res1, nil
+
 	return new(big.Rat), nil
 }
