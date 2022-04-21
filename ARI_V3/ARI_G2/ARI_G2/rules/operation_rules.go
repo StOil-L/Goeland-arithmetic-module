@@ -384,7 +384,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 				diff := newRat().Sub(res_1_f64, float64(int(res_1_f64)))
 				res := newRat()
 
-				if res1.Cmp(0.5) == 1 || res1.Cmp(0.5) == 0 {
+				if diff.Cmp(0.5) == 1 || res1.Cmp(0.5) == 0 {
 					res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
 					//return newRat().res.SetFloat64(math.Ceil(float64(res_1_f64)))
 				} else {
