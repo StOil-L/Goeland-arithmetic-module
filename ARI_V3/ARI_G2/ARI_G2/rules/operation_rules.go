@@ -388,7 +388,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 
 				res_1_f64_floor := newRat().SetFloat64(math.Floor(res_1_f64))
 				
-				diff := newRat().Sub(res_1_f64, res_1_f64_floor)
+				diff := newRat().Sub(res1, res_1_f64_floor)
 				res := newRat()
 
 				if diff.Cmp(big.NewRat(1,2)) == 1 || res1.Cmp(big.NewRat(1,2)) == 0 {
