@@ -103,30 +103,52 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 			cpt+=2
 			present:=false
 			var variable string
-			if t1==""{
-				variable=p.GetArgs()[1].GetName()
-			} else if t2==""{
-				variable=p.GetArgs()[0].GetName()
-			}
-			if variable!=""{
-				for i:=0;i<len(tab_variable);i++{
-					if tab_variable[i]==variable{
-						present=true
+			fmt.Println("variable =",variable)
+			
+			if len(t1)==0 && t2!=nil{
+				for i:=0;i<len(t2);i++{
+					variable=t2[i][0:1]
+					present=false
+					fmt.Println("variable2 =",variable)
+					for i:=0;i<len(tab_variable);i++{
+						if tab_variable[i]==variable{
+							present=true
+						}
 					}
+					if !present{
+						tab_variable=append(tab_variable,variable)
+					}
+				
+
 				}
 				
+			} else if t1!=nil && len(t2)==0{
+				for i:=0;i<len(t1);i++{
+					variable=t1[i][0:1]
+					present=false
+					fmt.Println("variable1 =",variable)
+					for i:=0;i<len(tab_variable);i++{
+						if tab_variable[i]==variable{
+							present=true
+						}
+					}
+					if !present{
+						tab_variable=append(tab_variable,variable)
+					}
+				
+
+				}
+			
 			}
-			if !present{
-				tab_variable=append(tab_variable,variable)
-			}
+			
 			fmt.Println("t1 ", t1)
 			fmt.Println("t2 ", t2)
 			
 			// fin du :p
 
-
-			res_for_simplex = append(res_for_simplex, t1+" >= "+t2)
-			res_for_simplex = append(res_for_simplex, t2+" >= "+t1)
+			fmt.Println("variable =",variable)
+			res_for_simplex = append(res_for_simplex," >= ")
+			res_for_simplex = append(res_for_simplex, " >= ")
 		case types.Id_neq.GetName():
 
 		//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
@@ -144,7 +166,8 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				fmt.Printf("Error in normalizeForSimplex")
 				return nil, nil, nil
 			}
-			res_for_simplex = append(res_for_simplex, "-"+t1+" > "+"-"+t2)
+			fmt.Println(t1,t2)
+			res_for_simplex = append(res_for_simplex, " > ")
 		
 		case "lesseq":
 			//je code svp jugez pas :p
@@ -155,28 +178,53 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				return nil, nil, nil
 			}
 			cpt+=1
-			fmt.Println("ici",p.GetArgs()[0].GetName())
 			present:=false
 			var variable string
-			if t1==""{
-				variable=p.GetArgs()[1].GetName()
-			} else if t2==""{
-				variable=p.GetArgs()[0].GetName()
-			}
-			if variable!=""{
-				for i:=0;i<len(tab_variable);i++{
-					if tab_variable[i]==variable{
-						present=true
+			fmt.Println("variable =",variable)
+			
+			if len(t1)==0 && t2!=nil{
+				for i:=0;i<len(t2);i++{
+					variable=t2[i][0:1]
+					present=false
+					fmt.Println("variable2 =",variable)
+					for i:=0;i<len(tab_variable);i++{
+						if tab_variable[i]==variable{
+							present=true
+						}
 					}
+					if !present{
+						tab_variable=append(tab_variable,variable)
+					}
+				
+
 				}
 				
+			} else if t1!=nil && len(t2)==0{
+				for i:=0;i<len(t1);i++{
+					variable=t1[i][0:1]
+					present=false
+					fmt.Println("variable1 =",variable)
+					for i:=0;i<len(tab_variable);i++{
+						if tab_variable[i]==variable{
+							present=true
+						}
+					}
+					if !present{
+						tab_variable=append(tab_variable,variable)
+					}
+				
+
+				}
+			
 			}
-			if !present{
-				tab_variable=append(tab_variable,p.GetArgs()[0].GetName())
-			}
+			
+			fmt.Println("t1 ", t1)
+			fmt.Println("t2 ", t2)
+
 			// fin du :p
 
 		case "great":
+
 
 		case "greateq":
 			//je code svp jugez pas :p
@@ -188,26 +236,49 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 			}
 			
 			cpt+=1
-			fmt.Println("ici",p.GetArgs()[0].GetName())
 			present:=false
 			var variable string
-			if t1==""{
-				variable=p.GetArgs()[1].GetName()
-			} else if t2==""{
-				variable=p.GetArgs()[0].GetName()
-			}
-			if variable!=""{
-				for i:=0;i<len(tab_variable);i++{
-					if tab_variable[i]==variable{
-						present=true
+			fmt.Println("variable =",variable)
+			
+			if len(t1)==0 && t2!=nil{
+				for i:=0;i<len(t2);i++{
+					variable=t2[i][0:1]
+					present=false
+					fmt.Println("variable2 =",variable)
+					for i:=0;i<len(tab_variable);i++{
+						if tab_variable[i]==variable{
+							present=true
+						}
 					}
+					if !present{
+						tab_variable=append(tab_variable,variable)
+					}
+				
+
 				}
 				
+			} else if t1!=nil && len(t2)==0{
+				for i:=0;i<len(t1);i++{
+					variable=t1[i][0:1]
+					present=false
+					fmt.Println("variable1 =",variable)
+					for i:=0;i<len(tab_variable);i++{
+						if tab_variable[i]==variable{
+							present=true
+						}
+					}
+					if !present{
+						tab_variable=append(tab_variable,variable)
+					}
+				
+
+				}
+			
 			}
-		
-			if !present{
-				tab_variable=append(tab_variable,p.GetArgs()[0].GetName())
-			}
+			
+			fmt.Println("t1 ", t1)
+			fmt.Println("t2 ", t2)
+
 			// fin du :p
 
 
@@ -223,7 +294,8 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 * C'est ici qu'on gère la conversion des variables
 * Je fais beaucoup de disjonction de cas en fonction de int ou rat, mais selon votre format d'entrée ce ne sera peut-être pas nécessaire
 **/
-func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) (string, error) {
+func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) ([]string, error) {
+	var tab_var = make([]string,0)
 	switch ttype := t.(type) {
 	case types.Meta:
 		// C'est ici que je stock les metavairables, que je regarde si elles sont entière et que je fais la correspondence
@@ -232,12 +304,70 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 		if typing.IsInt(ttype.GetTypeHint()) {
 			(*iv) = append((*iv), var_for_simplex) // Je stock aussi la variable dans la liste des variables entière si elle doit être entière
 		}
-		return var_for_simplex, nil
+		tab_var= append(tab_var,var_for_simplex)
+		return tab_var, nil
 	case types.Fun:
-		return "", nil
+		
+		
+		switch t.GetName(){
+		case "sum":
+			var arg1, arg2 types.Term
+			arg1 = ttype.GetArgs()[0]
+			arg2 = ttype.GetArgs()[1]
+			
+			var1,_:=termToSimplex(arg1,map_v_mv,iv)
+			var2,_:=termToSimplex(arg2,map_v_mv,iv)
+			if var1!=nil{
+				tab_var=append(tab_var,var1...)
+			} 
+			if var2!=nil{
+				tab_var=append(tab_var,var2...)
+			}
+
+			return tab_var,nil
+		case "product":
+
+			var arg1, arg2 types.Term
+			arg1 = ttype.GetArgs()[0]
+			arg2 = ttype.GetArgs()[1]
+			
+			var1,_:=termToSimplex(arg1,map_v_mv,iv)
+			var2,_:=termToSimplex(arg2,map_v_mv,iv)
+			if var1!=nil{
+				tab_var=append(tab_var,var1...)
+			} 
+			if var2!=nil{
+				tab_var=append(tab_var,var2...)
+			}
+
+			return tab_var,nil
+		
+		case "difference":
+			
+			var arg1, arg2 types.Term
+			arg1 = ttype.GetArgs()[0]
+			arg2 = ttype.GetArgs()[1]
+			
+			var1,_:=termToSimplex(arg1,map_v_mv,iv)
+			var2,_:=termToSimplex(arg2,map_v_mv,iv)
+			if var1!=nil{
+				tab_var=append(tab_var,var1...)
+			} 
+			if var2!=nil{
+				tab_var=append(tab_var,var2...)
+			}
+			
+			return tab_var,nil
+
+		
+
+		default:
+			return tab_var,nil
+		}
+		//return tab_var, nil
 	default:
 		fmt.Printf("Unexpected type in termToSimplex\n")
-		return "", errors.New("Error")
+		return tab_var, errors.New("Error")
 	}
 }
 

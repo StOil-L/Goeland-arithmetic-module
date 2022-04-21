@@ -60,6 +60,9 @@ func main() {
 	TestSimplexeRat1()
 	TestSimplexeRat2()
 	TestSimplexeRat()
+	TestSimplexeSumRat()
+	TestSimplexeBeaucoupRat()
+
 
 }
 
@@ -442,7 +445,7 @@ func TestSimplexeRat1() {
 
 func TestSimplexeRat2() {
 	fmt.Println(" -------- TEST 28 -------- ")
-	fmt.Println(" X <= 3/2 et X >= 2/3 ")
+	fmt.Println(" X <= 3/2 et Y >= 2/3 ")
 	x := types.MakerMeta("X", -1)
 	y := types.MakerMeta("Y", -1)
 	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
@@ -470,6 +473,40 @@ func TestSimplexeRat() {
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
 }
+
+func TestSimplexeSumRat() {
+	fmt.Println(" -------- TEST 28.75 -------- ")
+	fmt.Println(" X + Y = 3")
+	x := types.MakerMeta("X", -1)
+	y := types.MakerMeta("Y", -1)
+	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
+	sum := types.MakeFun(types.MakerId("sum"), []types.Term{x, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	p := types.MakePred(types.Id_eq, []types.Term{sum, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
+
+func TestSimplexeBeaucoupRat() {
+	fmt.Println(" -------- TEST 28.999 -------- ")
+	fmt.Println(" ((X + Y)-Z)*K = 3")
+	x := types.MakerMeta("X", -1)
+	y := types.MakerMeta("Y", -1)
+	z := types.MakerMeta("Z", -1)
+	k := types.MakerMeta("K", -1)
+	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
+	sum := types.MakeFun(types.MakerId("sum"), []types.Term{x, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	diff := types.MakeFun(types.MakerId("difference"), []types.Term{sum, z}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	prod := types.MakeFun(types.MakerId("product"), []types.Term{diff, k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+	p := types.MakePred(types.Id_eq, []types.Term{prod, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
 
 func TestSimplexeInt() {
 	fmt.Println(" -------- TEST 29 -------- ")
