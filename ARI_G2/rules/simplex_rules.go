@@ -159,7 +159,7 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 
 		// Si c'est un résultat décimal     
 		case typing.IsRat(ttype.GetTypeHint()):
-			res, err := funToRat(ttype)
+			res, err := FunToRat(ttype)
 			if err != nil {
 				fmt.Printf("Error in termToSimplex\n")
 				return "", err
