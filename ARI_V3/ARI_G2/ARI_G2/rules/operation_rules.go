@@ -385,9 +385,11 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 				res := newRat()
 
 				if diff >= 0.5 {
-					res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
+					//res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
+					return newRat().res.SetFloat64(math.Ceil(float64(res_1_f64)))
 				} else {
-					res = res.SetFloat64(math.Floor(float64(res_1_f64)))
+					//res = res.SetFloat64(math.Floor(float64(res_1_f64)))
+					return newRat().SetFloat64(math.Floor(float64(res_1_f64)))
 				}
 				
 				return res, nil
