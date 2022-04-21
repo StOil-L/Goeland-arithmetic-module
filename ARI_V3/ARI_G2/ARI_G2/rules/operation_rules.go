@@ -187,7 +187,11 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	// TODO : quotient_e on rat
+			// 	quo := res1.Mul(res1, new(big.Rat).Inv(res2))
+			//	if (quo.Num()).Cmp(big.NewInt(0)) == -1 {
+			//		quo = quo.Add(quo, big.NewRat(-1, 1))
+			//	}
+			//	return quo, nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient_e")
@@ -206,7 +210,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	// TODO : quotient_t on rat
+			// 	return res1.Mul(res1, new(big.Rat).Inv(res2)), nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient_t")
@@ -224,7 +228,8 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	// TODO : quotient_f on rat
+			// 	quo := res1.Mul(res1, new(big.Rat).Inv(res2))
+			//	return big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64()), nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient_f")
@@ -246,7 +251,10 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	// TODO : remainder_e on rat
+			// 	Rquotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tInt, tInt)))
+			//	quotient_e, _ := FunToRat(Rquotient_e)
+			//	rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_e))))
+			//	return rem, nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : remainder_e")
@@ -264,7 +272,10 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	// TODO : remainder_t on rat
+			// 	Rquotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tInt, tInt)))
+			//	quotient_t, _ := FunToRat(Rquotient_t)
+			//	rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_t))))
+			//	return rem, nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : remainder_t")
@@ -285,7 +296,10 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	// TODO : remainder_f on rat
+			// 	Rquotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
+			//	quotient_f, _ := FunToRat(Rquotient_f)
+			//	rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_f))))
+			//	return rem, nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : remainder_f")
