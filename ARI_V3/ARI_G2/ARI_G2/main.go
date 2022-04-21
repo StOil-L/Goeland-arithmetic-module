@@ -57,6 +57,8 @@ func main() {
 	TestParserRemainder_f()
 
 	// Tests règles simplexe
+	TestSimplexeRat1()
+	TestSimplexeRat2()
 	TestSimplexeRat()
 
 }
@@ -421,15 +423,50 @@ func TestParserRemainder_f() {
 * x >= 2/3
 * Il doit renvoyer une solution !
 **/
-func TestSimplexeRat() {
-	fmt.Println(" -------- TEST 28 -------- ")
-	fmt.Println(" X <= 3/2 et X >= 2/3 ")
+
+
+
+func TestSimplexeRat1() {
+	fmt.Println(" -------- TEST 27.5 -------- ")
+	fmt.Println(" X = 3/2 et X = 2/3 ")
 	x := types.MakerMeta("X", -1)
 	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
 	deux_tiers := types.MakerConst(types.MakerId("2/3"), tRat)
-	p1 := types.MakePred(types.MakerId("lesseq"), []types.Term{x, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	p2 := types.MakePred(types.MakerId("greateq"), []types.Term{x, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p1 := types.MakePred(types.Id_eq, []types.Term{x, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p2 := types.MakePred(types.Id_eq, []types.Term{x, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	systeme := []types.Form{p1, p2}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
+func TestSimplexeRat2() {
+	fmt.Println(" -------- TEST 28 -------- ")
+	fmt.Println(" X <= 3/2 et X >= 2/3 ")
+	x := types.MakerMeta("X", -1)
+	y := types.MakerMeta("Y", -1)
+	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
+	deux_tiers := types.MakerConst(types.MakerId("2/3"), tRat)
+	p1 := types.MakePred(types.MakerId("lesseq"), []types.Term{x, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p2 := types.MakePred(types.MakerId("greateq"), []types.Term{y, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1, p2}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+func TestSimplexeRat() {
+	fmt.Println(" -------- TEST 28.5 -------- ")
+	fmt.Println(" X <= 3/2 et Y >= 2/3  et  3/2 = Z et X = 2/3 ")
+	x := types.MakerMeta("X", -1)
+	y := types.MakerMeta("Y", -1)
+	z := types.MakerMeta("Z", -1)
+	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
+	deux_tiers := types.MakerConst(types.MakerId("2/3"), tRat)
+	p1 := types.MakePred(types.MakerId("lesseq"), []types.Term{x, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p2 := types.MakePred(types.MakerId("greateq"), []types.Term{y, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p3 := types.MakePred(types.Id_eq, []types.Term{ trois_demi, z}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p4 := types.MakePred(types.Id_eq, []types.Term{x, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1, p2, p3, p4}
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
 }

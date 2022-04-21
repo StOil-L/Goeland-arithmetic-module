@@ -79,10 +79,13 @@ func simplex([]string, []string) (bool, map[string]*big.Rat) {
 * Ca va beaucoup ressembler aux autre fonctions de parse que vous avez, sauf que là au lieu que les deux côtés soient des ints ou des rats, vous allez avoir des métavariables à convertir
 * Les deux listes qui concernent les metavariables sont à utiliser comme des pointeurs pour qu'elles puissent se construire tout au long du parsing
 **/
+
 func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []string) {
 	res_for_simplex := []string{}
 	map_variable_metavariables := make(map[string]types.Meta)
 	int_variables := []string{}
+	var tab_variable = make([]string, 0)
+	cpt:=0
 
 	for _, p := range pl {
 		switch p.GetID().GetName() {
@@ -96,9 +99,41 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				fmt.Printf("Error in normalizeForSimplex")
 				return nil, nil, nil
 			}
+			//je code svp jugez pas :p
+			cpt+=2
+			present:=false
+			var variable string
+			if t1==""{
+				variable=p.GetArgs()[1].GetName()
+			} else if t2==""{
+				variable=p.GetArgs()[0].GetName()
+			}
+			if variable!=""{
+				for i:=0;i<len(tab_variable);i++{
+					if tab_variable[i]==variable{
+						present=true
+					}
+				}
+				
+			}
+			if !present{
+				tab_variable=append(tab_variable,variable)
+			}
+			fmt.Println("t1 ", t1)
+			fmt.Println("t2 ", t2)
+			
+			// fin du :p
+
+
 			res_for_simplex = append(res_for_simplex, t1+" >= "+t2)
 			res_for_simplex = append(res_for_simplex, t2+" >= "+t1)
 		case types.Id_neq.GetName():
+
+		//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
+		//il faudrait donc faire 2 systèmes, un avec chacune des équations.. 
+		//et encore, ça ne marche que si on cherche une solution entière..
+		
+		
 		case "less":
 			// Si j'ai un <
 			// Ce qui suit est un exemple et dépend de votre format d'entrée
@@ -110,12 +145,77 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				return nil, nil, nil
 			}
 			res_for_simplex = append(res_for_simplex, "-"+t1+" > "+"-"+t2)
+		
 		case "lesseq":
+			//je code svp jugez pas :p
+			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
+			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+			if err1 != nil || err2 != nil  {
+				fmt.Printf("Error in normalizeForSimplex")
+				return nil, nil, nil
+			}
+			cpt+=1
+			fmt.Println("ici",p.GetArgs()[0].GetName())
+			present:=false
+			var variable string
+			if t1==""{
+				variable=p.GetArgs()[1].GetName()
+			} else if t2==""{
+				variable=p.GetArgs()[0].GetName()
+			}
+			if variable!=""{
+				for i:=0;i<len(tab_variable);i++{
+					if tab_variable[i]==variable{
+						present=true
+					}
+				}
+				
+			}
+			if !present{
+				tab_variable=append(tab_variable,p.GetArgs()[0].GetName())
+			}
+			// fin du :p
+
 		case "great":
+
 		case "greateq":
+			//je code svp jugez pas :p
+			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
+			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+			if err1 != nil || err2 != nil  {
+				fmt.Printf("Error in normalizeForSimplex")
+				return nil, nil, nil
+			}
+			
+			cpt+=1
+			fmt.Println("ici",p.GetArgs()[0].GetName())
+			present:=false
+			var variable string
+			if t1==""{
+				variable=p.GetArgs()[1].GetName()
+			} else if t2==""{
+				variable=p.GetArgs()[0].GetName()
+			}
+			if variable!=""{
+				for i:=0;i<len(tab_variable);i++{
+					if tab_variable[i]==variable{
+						present=true
+					}
+				}
+				
+			}
+		
+			if !present{
+				tab_variable=append(tab_variable,p.GetArgs()[0].GetName())
+			}
+			// fin du :p
+
+
 		}
 	}
-
+	fmt.Println("tab_var : ",tab_variable)
+	fmt.Println("cpt = ",cpt)
+	
 	return res_for_simplex, map_variable_metavariables, int_variables
 }
 
