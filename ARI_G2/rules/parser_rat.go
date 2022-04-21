@@ -14,6 +14,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	typing "ARI/polymorphism"
 )
 
 var zero_rat = &big.Rat{}
@@ -43,7 +44,7 @@ func termToRat(t types.Term) (*big.Rat, error) {
 
 			fmt.Printf("Error termToRat")
 		} else {
-			if res, err := funToRat(ttypes); err == nil {
+			if res, err := FunToRat(ttypes); err == nil {
 				return res, nil
 			} else {
 				return nil, err
@@ -59,9 +60,7 @@ func termToRat(t types.Term) (*big.Rat, error) {
 }
 
 // TODO : compléter la fonction
-func funToRat(f types.Fun) (*big.Rat, error) {
-	arg1 := f.GetArgs()[0]
-	arg2 := f.GetArgs()[1]
+func FunToRat(f types.Fun) (*big.Rat, error) {
 	switch f.GetID().GetName() {
 	case "sum":
 		arg1 := f.GetArgs()[0]
@@ -101,6 +100,23 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 			return nil, err2
 		}
 		return res1.Mul(res1, res2), nil
+		
+	case "quotient_e":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return nil, err1
+		}
+		res2, err2 := termToRat(arg2)
+		if err2 != nil || (res2.Cmp(zero_rat) == 0) {
+			return nil, err2
+		}
+		quo := res1.Mul(res1, new(big.Rat).Inv(res2))
+		if (quo.Num()).Cmp(big.NewInt(0)) == -1 {
+			quo = quo.Add(quo, big.NewRat(-1, 1))
+		}
+		return quo, nil
 
 	case "quotient_t":
 		arg1 := f.GetArgs()[0]
@@ -115,66 +131,89 @@ func funToRat(f types.Fun) (*big.Rat, error) {
 			return nil, err2
 		}
 		return res1.Mul(res1, new(big.Rat).Inv(res2)), nil
-	}
-
+		
+	case "quotient_f":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return nil, err1
+		}
+		res2, err2 := termToRat(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || (res2.Cmp(zero_rat) == 0) {
+			return nil, err2
+		}
+		quo := res1.Mul(res1, new(big.Rat).Inv(res2))
+		return big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64()), nil
+		
+	case "remainder_e":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return nil, err1
+		}
+		res2, err2 := termToRat(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || (res2.Cmp(zero_rat) == 0) {
+			return nil, err2
+		}
+		Rquotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tInt, tInt)))
+		quotient_e, _ := FunToRat(Rquotient_e)
+		rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_e))))
+		return rem, nil
+		
+	case "remainder_t":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return nil, err1
+		}
+		res2, err2 := termToRat(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || (res2.Cmp(zero_rat) == 0) {
+			return nil, err2
+		}
+		Rquotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tInt, tInt)))
+		quotient_t, _ := FunToRat(Rquotient_t)
+		rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_t))))
+		return rem, nil
+		
+	case "remainder_f":
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
+		res1, err1 := termToRat(arg1)
+		if err1 != nil {
+			return nil, err1
+		}
+		res2, err2 := termToRat(arg2)
+		// Rajout du cas : res2 == 0
+		if err2 != nil || (res2.Cmp(zero_rat) == 0) {
+			return nil, err2
+		}
+		Rquotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
+		quotient_f, _ := FunToRat(Rquotient_f)
+		rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_f))))
+		return rem, nil
+	
 	// Rien ne change ?
 	case "uminus":
 		arg1 := f.GetArgs()[0]
 		res1, err1 := termToRat(arg1)
 		if err1 != nil {
-			return 0, err1
+			return zero_rat, err1
 		}
-		if res1 == 0 {
-			res1 = 0
+		if res1.Num() == big.NewInt(0) {
+			res1 = zero_rat
 		} else {
-			res1 = res1 * -1
+			res1 = res1.Neg(res1)
 		}
 
 		return res1, nil
-
-	case "floor":
-		arg1 := f.GetArgs()[0]
-		res1, err1 := termToRat(arg1)
-		if err1 != nil {
-			return 0, err1
-		}
-
-		return rat(math.Floor(float64(res1))), nil	
-		
-	case "ceiling":
-		arg1 := f.GetArgs()[0]
-		res1, err1 := termToRat(arg1)
-		if err1 != nil {
-			return 0, err1
-		}
-
-		return rat(math.Ceil(float64(res1))), err1
-
-	case "truncate":
-		arg1 := f.GetArgs()[0]
-		res1, err1 := termToRat(arg1)
-		if err1 != nil {
-			return 0, err1
-		}
-		if res1 > 0 {
-			res1 = rat(math.Floor(float64(res1)))
-		} else {
-			//pas sur de ça
-			res1 = rat(math.Ceil(float64(res1)))
-		}
-
-	case "round":
-		arg1 := f.GetArgs()[0]
-		res1, err1 := termToRat(arg1)
-		if err1 != nil {
-			return 0, err1
-		}
-		if float64(res1-int(math.Floor(float64(res1)))) >= 0.5 {
-			res1 = rat(math.Ceil(float64(res1)))
-		} else {
-			res1 = rat(math.Floor(float64(res1)))
-		}
-		return res1, nil
+	
+	}
 
 	return new(big.Rat), nil
 }
