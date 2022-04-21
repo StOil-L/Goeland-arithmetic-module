@@ -13,7 +13,7 @@ import (
 var lock sync.Mutex
 
 func main() {
-	fmt.Println("choisissez le test que vous voulez executer, ajoutez 1 pour le B&B \n\n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 3 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 5 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 7 pour : x>=1/4,x<=1/5 \n 9 pour : x=1/4 \n 11 pour : construire votre matrice des coefficients et vos contraintes \n 13 pour : faire appel au parseur \n 15 pour : écrire à la main le système en utilisant le parseur\n 17 test aléatoire avec 2 variables et 2 contraintes \n 18 test aléatoire avec 2 variables et 3 contraintes \n 19 test aléatoire avec 3 variables et 3 contraintes \n exemple : l'option 1 lance le simplexe du jeu de test 1, l'option 2 lance le B&B sur le jeu de test 1")
+	fmt.Println("choisissez le test que vous voulez executer, ajoutez 1 pour le B&B \n\n 1 pour : x+y>=2,2x-y>=0,-x+2y>=1 \n 3 pour : x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4 \n 5 pour : x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4 \n 7 pour : x>=1/4,x<=1/5 \n 9 pour : x=1/4 \n 11 pour : construire votre matrice des coefficients et vos contraintes \n 13 pour : faire appel au parseur \n 15 pour : écrire à la main le système en utilisant le parseur\n 17 test aléatoire avec choix du nombre de variables et de contraintes \n exemple : l'option 1 lance le simplexe du jeu de test 1, l'option 2 lance le B&B sur le jeu de test 1")
 	var x int
 	fmt.Scanln(&x)
 	var tab_var = make([]string,0)	
@@ -661,17 +661,7 @@ func main() {
 	}
 
   if x == 17{
-    //2 variables 2 contraites
-    generateurtest(x)
-  }
-
-  if x == 18{
-    //2 variables 3 contraites
-    generateurtest(x)
-  }
-
-  if x == 19{
-    //3 variables 3 contraites
+    //Choisir le nombre de variables + de contraintes
     generateurtest(x)
   }
 }
