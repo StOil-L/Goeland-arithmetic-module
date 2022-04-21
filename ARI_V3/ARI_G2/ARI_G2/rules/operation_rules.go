@@ -362,7 +362,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 				diff := res_1_f64 - float64(int(res_1_f64))
 				res := newRat()
 
-				if diff >= 0.5 {
+				if diff.Cmp(zero_rat) >= 0.5 {
 					res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
 				} else {
 					res = res.SetFloat64(math.Floor(float64(res_1_f64)))
@@ -381,15 +381,15 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			} else {
 				res_1_f64, _ := res1.Float64()
 				// Pas sure de moi
-				diff := newRat().Sub(res_1_f64, float64(rat(res_1_f64)))
+				diff := newRat().Sub(res_1_f64, float64(int(res_1_f64)))
 				res := newRat()
 
 				if diff >= 0.5 {
-					//res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
-					return newRat().res.SetFloat64(math.Ceil(float64(res_1_f64)))
+					res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
+					//return newRat().res.SetFloat64(math.Ceil(float64(res_1_f64)))
 				} else {
-					//res = res.SetFloat64(math.Floor(float64(res_1_f64)))
-					return newRat().SetFloat64(math.Floor(float64(res_1_f64)))
+					res = res.SetFloat64(math.Floor(float64(res_1_f64)))
+					//return newRat().SetFloat64(math.Floor(float64(res_1_f64)))
 				}
 				
 				return res, nil
