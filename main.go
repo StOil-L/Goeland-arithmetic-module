@@ -56,7 +56,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tab_cont = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)
@@ -119,7 +119,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
 		var tab_cont = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)
@@ -183,7 +183,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
 		var tab_cont = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)
@@ -247,7 +247,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tab_cont = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
 		fmt.Println("x>=1/4,x<=1/5")
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)
@@ -311,7 +311,7 @@ func main() {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tab_cont = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
 		fmt.Println("x=1/4")
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)
@@ -449,7 +449,7 @@ func main() {
 		}
 
 		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tab_cont)
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)
@@ -527,7 +527,7 @@ func main() {
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)
@@ -631,7 +631,7 @@ func main() {
         fmt.Println("tableau = ",tableau)
         fmt.Println("tab_cont = ",tab_cont)
         fmt.Println("tab_var = ",tab_var)
-		channel := make(chan bAndB)
+		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
 	alpha_tab := create_alpha_tab(tableau, tab_var)

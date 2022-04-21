@@ -10,9 +10,7 @@ import (
  * This function applies the main logic of the simplex algorithm (without objective function).
  * It takes the following parameters:
  *   - `system`, a struct containing all information about the system
- *   - `incremental_coef`,
- *	 - `incremental_aff`,
- * It returns an affectation that satisfies the constraints. 
+ * It returns the system that contain an affectation that satisfies the constraints. 
  * In case the system has no solutions, the boolean return value is set to false.
  **/
 func Simplexe(system info_system) (info_system, bool){
@@ -98,6 +96,14 @@ func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab 
 	return -1
 }
 
+/**
+ * This function search if a variable is out of the base
+ * It takes the following parameters:
+ *   - `tab_cont`, an array containing the constraints, tab_cont[0] contains the constraint of the first line of the matrice
+ * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
+ *	 - `nom_var`, a string which is the variable whose we check if it's out of the base
+ * It return the true if the variable is out of the base else it return false
+ **/
 func checkContHorsBase(tab_cont []*big.Rat, pos_var_tab []string, nom_var string) bool{
 	for _, variable := range pos_var_tab[:len(tab_cont)]  {
 		if variable == nom_var {
@@ -113,7 +119,8 @@ func checkContHorsBase(tab_cont []*big.Rat, pos_var_tab []string, nom_var string
  * It takes the following parameters:
  *   - `system`, a struct containing all information about the system
  * 	 - `pivot_line`, an int which indacate the pivot line in `tab_coef`
- * It return the line of the pivot
+ * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
+ * It return the line of the pivot with the update system
  * If any pivot is found, return -1
  **/
 func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_system, int){
@@ -179,10 +186,10 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 /** 
  * This function update tab_coef.
  * It takes the following parameters:
- *   - `tab_coef`, the matrice with the normalized inequations
+ *   - `system`, a struct containing all information about the system
  *   - `colonne_pivot`, column of the matrice where the pivot occur
  *   - `ligne_pivot`, line of the matrice where the pivot occur
- *   - `incremental_coef`,
+ * It return the update system
  **/
 func updateMatrice(system info_system, colonne_pivot int, ligne_pivot int) (info_system){
 	
@@ -225,11 +232,10 @@ func updateMatrice(system info_system, colonne_pivot int, ligne_pivot int) (info
 /** 
  * This function update alpha_tab.
  * It takes the following parameters:
- *   - `tab_coef`, the matrice with the normalized inequations
+ *   - `system`, a struct containing all information about the system
  *   - `ligne_pivot`, line of the matrice where the pivot occur
- * 	 - `alpha_tab`, a map associating the name of the variable and his alpha value
  * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
- *   - `incremental_aff`,
+ * It return the update system
  **/
 func updateAlpha(system info_system, ligne_pivot int, pos_var_tab []string) (info_system){
 

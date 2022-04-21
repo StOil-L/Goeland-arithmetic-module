@@ -9,19 +9,12 @@ import (
 /** 
  * This function applies the main logic of the branch and bound algorithm
  * It takes the following parameters:
- *	 - `solution`, solution of the system of equation return by the simplex in other way, it's `alpah_tab`
  *	 - `gotSol`, a boolean return by the simplex saying if the simplex find a solution
- *   - `tab_nom_var`, an array of the system's starting variable
- *   - `tab_coef`, the matrice with the normalized inequations
- *   - `tab_cont`, an array containing the constraints, tab_cont[0] contains the constraint of the first line of the matrice
- *   - `channel`, 
- *   - `incremental_coef`,
- *	 - `incremental_aff`,
- * 	 - `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
- * 	 - `bland`, an array containing the Bland order of variable
+ *   - `channel`, a channel that will permit to receive information from goroutine
+ *   - `system`, a struct containing all information about the system
  * It returns a boolean which says if it exist a solution and the `alpha_tab` which represent the solution of the system
  **/
-func Branch_bound(gotSol bool, channel chan bAndB, system info_system) (map[string]*big.Rat, bool){
+func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system) (map[string]*big.Rat, bool){
 
 	fmt.Println("\033[0m ") 
 	
@@ -33,13 +26,13 @@ func Branch_bound(gotSol bool, channel chan bAndB, system info_system) (map[stri
     } else if (solutionEntiere){
         return system.alpha_tab, true
     }
-	go goBandB(false, channel, index, system)
-	go goBandB(true, channel, index, system)
+	go go_branch_and_bound(false, channel, index, system)
+	go go_branch_and_bound(true, channel, index, system)
 	
-	stBAndB := <- channel
-	if(!stBAndB.solBoolStr){
-		stBAndB = <- channel
-		if(stBAndB.solBoolStr){
+	str_bandb := <- channel
+	if(!str_bandb.solBoolStr){
+		str_bandb = <- channel
+		if(str_bandb.solBoolStr){
 			close(channel)
 		}
 	} else {
@@ -50,17 +43,17 @@ func Branch_bound(gotSol bool, channel chan bAndB, system info_system) (map[stri
 				close(channel)
 		}
 	}
-    return stBAndB.solStr, stBAndB.solBoolStr
+    return str_bandb.solStr, str_bandb.solBoolStr
 }
 
-func goBandB(inf_sup bool, channel chan bAndB, index int, system info_system) {
+func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int, system info_system) {
 	select {
 		case <- channel :
 			return
 		default :
 			var tab_coef_bis [][]*big.Rat
 			var tab_cont_bis []*big.Rat
-			channelBis := make(chan bAndB)
+			channelBis := make(chan branch_and_bound)
 			//Copie de tableau et du tableau de contrainte
 			tab_cont_bis = deepCopyTableau(system.tab_cont)
 			tab_coef_bis = deepCopyMatrice(system.tab_coef)
@@ -102,9 +95,9 @@ func goBandB(inf_sup bool, channel chan bAndB, index int, system info_system) {
 
 			sol, solBool := Branch_bound(gotSol, channelBis, system)
 
-			stBAndB := bAndB{solBoolStr: solBool, solStr: sol}
+			str_bandb := branch_and_bound{solBoolStr: solBool, solStr: sol}
 			select {
-				case channel <- stBAndB:
+				case channel <- str_bandb:
 				case <- channel:
 			}
 	}
