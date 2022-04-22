@@ -308,6 +308,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 		switch f.GetTypeHint() {
 		case tInt, tRat:
 			if res1, err := checkError1Arg(arg1); err != nil {
+				fmt.Println("je passe ici? ")
 				return zero_rat, err
 			} else {
 				if res1 == zero_rat {

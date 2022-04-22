@@ -129,11 +129,11 @@ func TestUminusNegInt() {
 func TestUminusRat() {
 	fmt.Println(" -------- TEST Uminus Rat -------- ")
 	fmt.Println(" 4.5  devient -4.5 ")
-	moins_quatre_cinq := types.MakerConst(types.MakerId("4.5"),tRat) 
-	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{moins_quatre_cinq}, tRat)
+	quatre_cinq := types.MakerConst(types.MakerId("9/2"),tRat) 
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{quatre_cinq}, tRat)
 	solution,_:=ari.EvaluateFun(uminus)
 	fmt.Println("solution = ", solution) 
-
+}
 func TestUminusNegRat() {
 	fmt.Println(" -------- TEST Uminus Neg Rat -------- ")
 	fmt.Println(" -4.5  devient 4.5 ")
@@ -168,7 +168,7 @@ func TestFloorRat() {
 	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{moins_quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(floor)
 	fmt.Println("solution = ", solution) 
-
+}
 func TestFloorNegRat() {
 	fmt.Println(" -------- TEST Floor Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -4 ")
@@ -203,7 +203,7 @@ func TestCeilingRat() {
 	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{moins_quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(ceiling)
 	fmt.Println("solution = ", solution) 
-
+}
 func TestCeilingNegRat() {
 	fmt.Println(" -------- TEST Ceiling Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -5 ")
@@ -238,7 +238,7 @@ func TestTruncateRat() {
 	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(truncate)
 	fmt.Println("solution = ", solution) 
-
+}
 func TestTruncateNegRat() {
 	fmt.Println(" -------- TEST Truncate Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -4 ")
@@ -273,7 +273,7 @@ func TestRoundRat() {
 	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(round)
 	fmt.Println("solution = ", solution) 
-
+}
 func TestRoundNegRat() {
 	fmt.Println(" -------- TEST Round Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -4 ")
