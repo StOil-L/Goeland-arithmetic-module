@@ -164,15 +164,15 @@ func TestFloorNegInt() {
 func TestFloorRat() {
 	fmt.Println(" -------- TEST Floor Rat -------- ")
 	fmt.Println(" 4.7  devient 5.0 ")
-	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
-	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{moins_quatre_sept}, tRat)
+	quatre_sept := types.MakerConst(types.MakerId("47/10"),tRat) 
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(floor)
 	fmt.Println("solution = ", solution) 
 }
 func TestFloorNegRat() {
 	fmt.Println(" -------- TEST Floor Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -4 ")
-	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	moins_quatre_deux := types.MakerConst(types.MakerId("-21/5"),tRat) 
 	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{moins_quatre_deux}, tRat)
 	solution,_:=ari.EvaluateFun(floor)
 	fmt.Println("solution = ", solution) 
@@ -199,7 +199,7 @@ func TestCeilingNegInt() {
 func TestCeilingRat() {
 	fmt.Println(" -------- TEST Ceiling Rat -------- ")
 	fmt.Println(" 4.7  devient 4.0 ")
-	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
+	quatre_sept := types.MakerConst(types.MakerId("47/10"),tRat) 
 	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{moins_quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(ceiling)
 	fmt.Println("solution = ", solution) 
@@ -207,7 +207,7 @@ func TestCeilingRat() {
 func TestCeilingNegRat() {
 	fmt.Println(" -------- TEST Ceiling Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -5 ")
-	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	moins_quatre_deux := types.MakerConst(types.MakerId("-21/5"),tRat) 
 	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{moins_quatre_deux}, tRat)
 	solution,_:=ari.EvaluateFun(ceiling)
 	fmt.Println("solution = ", solution) 
@@ -234,15 +234,15 @@ func TestTruncateNegInt() {
 func TestTruncateRat() {
 	fmt.Println(" -------- TEST Truncate Rat -------- ")
 	fmt.Println(" 4.7  devient 4.0 ")
-	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
-	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_quatre_sept}, tRat)
+	quatre_sept := types.MakerConst(types.MakerId("47/10"),tRat) 
+	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(truncate)
 	fmt.Println("solution = ", solution) 
 }
 func TestTruncateNegRat() {
 	fmt.Println(" -------- TEST Truncate Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -4 ")
-	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	moins_quatre_deux := types.MakerConst(types.MakerId("-21/5"),tRat) 
 	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_quatre_deux}, tRat)
 	solution,_:=ari.EvaluateFun(truncate)
 	fmt.Println("solution = ", solution) 
@@ -269,15 +269,15 @@ func TestRoundNegInt() {
 func TestRoundRat() {
 	fmt.Println(" -------- TEST Round Rat -------- ")
 	fmt.Println(" 4.7  devient 5.0 ")
-	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
-	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_quatre_sept}, tRat)
+	quatre_sept := types.MakerConst(types.MakerId("47/10"),tRat) 
+	round := types.MakerFun(types.MakerId("round"),[]types.Term{quatre_sept}, tRat)
 	solution,_:=ari.EvaluateFun(round)
 	fmt.Println("solution = ", solution) 
 }
 func TestRoundNegRat() {
 	fmt.Println(" -------- TEST Round Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -4 ")
-	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	moins_quatre_deux := types.MakerConst(types.MakerId("-21/5"),tRat) 
 	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_quatre_deux}, tRat)
 	solution,_:=ari.EvaluateFun(round)
 	fmt.Println("solution = ", solution) 
