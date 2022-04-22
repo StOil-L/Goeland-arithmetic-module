@@ -64,9 +64,27 @@ func main() {
 	TestSimplexeBeaucoupRat()
 
 
-	//Tests fonctions unaires
+	//Tests fonctions unaires 
 	TestUminusInt()
 	TestUminusNegInt()
+	TestUminusNegRat() 
+	TestUminusRat() 
+	TestFloorInt()
+	TestFloorNegInt()
+	TestFloorNegRat() 
+	TestFloorRat()
+	TestCeilingInt()
+	TestCeilingNegInt()
+	TestCeilingNegRat() 
+	TestCeilingRat()
+	TestTruncateInt()
+	TestTruncateNegInt()
+	TestTruncateNegRat() 
+	TestTruncateRat() 
+	TestRoundInt()
+	TestRoundNegInt()
+	TestRoundNegRat() 
+	TestRoundRat()
 }
 
 /*** Test création de termes ***/
@@ -87,44 +105,184 @@ func TestInt() {
 	fmt.Printf("%v\n", p.ToString())
 }
 
-//en haut on a un test sum, on va s'en inspirer pour faire le test uminus
-
-//J'écris ton prénom ici pour que tu retrouve la ligne avec ctrl-f margaux, Margaux  (oui je sais que tu vas te gourrer avec ou sans majuscule)
 func TestUminusInt() {
-	fmt.Println(" -------- TEST Uminus -------- ")
+	fmt.Println(" -------- TEST Uminus Int -------- ")
 	fmt.Println(" 4  devient -4 ")
-	//on veut créer le nombre 4 !
-	//types c'est le dossier ou il y a maker.go
-	//MakerConst ça veut dire constructeur de constante ^^
-	//l'ID c'est la vie !  
-	quatre := types.MakerConst(types.MakerId("4"),tInt) //tInt ça veut dire que 4 est un entier
+	quatre := types.MakerConst(types.MakerId("4"),tInt) 
 	//MakerFun c'est pour créer la fonction type uminus ^^
 	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{quatre}, tInt)
-//j'ai oublié qu'on peut recevoir une erreur xD
 	solution,_:=ari.EvaluateFun(uminus)
 	fmt.Println("solution = ", solution) 
-
 	//MkTypeCross c'est le produit cartésien, en gros c'est pour les opérations binaire, je pense que nous il nous suffit de mettre MkTypeArrow dans le prédicat.
 	//arrow c'est juste pour la flèche : genre   f(x) -> 2x  ^^
 }
 
 func TestUminusNegInt() {
-	fmt.Println(" -------- TEST Uminus -------- ")
+	fmt.Println(" -------- TEST Uminus Neg Int -------- ")
 	fmt.Println(" -4  devient 4 ")
-	//on veut créer le nombre 4 !
-	//types c'est le dossier ou il y a maker.go
-	//MakerConst ça veut dire constructeur de constante ^^
-	//l'ID c'est la vie !  
-	moins_quatre := types.MakerConst(types.MakerId("-4"),tInt) //tInt ça veut dire que 4 est un entier
-	//MakerFun c'est pour créer la fonction type uminus ^^
+	moins_quatre := types.MakerConst(types.MakerId("-4"),tInt) 
 	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{moins_quatre}, tInt)
-//j'ai oublié qu'on peut recevoir une erreur xD
+	solution,_:=ari.EvaluateFun(uminus)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestUminusRat() {
+	fmt.Println(" -------- TEST Uminus Rat -------- ")
+	fmt.Println(" 4.5  devient -4.5 ")
+	moins_quatre_cinq := types.MakerConst(types.MakerId("4.5"),tRat) 
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{moins_quatre_cinq}, tRat)
 	solution,_:=ari.EvaluateFun(uminus)
 	fmt.Println("solution = ", solution) 
 
-	//MkTypeCross c'est le produit cartésien, en gros c'est pour les opérations binaire, je pense que nous il nous suffit de mettre MkTypeArrow dans le prédicat.
-	//arrow c'est juste pour la flèche : genre   f(x) -> 2x  ^^
+func TestUminusNegRat() {
+	fmt.Println(" -------- TEST Uminus Neg Rat -------- ")
+	fmt.Println(" -4.5  devient 4.5 ")
+	moins_quatre_cinq := types.MakerConst(types.MakerId("-4.5"),tRat) 
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{moins_quatre_cinq}, tRat)
+	solution,_:=ari.EvaluateFun(uminus)
+	fmt.Println("solution = ", solution) 
 }
+
+func TestFloorInt() {
+	fmt.Println(" -------- TEST Floor Int -------- ")
+	fmt.Println(" 4  devient 4 ")
+	quatre := types.MakerConst(types.MakerId("4"),tInt)
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{quatre}, tInt)
+	solution,_:=ari.EvaluateFun(floor)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestFloorNegInt() {
+	fmt.Println(" -------- TEST Floor Neg Int -------- ")
+	fmt.Println(" -4  devient -4 ")
+	moins_quatre := types.MakerConst(types.MakerId("-4"),tInt) 
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{moins_quatre}, tInt)
+	solution,_:=ari.EvaluateFun(floor)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestFloorRat() {
+	fmt.Println(" -------- TEST Floor Rat -------- ")
+	fmt.Println(" 4.7  devient 5.0 ")
+	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{moins_quatre_sept}, tRat)
+	solution,_:=ari.EvaluateFun(floor)
+	fmt.Println("solution = ", solution) 
+
+func TestFloorNegRat() {
+	fmt.Println(" -------- TEST Floor Neg Rat -------- ")
+	fmt.Println(" -4.2  devient -4 ")
+	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{moins_quatre_deux}, tRat)
+	solution,_:=ari.EvaluateFun(floor)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestCeilingInt() {
+	fmt.Println(" -------- TEST Ceiling Int -------- ")
+	fmt.Println(" 4  devient 4 ")
+	quatre := types.MakerConst(types.MakerId("4"),tInt)
+	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{quatre}, tInt)
+	solution,_:=ari.EvaluateFun(ceiling)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestCeilingNegInt() {
+	fmt.Println(" -------- TEST Ceiling Neg Int -------- ")
+	fmt.Println(" -4  devient -4 ")
+	moins_quatre := types.MakerConst(types.MakerId("-4"),tInt) 
+	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{moins_quatre}, tInt)
+	solution,_:=ari.EvaluateFun(ceiling)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestCeilingRat() {
+	fmt.Println(" -------- TEST Ceiling Rat -------- ")
+	fmt.Println(" 4.7  devient 4.0 ")
+	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
+	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{moins_quatre_sept}, tRat)
+	solution,_:=ari.EvaluateFun(ceiling)
+	fmt.Println("solution = ", solution) 
+
+func TestCeilingNegRat() {
+	fmt.Println(" -------- TEST Ceiling Neg Rat -------- ")
+	fmt.Println(" -4.2  devient -5 ")
+	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{moins_quatre_deux}, tRat)
+	solution,_:=ari.EvaluateFun(ceiling)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestTruncateInt() {
+	fmt.Println(" -------- TEST Truncate Int -------- ")
+	fmt.Println(" 4  devient 4 ")
+	quatre := types.MakerConst(types.MakerId("4"),tInt)
+	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{quatre}, tInt)
+	solution,_:=ari.EvaluateFun(truncate)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestTruncateNegInt() {
+	fmt.Println(" -------- TEST Truncate Neg Int -------- ")
+	fmt.Println(" -4  devient -4 ")
+	moins_quatre := types.MakerConst(types.MakerId("-4"),tInt) 
+	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_quatre}, tInt)
+	solution,_:=ari.EvaluateFun(truncate)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestTruncateRat() {
+	fmt.Println(" -------- TEST Truncate Rat -------- ")
+	fmt.Println(" 4.7  devient 4.0 ")
+	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
+	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_quatre_sept}, tRat)
+	solution,_:=ari.EvaluateFun(truncate)
+	fmt.Println("solution = ", solution) 
+
+func TestTruncateNegRat() {
+	fmt.Println(" -------- TEST Truncate Neg Rat -------- ")
+	fmt.Println(" -4.2  devient -4 ")
+	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_quatre_deux}, tRat)
+	solution,_:=ari.EvaluateFun(truncate)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestRoundInt() {
+	fmt.Println(" -------- TEST Round Int -------- ")
+	fmt.Println(" 4  devient 4 ")
+	quatre := types.MakerConst(types.MakerId("4"),tInt)
+	round := types.MakerFun(types.MakerId("round"),[]types.Term{quatre}, tInt)
+	solution,_:=ari.EvaluateFun(round)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestRoundNegInt() {
+	fmt.Println(" -------- TEST Round Neg Int -------- ")
+	fmt.Println(" -4  devient -4 ")
+	moins_quatre := types.MakerConst(types.MakerId("-4"),tInt) 
+	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_quatre}, tInt)
+	solution,_:=ari.EvaluateFun(round)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestRoundRat() {
+	fmt.Println(" -------- TEST Round Rat -------- ")
+	fmt.Println(" 4.7  devient 5.0 ")
+	moins_quatre_sept := types.MakerConst(types.MakerId("4.7"),tRat) 
+	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_quatre_sept}, tRat)
+	solution,_:=ari.EvaluateFun(round)
+	fmt.Println("solution = ", solution) 
+
+func TestRoundNegRat() {
+	fmt.Println(" -------- TEST Round Neg Rat -------- ")
+	fmt.Println(" -4.2  devient -4 ")
+	moins_quatre_deux := types.MakerConst(types.MakerId("-4.2"),tRat) 
+	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_quatre_deux}, tRat)
+	solution,_:=ari.EvaluateFun(round)
+	fmt.Println("solution = ", solution) 
+}
+
 
 
 /* Tests RAT */
