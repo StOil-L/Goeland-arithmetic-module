@@ -12,13 +12,14 @@ import (
  *	 - `gotSol`, a boolean return by the simplex saying if the simplex find a solution
  *   - `channel`, a channel that will permit to receive information from goroutine
  *   - `system`, a struct containing all information about the system
+ * 	 - `tab_rat_bool`, an array of bool that say if we want a rationnal or a integer for the variable
  * It returns a boolean which says if it exist a solution and the `alpha_tab` which represent the solution of the system
  **/
-func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system) (map[string]*big.Rat, bool){
+func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system, tab_rat_bool []bool) (map[string]*big.Rat, bool){
 
 	fmt.Println("\033[0m ") 
 	
-	solutionEntiere,index:=estSol(system.alpha_tab,system.tab_nom_var)
+	solutionEntiere,index:=estSol(system.alpha_tab,system.tab_nom_var, tab_rat_bool)
 	
 	//Cas d'arret si solution est fait seulement d'entier
 	if (!gotSol) {
@@ -26,8 +27,8 @@ func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system
     } else if (solutionEntiere){
         return system.alpha_tab, true
     }
-	go go_branch_and_bound(false, channel, index, system)
-	go go_branch_and_bound(true, channel, index, system)
+	go go_branch_and_bound(false, channel, index, system, tab_rat_bool)
+	go go_branch_and_bound(true, channel, index, system, tab_rat_bool)
 	
 	str_bandb := <- channel
 	if(!str_bandb.solBoolStr){
@@ -46,7 +47,7 @@ func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system
     return str_bandb.solStr, str_bandb.solBoolStr
 }
 
-func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int, system info_system) {
+func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int, system info_system, tab_rat_bool []bool) {
 	select {
 		case <- channel :
 			return
@@ -93,7 +94,7 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
 
 			system, gotSol := Simplexe(system)
 
-			sol, solBool := Branch_bound(gotSol, channelBis, system)
+			sol, solBool := Branch_bound(gotSol, channelBis, system, tab_rat_bool)
 
 			str_bandb := branch_and_bound{solBoolStr: solBool, solStr: sol}
 			select {
@@ -108,18 +109,16 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
  * It takes the following parameters:
  * 	 - `solution`, a map associating the name of the variable and his alpha value
  *   - `tab_nom_var`, an array of the system's starting variable
+ * 	 - `tab_rat_bool`, an array of bool that say if we want a rationnal or a integer for the variable
  * It returns a boolean which inform of the solution is natural and the index of the decimal number in `solution` if there is one
  **/
-func estSol(solution map[string]*big.Rat, tab_nom_var []string) (bool,int){
-	index:=0
-	for ( index < len(tab_nom_var) && solution[tab_nom_var[index]].IsInt()){
-		index+=1
+func estSol(solution map[string]*big.Rat, tab_nom_var []string, tab_rat_bool []bool) (bool,int){
+	for i:=0;i<len(tab_nom_var);i++ {
+		if tab_rat_bool[i] && !solution[tab_nom_var[i]].IsInt() {
+			return false, i
+		}
 	}
-	if index < len(tab_nom_var){
-			return false,index
-	}
-	fmt.Printf("test %d \n", len(tab_nom_var))
-	return true,index
+	return true, -1
 }
 
 /** 

@@ -55,6 +55,7 @@ func main() {
 	if x==2 {
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(2,1),big.NewRat(-1,1)}, {big.NewRat(-1,1),big.NewRat(2,1)}} //[]*big.Rat{big.NewRat(1,1),new(big.Rat),big.NewRat(1,1)}
 		var tab_cont = []*big.Rat{big.NewRat(2,1),new(big.Rat),big.NewRat(1,1)}
+		var tab_rat_bool = []bool{true, true};
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
 		channel := make(chan branch_and_bound)
 
@@ -82,7 +83,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 	}
 	if x==3{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
@@ -118,6 +119,7 @@ func main() {
 	if x==4{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(1,1)}}
 		var tab_cont = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
+		var tab_rat_bool = []bool{true, true};
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
 		channel := make(chan branch_and_bound)
 
@@ -145,7 +147,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 	}
 	if x==5{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
@@ -182,6 +184,7 @@ func main() {
 	if x==6{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1),big.NewRat(1,1)}, {big.NewRat(1,1),big.NewRat(2,1)}, {big.NewRat(1,1),big.NewRat(3,1)}, {big.NewRat(1,1),big.NewRat(4,1)}, {big.NewRat(1,1),big.NewRat(5,1)}}
 		var tab_cont = []*big.Rat{new(big.Rat),big.NewRat(1,1),big.NewRat(2,1),big.NewRat(3,1),big.NewRat(4,1)}
+		var tab_rat_bool = []bool{true, true};
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
 		channel := make(chan branch_and_bound)
 
@@ -209,7 +212,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 	}
 	if x==7{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
@@ -246,6 +249,7 @@ func main() {
 	if x==8{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tab_cont = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,5)}
+		var tab_rat_bool = []bool{true};
 		fmt.Println("x>=1/4,x<=1/5")
 		channel := make(chan branch_and_bound)
 
@@ -273,7 +277,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 	}
 	if x==9{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
@@ -310,6 +314,7 @@ func main() {
 	if x==10{
 		var tableau = [][]*big.Rat{{big.NewRat(1,1)}, {big.NewRat(-1,1)}}
 		var tab_cont = []*big.Rat{big.NewRat(1,4),big.NewRat(-1,4)}
+		var tab_rat_bool = []bool{true};
 		fmt.Println("x=1/4")
 		channel := make(chan branch_and_bound)
 
@@ -337,7 +342,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 	}
 
 	if x==11{
@@ -416,9 +421,10 @@ func main() {
 		fmt.Scanln(&ligne)
 		fmt.Println("veuillez saisir le nombre de colonnes de la matrice des coefficients")
 		fmt.Scanln(&colonne)
+		var tab_rat_bool = make([]bool, colonne)
 		var tableau= make([][]*big.Rat, ligne)
 		for j:=0; j<ligne;j++{
-			tableau[j]=make([]*big.Rat,colonne)
+			tableau[j] = make([]*big.Rat,colonne)
 		}
 		cpt:=0
 		cpt2:=0
@@ -464,6 +470,7 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_rat_bool[i] = true
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -475,7 +482,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 		
 	}
 	fmt.Println("\033[0m")
@@ -521,6 +528,7 @@ func main() {
         var tableau = make([][]*big.Rat,0) 
         var tab_cont = make([]*big.Rat,0)
         var tab_var = make([]string,0)
+        var tab_rat_bool = []bool{true, true, true, true};
         var tabExe = []string{"20 t - x + y -18 z >= 8","0 t -5 x + y -0 z >= 5","-7 t +3 x +5 y + z >= 33"}
         
         tableau, tab_cont, tab_var = addAllConst(tabExe, tableau, tab_cont, tab_var)
@@ -553,7 +561,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 		
 	}
 
@@ -643,9 +651,10 @@ func main() {
 	for i:=0;i<len(tableau);i++ {
 		bland[i+len(tableau[0])]=pos_var_tab[i]
 	}
-	
+	var tab_rat_bool = make([]bool, len(tableau[0]))
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_rat_bool[i] = true
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -657,7 +666,7 @@ func main() {
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
 		system, gotSol := Simplexe(system)
-		fmt.Println(Branch_bound(gotSol, channel, system))
+		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
 	}
 }
 
