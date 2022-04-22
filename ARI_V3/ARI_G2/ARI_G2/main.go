@@ -64,6 +64,9 @@ func main() {
 	TestSimplexeBeaucoupRat()
 
 
+	//Tests fonctions unaires
+	TestUminusInt()
+	TestUminusNegInt()
 }
 
 /*** Test création de termes ***/
@@ -83,6 +86,46 @@ func TestInt() {
 	p := types.MakePred(types.Id_eq, []types.Term{sum, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
+
+//en haut on a un test sum, on va s'en inspirer pour faire le test uminus
+
+//J'écris ton prénom ici pour que tu retrouve la ligne avec ctrl-f margaux, Margaux  (oui je sais que tu vas te gourrer avec ou sans majuscule)
+func TestUminusInt() {
+	fmt.Println(" -------- TEST Uminus -------- ")
+	fmt.Println(" 4  devient -4 ")
+	//on veut créer le nombre 4 !
+	//types c'est le dossier ou il y a maker.go
+	//MakerConst ça veut dire constructeur de constante ^^
+	//l'ID c'est la vie !  
+	quatre := types.MakerConst(types.MakerId("4"),tInt) //tInt ça veut dire que 4 est un entier
+	//MakerFun c'est pour créer la fonction type uminus ^^
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{quatre}, tInt)
+//j'ai oublié qu'on peut recevoir une erreur xD
+	solution,_:=ari.EvaluateFun(uminus)
+	fmt.Println("solution = ", solution) 
+
+	//MkTypeCross c'est le produit cartésien, en gros c'est pour les opérations binaire, je pense que nous il nous suffit de mettre MkTypeArrow dans le prédicat.
+	//arrow c'est juste pour la flèche : genre   f(x) -> 2x  ^^
+}
+
+func TestUminusNegInt() {
+	fmt.Println(" -------- TEST Uminus -------- ")
+	fmt.Println(" -4  devient 4 ")
+	//on veut créer le nombre 4 !
+	//types c'est le dossier ou il y a maker.go
+	//MakerConst ça veut dire constructeur de constante ^^
+	//l'ID c'est la vie !  
+	moins_quatre := types.MakerConst(types.MakerId("-4"),tInt) //tInt ça veut dire que 4 est un entier
+	//MakerFun c'est pour créer la fonction type uminus ^^
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{moins_quatre}, tInt)
+//j'ai oublié qu'on peut recevoir une erreur xD
+	solution,_:=ari.EvaluateFun(uminus)
+	fmt.Println("solution = ", solution) 
+
+	//MkTypeCross c'est le produit cartésien, en gros c'est pour les opérations binaire, je pense que nous il nous suffit de mettre MkTypeArrow dans le prédicat.
+	//arrow c'est juste pour la flèche : genre   f(x) -> 2x  ^^
+}
+
 
 /* Tests RAT */
 
@@ -491,8 +534,8 @@ func TestSimplexeSumRat() {
 
 func TestSimplexeBeaucoupRat() {
 	fmt.Println(" -------- TEST 28.999 -------- ")
-	fmt.Println(" ((X + Y)-Z)*K = 3")
-	x := types.MakerMeta("X", -1)
+	fmt.Println(" (((((X + Y)-Z)*K)+Y)-Z)*K) = 3")
+	x := types.MakerMeta("X_0__", -1)
 	y := types.MakerMeta("Y", -1)
 	z := types.MakerMeta("Z", -1)
 	k := types.MakerMeta("K", -1)
@@ -500,7 +543,10 @@ func TestSimplexeBeaucoupRat() {
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{x, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
 	diff := types.MakeFun(types.MakerId("difference"), []types.Term{sum, z}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
 	prod := types.MakeFun(types.MakerId("product"), []types.Term{diff, k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{prod, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	sum2 := types.MakeFun(types.MakerId("sum"), []types.Term{prod, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	diff2 := types.MakeFun(types.MakerId("difference"), []types.Term{sum2, z}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	prod2 := types.MakeFun(types.MakerId("product"), []types.Term{diff2, k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+	p := types.MakePred(types.Id_eq, []types.Term{prod2, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	systeme := []types.Form{p}
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())

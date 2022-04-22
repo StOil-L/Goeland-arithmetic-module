@@ -317,6 +317,8 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 				}
 			}
 		default:
+			fmt.Println("suis-je arrivé ici? ")
+
 			return zero_rat, errors.New("Error in evaluate : uminus")
 		}
 	// Pour les cas suivants, je regroupe tout en un cas car les opérations sont les memes

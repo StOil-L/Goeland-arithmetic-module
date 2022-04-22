@@ -86,207 +86,203 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 	int_variables := []string{}
 	var tab_variable = make([]string, 0)
 	cpt:=0
-
-	for _, p := range pl {
-		switch p.GetID().GetName() {
-		case types.Id_eq.GetName():
-			// si j'ai une égalité
-			// Ce qui suit est un exemple et dépend de votre format d'entrée
-			// ici je dis que si j'ai par exemple x = 2 alors je transforme ça en x >= 2 et 2 >= x
-			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-			if err1 != nil || err2 != nil {
-				fmt.Printf("Error in normalizeForSimplex")
-				return nil, nil, nil
-			}
-			//je code svp jugez pas :p
-			cpt+=2
-			present:=false
-			var variable string
-			fmt.Println("variable =",variable)
-			
-			if len(t1)==0 && t2!=nil{
-				for i:=0;i<len(t2);i++{
-					variable=t2[i][0:1]
-					present=false
-					fmt.Println("variable2 =",variable)
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable{
-							present=true
+	//passe:=0
+	passe:=2
+	for passe<3{
+		for _, p := range pl {
+			switch p.GetID().GetName() {
+			case types.Id_eq.GetName():
+				// si j'ai une égalité
+				// Ce qui suit est un exemple et dépend de votre format d'entrée
+				// ici je dis que si j'ai par exemple x = 2 alors je transforme ça en x >= 2 et 2 >= x
+				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
+				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+				if err1 != nil || err2 != nil {
+					fmt.Printf("Error in normalizeForSimplex")
+					return nil, nil, nil
+				}
+				cpt+=2
+				//je code svp jugez pas :p
+				present:=false
+				if len(t1)==0 && t2!=nil{
+					for i:=0;i<len(t2);i++{
+						variable := p.GetArgs()[1].GetMetas()[i]
+						present=false
+						fmt.Println("variable2 =",variable.GetName())
+						for i:=0;i<len(tab_variable);i++{
+							if tab_variable[i]==variable.GetName(){
+								present=true
+							}
 						}
+						if !present{
+							tab_variable=append(tab_variable,variable.GetName())
+						}
+					
+
 					}
-					if !present{
-						tab_variable=append(tab_variable,variable)
+					
+				} else if t1!=nil && len(t2)==0{
+					for i:=0;i<len(t1);i++{
+						variable := p.GetArgs()[0].GetMetas()[i]
+						present=false
+						fmt.Println("variable1 =",variable.GetName())
+						for i:=0;i<len(tab_variable);i++{
+							if tab_variable[i]==variable.GetName(){
+								present=true
+							}
+						}
+						if !present{
+							tab_variable=append(tab_variable,variable.GetName())
+						}
+					
+
 					}
 				
-
 				}
 				
-			} else if t1!=nil && len(t2)==0{
-				for i:=0;i<len(t1);i++{
-					variable=t1[i][0:1]
-					present=false
-					fmt.Println("variable1 =",variable)
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable{
-							present=true
+				fmt.Println("t1 ", t1)
+				fmt.Println("t2 ", t2)
+				
+				// fin du :p
+
+				res_for_simplex = append(res_for_simplex," >= ")
+				res_for_simplex = append(res_for_simplex, " >= ")
+			case types.Id_neq.GetName():
+
+			//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
+			//il faudrait donc faire 2 systèmes, un avec chacune des équations.. 
+			//et encore, ça ne marche que si on cherche une solution entière..
+			
+			
+			case "less":
+				// Si j'ai un <
+				// Ce qui suit est un exemple et dépend de votre format d'entrée
+				// cas x < 3 ou sum(x, y) < 4 par exemple, et vous voulez le transformer en -x > -3
+				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
+				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+				if err1 != nil || err2 != nil {
+					fmt.Printf("Error in normalizeForSimplex")
+					return nil, nil, nil
+				}
+				fmt.Println(t1,t2)
+				res_for_simplex = append(res_for_simplex, " > ")
+			
+			case "lesseq":
+				//je code svp jugez pas :p
+				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
+				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+				if err1 != nil || err2 != nil  {
+					fmt.Printf("Error in normalizeForSimplex")
+					return nil, nil, nil
+				}
+				cpt+=1
+				present:=false
+				if len(t1)==0 && t2!=nil{
+					for i:=0;i<len(t2);i++{
+						variable := p.GetArgs()[1].GetMetas()[i]
+						present=false
+						fmt.Println("variable2 =",variable.GetName())
+						for i:=0;i<len(tab_variable);i++{
+							if tab_variable[i]==variable.GetName(){
+								present=true
+							}
 						}
+						if !present{
+							tab_variable=append(tab_variable,variable.GetName())
+						}
+					
+
 					}
-					if !present{
-						tab_variable=append(tab_variable,variable)
+					
+				} else if t1!=nil && len(t2)==0{
+					for i:=0;i<len(t1);i++{
+						variable := p.GetArgs()[0].GetMetas()[i]
+						present=false
+						fmt.Println("variable1 =",variable.GetName())
+						for i:=0;i<len(tab_variable);i++{
+							if tab_variable[i]==variable.GetName(){
+								present=true
+							}
+						}
+						if !present{
+							tab_variable=append(tab_variable,variable.GetName())
+						}
+					
+
 					}
 				
-
 				}
-			
+				
+				fmt.Println("t1 ", t1)
+				fmt.Println("t2 ", t2)
+
+				// fin du :p
+
+			case "great":
+
+
+			case "greateq":
+				//je code svp jugez pas :p
+				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
+				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+				if err1 != nil || err2 != nil  {
+					fmt.Printf("Error in normalizeForSimplex")
+					return nil, nil, nil
+				}
+				
+				cpt+=1
+				present:=false
+				if len(t1)==0 && t2!=nil{
+					for i:=0;i<len(t2);i++{
+						variable := p.GetArgs()[1].GetMetas()[i]
+						present=false
+						fmt.Println("variable2 =",variable.GetName())
+						for i:=0;i<len(tab_variable);i++{
+							if tab_variable[i]==variable.GetName(){
+								present=true
+							}
+						}
+						if !present{
+							tab_variable=append(tab_variable,variable.GetName())
+						}
+					
+
+					}
+					
+				} else if t1!=nil && len(t2)==0{
+					for i:=0;i<len(t1);i++{
+						variable := p.GetArgs()[0].GetMetas()[i]
+						present=false
+						fmt.Println("variable1 =",variable.GetName())
+						for i:=0;i<len(tab_variable);i++{
+							if tab_variable[i]==variable.GetName(){
+								present=true
+							}
+						}
+						if !present{
+							tab_variable=append(tab_variable,variable.GetName())
+						}
+					
+
+					}
+				
+				}
+				
+				fmt.Println("t1 ", t1)
+				fmt.Println("t2 ", t2)
+
+				// fin du :p
+
+
 			}
-			
-			fmt.Println("t1 ", t1)
-			fmt.Println("t2 ", t2)
-			
-			// fin du :p
-
-			fmt.Println("variable =",variable)
-			res_for_simplex = append(res_for_simplex," >= ")
-			res_for_simplex = append(res_for_simplex, " >= ")
-		case types.Id_neq.GetName():
-
-		//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
-		//il faudrait donc faire 2 systèmes, un avec chacune des équations.. 
-		//et encore, ça ne marche que si on cherche une solution entière..
+			fmt.Println("tab_var : ",tab_variable)
+			fmt.Println("cpt = ",cpt)
 		
-		
-		case "less":
-			// Si j'ai un <
-			// Ce qui suit est un exemple et dépend de votre format d'entrée
-			// cas x < 3 ou sum(x, y) < 4 par exemple, et vous voulez le transformer en -x > -3
-			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-			if err1 != nil || err2 != nil {
-				fmt.Printf("Error in normalizeForSimplex")
-				return nil, nil, nil
-			}
-			fmt.Println(t1,t2)
-			res_for_simplex = append(res_for_simplex, " > ")
-		
-		case "lesseq":
-			//je code svp jugez pas :p
-			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-			if err1 != nil || err2 != nil  {
-				fmt.Printf("Error in normalizeForSimplex")
-				return nil, nil, nil
-			}
-			cpt+=1
-			present:=false
-			var variable string
-			fmt.Println("variable =",variable)
 			
-			if len(t1)==0 && t2!=nil{
-				for i:=0;i<len(t2);i++{
-					variable=t2[i][0:1]
-					present=false
-					fmt.Println("variable2 =",variable)
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable{
-							present=true
-						}
-					}
-					if !present{
-						tab_variable=append(tab_variable,variable)
-					}
-				
-
-				}
-				
-			} else if t1!=nil && len(t2)==0{
-				for i:=0;i<len(t1);i++{
-					variable=t1[i][0:1]
-					present=false
-					fmt.Println("variable1 =",variable)
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable{
-							present=true
-						}
-					}
-					if !present{
-						tab_variable=append(tab_variable,variable)
-					}
-				
-
-				}
-			
-			}
-			
-			fmt.Println("t1 ", t1)
-			fmt.Println("t2 ", t2)
-
-			// fin du :p
-
-		case "great":
-
-
-		case "greateq":
-			//je code svp jugez pas :p
-			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-			if err1 != nil || err2 != nil  {
-				fmt.Printf("Error in normalizeForSimplex")
-				return nil, nil, nil
-			}
-			
-			cpt+=1
-			present:=false
-			var variable string
-			fmt.Println("variable =",variable)
-			
-			if len(t1)==0 && t2!=nil{
-				for i:=0;i<len(t2);i++{
-					variable=t2[i][0:1]
-					present=false
-					fmt.Println("variable2 =",variable)
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable{
-							present=true
-						}
-					}
-					if !present{
-						tab_variable=append(tab_variable,variable)
-					}
-				
-
-				}
-				
-			} else if t1!=nil && len(t2)==0{
-				for i:=0;i<len(t1);i++{
-					variable=t1[i][0:1]
-					present=false
-					fmt.Println("variable1 =",variable)
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable{
-							present=true
-						}
-					}
-					if !present{
-						tab_variable=append(tab_variable,variable)
-					}
-				
-
-				}
-			
-			}
-			
-			fmt.Println("t1 ", t1)
-			fmt.Println("t2 ", t2)
-
-			// fin du :p
-
-
 		}
+		passe+=1
 	}
-	fmt.Println("tab_var : ",tab_variable)
-	fmt.Println("cpt = ",cpt)
-	
+
 	return res_for_simplex, map_variable_metavariables, int_variables
 }
 
