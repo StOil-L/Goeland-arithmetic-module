@@ -99,9 +99,9 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 					fmt.Printf("Error in normalizeForSimplex")
 					return nil, nil, nil
 				}
-				tab_variable=passe1eg(p,t1,t2,&cpt,tab_variable)
-				fmt.Println("ici", tab_variable)		
 		
+				tab_variable=passe1(p,t1,t2,&cpt,tab_variable, true)
+				
 			case types.Id_neq.GetName():
 
 			//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
@@ -128,7 +128,7 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				}
 				
 	
-				tab_variable=passe1greateq_lesseq(p,t1,t2,&cpt,tab_variable)
+				tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
 
 			case "great":
 
@@ -141,7 +141,7 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 					return nil, nil, nil
 				}
 
-				tab_variable=passe1greateq_lesseq(p,t1,t2,&cpt,tab_variable)
+				tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
 
 			}
 			fmt.Println("tab_var : ",tab_variable)
@@ -159,11 +159,14 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 
 
 
-func passe1eg(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []string) ([]string){
-	*cpt+=2
-	//je code svp jugez pas :p
+func passe1(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []string, b bool) ([]string){
+	if b{
+		*cpt+=2
+	}else {
+		*cpt+=1
+	}
 	present:=false
-	if len(t1)==0 && t2!=nil{
+	if t2!=nil{
 		for i:=0;i<len(t2);i++{
 			variable := p.GetArgs()[1].GetMetas()[i]
 			present=false
@@ -179,8 +182,8 @@ func passe1eg(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []str
 		
 
 		}
-		
-	} else if t1!=nil && len(t2)==0{
+	}	
+	if t1!=nil {
 		for i:=0;i<len(t1);i++{
 			variable := p.GetArgs()[0].GetMetas()[i]
 			present=false
@@ -199,55 +202,7 @@ func passe1eg(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []str
 
 	}
 
-	fmt.Println("t1 ", t1)
-	fmt.Println("t2 ", t2)
-	fmt.Println("tableau_variable ", tab_variable)
 return tab_variable
-}
-
-
-func passe1greateq_lesseq(p types.Pred, t1 []string, t2 []string, cpt *int,tab_variable []string) ([]string){
-			*cpt+=1
-			present:=false
-			if len(t1)==0 && t2!=nil{
-				for i:=0;i<len(t2);i++{
-					variable := p.GetArgs()[1].GetMetas()[i]
-					present=false
-					fmt.Println("variable2 =",variable.GetName())
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable.GetName(){
-							present=true
-						}
-					}
-					if !present{
-						tab_variable=append(tab_variable,variable.GetName())
-					}
-				
-
-				}
-				
-			} else if t1!=nil && len(t2)==0{
-				for i:=0;i<len(t1);i++{
-					variable := p.GetArgs()[0].GetMetas()[i]
-					present=false
-					fmt.Println("variable1 =",variable.GetName())
-					for i:=0;i<len(tab_variable);i++{
-						if tab_variable[i]==variable.GetName(){
-							present=true
-						}
-					}
-					if !present{
-						tab_variable=append(tab_variable,variable.GetName())
-					}
-				
-
-				}
-			
-			}
-
-			fmt.Println("t1 ", t1)
-			fmt.Println("t2 ", t2)
-		return tab_variable
 }
 
 

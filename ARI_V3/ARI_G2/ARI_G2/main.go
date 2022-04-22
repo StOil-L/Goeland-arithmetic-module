@@ -56,21 +56,18 @@ func main() {
 	TestNormalizationNotSupEq()
 	TestParserRemainder_f()
 
-	// Tests règles simplexe
-	TestSimplexeRat1()
-	TestSimplexeRat2()
-	TestSimplexeRat()
-	TestSimplexeSumRat()
-	TestSimplexeBeaucoupRat()
-
-
 	//Tests fonctions unaires 
+
+fmt.Println(" ------------- TEST UMINUS ------------- ")
+
 	TestUminusInt()
 	TestUminusNegInt()
 	TestUminusRat()
 	TestUminusNegRat() 
 	TestUminusRat2()
 	TestUminusNegRat2() 
+	
+	fmt.Println(" ------------- TEST FLOOR ------------- ")
 
 	TestFloorInt()
 	TestFloorNegInt()
@@ -78,6 +75,8 @@ func main() {
 	TestFloorNegRat() 	
 	TestFloorRat2()
 	TestFloorNegRat2() 	
+
+	fmt.Println(" ------------- TEST CEILING ------------- ")
 	
 	TestCeilingInt()
 	TestCeilingNegInt()
@@ -85,6 +84,8 @@ func main() {
 	TestCeilingNegRat() 
 	TestCeilingRat2()
 	TestCeilingNegRat2() 
+
+	fmt.Println(" ------------- TEST TRUNCATE ------------- ")
 	
 	TestTruncateInt()
 	TestTruncateNegInt()
@@ -92,6 +93,8 @@ func main() {
 	TestTruncateNegRat() 
 	TestTruncateRat2()
 	TestTruncateNegRat2()
+
+	fmt.Println(" ------------- TEST ROUND ------------- ")
 	 
 	TestRoundInt()
 	TestRoundNegInt()
@@ -99,6 +102,16 @@ func main() {
 	TestRoundNegRat() 
 	TestRoundRat2()
 	TestRoundNegRat2() 
+
+	fmt.Println(" ------------- TEST Passe1 ------------- ")
+	 
+	// Tests règles simplexe
+	TestSimplexeRat1()
+	TestSimplexeRat2()
+	TestSimplexeRat()
+	TestSimplexeSumRat()
+	TestSimplexeBeaucoupRat()
+	TestSimplexeBeaucoupRat_2()
 	
 }
 
@@ -119,8 +132,6 @@ func TestInt() {
 	p := types.MakePred(types.Id_eq, []types.Term{sum, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
-
-fmt.Println(" ------------- TEST UMINUS ------------- ")
 
 func TestUminusInt() {
 	fmt.Println(" -------- TEST Uminus Int -------- ")
@@ -178,7 +189,6 @@ func TestUminusNegRat2() {
 	fmt.Println("solution = ", solution) 
 }
 
-fmt.Println(" ------------- TEST FLOOR ------------- ")
 
 func TestFloorInt() {
 	fmt.Println(" -------- TEST Floor Int -------- ")
@@ -234,8 +244,6 @@ func TestFloorNegRat2() {
 	fmt.Println("solution = ", solution) 
 }
 
-fmt.Println(" ------------- TEST CEILING ------------- ")
-
 func TestCeilingInt() {
 	fmt.Println(" -------- TEST Ceiling Int -------- ")
 	fmt.Println(" 4  devient 4 ")
@@ -289,7 +297,6 @@ func TestCeilingNegRat2() {
 	fmt.Println("solution = ", solution) 
 }
 
-fmt.Println(" ------------- TEST TRUNCATE ------------- ")
 
 func TestTruncateInt() {
 	fmt.Println(" -------- TEST Truncate Int -------- ")
@@ -345,7 +352,6 @@ func TestTruncateNegRat2() {
 	fmt.Println("solution = ", solution) 
 }
 
-fmt.Println(" ------------- TEST ROUND ------------- ")
 
 func TestRoundInt() {
 	fmt.Println(" -------- TEST Round Int -------- ")
@@ -809,8 +815,8 @@ func TestSimplexeSumRat() {
 
 
 func TestSimplexeBeaucoupRat() {
-	fmt.Println(" -------- TEST 28.999 -------- ")
-	fmt.Println(" (((((X + Y)-Z)*K)+Y)-Z)*K) = 3")
+	fmt.Println(" -------- TEST 28.998 -------- ")
+	fmt.Println(" (((((X + Y)-Z)*K)+Y)-Z)*K) = 3/2")
 	x := types.MakerMeta("X_0__", -1)
 	y := types.MakerMeta("Y", -1)
 	z := types.MakerMeta("Z", -1)
@@ -828,6 +834,34 @@ func TestSimplexeBeaucoupRat() {
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
 }
 
+func TestSimplexeBeaucoupRat_2() {
+	fmt.Println(" -------- TEST 28.999 -------- ")
+	fmt.Println(" (((((X + Y)-Z)*K)+Y)-Z)*K) = (A+B)*(C+K)")
+	x := types.MakerMeta("X_0__", -1)
+	y := types.MakerMeta("Y", -1)
+	z := types.MakerMeta("Z", -1)
+	k := types.MakerMeta("K", -1)
+	a := types.MakerMeta("A", -1)
+	b := types.MakerMeta("B", -1)
+	c := types.MakerMeta("C", -1)
+	
+	//t1
+	sum_x_y := types.MakeFun(types.MakerId("sum"), []types.Term{x, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	diff_z := types.MakeFun(types.MakerId("difference"), []types.Term{sum_x_y, z}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	prod_k := types.MakeFun(types.MakerId("product"), []types.Term{diff_z, k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+	sum_y := types.MakeFun(types.MakerId("sum"), []types.Term{prod_k, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	diff2_z := types.MakeFun(types.MakerId("difference"), []types.Term{sum_y, z}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	prod2 := types.MakeFun(types.MakerId("product"), []types.Term{diff2_z, k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+	//t2
+	sum_a_b := types.MakeFun(types.MakerId("sum"), []types.Term{a, b}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	sum_c_k := types.MakeFun(types.MakerId("sum"), []types.Term{c, k}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	prod := types.MakeFun(types.MakerId("product"), []types.Term{sum_a_b, sum_c_k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+
+	p := types.MakePred(types.Id_eq, []types.Term{prod2, prod}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
 
 
 func TestSimplexeInt() {
