@@ -67,24 +67,39 @@ func main() {
 	//Tests fonctions unaires 
 	TestUminusInt()
 	TestUminusNegInt()
+	TestUminusRat()
 	TestUminusNegRat() 
-	TestUminusRat() 
+	TestUminusRat2()
+	TestUminusNegRat2() 
+
 	TestFloorInt()
 	TestFloorNegInt()
-	TestFloorNegRat() 
 	TestFloorRat()
+	TestFloorNegRat() 	
+	TestFloorRat2()
+	TestFloorNegRat2() 	
+	
 	TestCeilingInt()
 	TestCeilingNegInt()
-	TestCeilingNegRat() 
 	TestCeilingRat()
+	TestCeilingNegRat() 
+	TestCeilingRat2()
+	TestCeilingNegRat2() 
+	
 	TestTruncateInt()
 	TestTruncateNegInt()
+	TestTruncateRat()
 	TestTruncateNegRat() 
-	TestTruncateRat() 
+	TestTruncateRat2()
+	TestTruncateNegRat2()
+	 
 	TestRoundInt()
 	TestRoundNegInt()
-	TestRoundNegRat() 
 	TestRoundRat()
+	TestRoundNegRat() 
+	TestRoundRat2()
+	TestRoundNegRat2() 
+	
 }
 
 /*** Test création de termes ***/
@@ -104,6 +119,8 @@ func TestInt() {
 	p := types.MakePred(types.Id_eq, []types.Term{sum, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
+
+fmt.Println(" ------------- TEST UMINUS ------------- ")
 
 func TestUminusInt() {
 	fmt.Println(" -------- TEST Uminus Int -------- ")
@@ -143,6 +160,26 @@ func TestUminusNegRat() {
 	fmt.Println("solution = ", solution) 
 }
 
+func TestUminusRat2() {
+	fmt.Println(" -------- TEST Uminus Rat 2 -------- ")
+	fmt.Println(" 1/3  devient -1/3 ")
+	un_trois := types.MakerConst(types.MakerId("1/3"),tRat) 
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(uminus)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestUminusNegRat2() {
+	fmt.Println(" -------- TEST Uminus Neg Rat 2 -------- ")
+	fmt.Println(" -1/3  devient 1/3 ")
+	moins_un_trois := types.MakerConst(types.MakerId("-1/3"),tRat) 
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{moins_un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(uminus)
+	fmt.Println("solution = ", solution) 
+}
+
+fmt.Println(" ------------- TEST FLOOR ------------- ")
+
 func TestFloorInt() {
 	fmt.Println(" -------- TEST Floor Int -------- ")
 	fmt.Println(" 4  devient 4 ")
@@ -169,6 +206,7 @@ func TestFloorRat() {
 	solution,_:=ari.EvaluateFun(floor)
 	fmt.Println("solution = ", solution) 
 }
+
 func TestFloorNegRat() {
 	fmt.Println(" -------- TEST Floor Neg Rat -------- ")
 	fmt.Println(" -4.2  devient -5 ")
@@ -177,6 +215,26 @@ func TestFloorNegRat() {
 	solution,_:=ari.EvaluateFun(floor)
 	fmt.Println("solution = ", solution) 
 }
+
+func TestFloorRat2() {
+	fmt.Println(" -------- TEST Floor Rat 2 -------- ")
+	fmt.Println(" 1/3  devient 0.0 ")
+	un_trois := types.MakerConst(types.MakerId("1/3"),tRat) 
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(floor)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestFloorNegRat2() {
+	fmt.Println(" -------- TEST Floor Neg Rat 2 -------- ")
+	fmt.Println(" -1/3  devient -1.0 ")
+	moins_un_trois := types.MakerConst(types.MakerId("-1/3"),tRat) 
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{moins_un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(floor)
+	fmt.Println("solution = ", solution) 
+}
+
+fmt.Println(" ------------- TEST CEILING ------------- ")
 
 func TestCeilingInt() {
 	fmt.Println(" -------- TEST Ceiling Int -------- ")
@@ -213,6 +271,26 @@ func TestCeilingNegRat() {
 	fmt.Println("solution = ", solution) 
 }
 
+func TestCeilingRat2() {
+	fmt.Println(" -------- TEST Ceiling Rat 2 -------- ")
+	fmt.Println(" 1/3  devient 1.0 ")
+	un_trois := types.MakerConst(types.MakerId("1/3"),tRat) 
+	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(ceiling)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestCeilingNegRat2() {
+	fmt.Println(" -------- TEST Ceiling Neg Rat 2 -------- ")
+	fmt.Println(" -1/3  devient -0.0 ")
+	moins_un_trois := types.MakerConst(types.MakerId("-1/3"),tRat) 
+	ceiling := types.MakerFun(types.MakerId("ceiling"),[]types.Term{moins_un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(ceiling)
+	fmt.Println("solution = ", solution) 
+}
+
+fmt.Println(" ------------- TEST TRUNCATE ------------- ")
+
 func TestTruncateInt() {
 	fmt.Println(" -------- TEST Truncate Int -------- ")
 	fmt.Println(" 4  devient 4 ")
@@ -239,14 +317,35 @@ func TestTruncateRat() {
 	solution,_:=ari.EvaluateFun(truncate)
 	fmt.Println("solution = ", solution) 
 }
+
 func TestTruncateNegRat() {
 	fmt.Println(" -------- TEST Truncate Neg Rat -------- ")
-	fmt.Println(" -4.2  devient -4 ")
+	fmt.Println(" -4.2  devient -4.0 ")
 	moins_quatre_deux := types.MakerConst(types.MakerId("-21/5"),tRat) 
 	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_quatre_deux}, tRat)
 	solution,_:=ari.EvaluateFun(truncate)
 	fmt.Println("solution = ", solution) 
 }
+
+func TestTruncateRat2() {
+	fmt.Println(" -------- TEST Truncate Rat 2 -------- ")
+	fmt.Println(" 1/3  devient 0.0 ")
+	un_trois := types.MakerConst(types.MakerId("1/3"),tRat) 
+	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(truncate)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestTruncateNegRat2() {
+	fmt.Println(" -------- TEST Truncate Neg Rat 2 -------- ")
+	fmt.Println(" -1/3  devient -0.0 ")
+	moins_un_trois := types.MakerConst(types.MakerId("-1/3"),tRat) 
+	truncate := types.MakerFun(types.MakerId("truncate"),[]types.Term{moins_un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(truncate)
+	fmt.Println("solution = ", solution) 
+}
+
+fmt.Println(" ------------- TEST ROUND ------------- ")
 
 func TestRoundInt() {
 	fmt.Println(" -------- TEST Round Int -------- ")
@@ -274,11 +373,30 @@ func TestRoundRat() {
 	solution,_:=ari.EvaluateFun(round)
 	fmt.Println("solution = ", solution) 
 }
+
 func TestRoundNegRat() {
 	fmt.Println(" -------- TEST Round Neg Rat -------- ")
-	fmt.Println(" -4.2  devient -4 ")
+	fmt.Println(" -4.2  devient -4.0 ")
 	moins_quatre_deux := types.MakerConst(types.MakerId("-21/5"),tRat) 
 	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_quatre_deux}, tRat)
+	solution,_:=ari.EvaluateFun(round)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestRoundRat2() {
+	fmt.Println(" -------- TEST Round Rat 2 -------- ")
+	fmt.Println(" 1/3  devient 0.0 ")
+	un_trois := types.MakerConst(types.MakerId("1/3"),tRat) 
+	round := types.MakerFun(types.MakerId("round"),[]types.Term{un_trois}, tRat)
+	solution,_:=ari.EvaluateFun(round)
+	fmt.Println("solution = ", solution) 
+}
+
+func TestRoundNegRat2() {
+	fmt.Println(" -------- TEST Round Neg Rat 2 -------- ")
+	fmt.Println(" -5/3  devient -2.0 ")
+	moins_cinq_trois := types.MakerConst(types.MakerId("-5/3"),tRat) 
+	round := types.MakerFun(types.MakerId("round"),[]types.Term{moins_cinq_trois}, tRat)
 	solution,_:=ari.EvaluateFun(round)
 	fmt.Println("solution = ", solution) 
 }
