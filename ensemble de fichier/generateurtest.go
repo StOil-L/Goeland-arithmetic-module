@@ -77,8 +77,29 @@ func generateurtest (x int)(){
     system := info_system{tab_coef: tableau, tab_cont: tab_cont, tab_nom_var: tab_var,
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
-		Simplexe(system)
+    
+    var ApelleSimplexe info_system
+    var alphatab map[string]*big.Rat
+    Simplexe(system)
+    ApelleSimplexe,_ = Simplexe(system)
+    alphatab = ApelleSimplexe.alpha_tab
+    //fmt.Println("\n ",alphatab)
+    var verite bool = true
 
-    //Vérifier le résultat en comparant les valeurs des variables dans la alpha_tab_bis avec les contraintes
+	for i := 0;i < w;i++ {
+	  concatenated := fmt.Sprint("e",i)
+    var cpt int = alphatab[concatenated].Cmp(tab_cont[i])
+    if cpt == -1 {
+      verite = false
+    }
+    //fmt.Println(tab_cont[i])
+	  //fmt.Println(alphatab[concatenated])
+	}
+    if verite {
+       fmt.Println("Toutes les contraintes sont respectées")
+    }else{
+      fmt.Println("Au moins une contrainte n'est pas respectée")
+    }
+    
   }
 }
