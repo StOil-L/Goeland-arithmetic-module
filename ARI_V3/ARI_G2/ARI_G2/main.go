@@ -28,13 +28,19 @@ func main() {
 	TestInt()
 	TestRat()
 
-	//fonctions binaires
+	fmt.Println(" ------------- TEST FONCTIONS BINAIRES ------------- ")
+
+	// Fonctions binaires
+	fmt.Println(" ------------- TEST SUM ------------- ")
+
 	TestSumInt()
     TestSumNegInt()
     TestSumRat()
     TestSumNegRat()
     TestSumRat2()
     TestSumNegRat2()
+
+	fmt.Println(" ------------- TEST DIFFERENCE ------------- ")
 
     TestDiffInt()
     TestDiffInt2()
@@ -81,7 +87,7 @@ func main() {
 
 	//Tests fonctions unaires 
 
-fmt.Println(" ------------- TEST UMINUS ------------- ")
+	fmt.Println(" ------------- TEST UMINUS ------------- ")
 
 	TestUminusInt()
 	TestUminusNegInt()
@@ -159,7 +165,6 @@ func TestInt() {
 	fmt.Printf("%v\n", p.ToString())
 }
 
-
 func TestSumInt() {
 	fmt.Println(" -------- TEST Sum Int -------- ")
 	fmt.Println(" 1 + 2 = 3")
@@ -177,7 +182,7 @@ func TestSumNegInt() {
 	moins_un := types.MakerConst(types.MakerId("-1"), tInt)
 	deux := types.MakerConst(types.MakerId("2"), tInt)
 	un := types.MakerConst(types.MakerId("1"), tInt)
-	sum := types.MakeFun(types.MakerId("sum"), []types.Term{mois_un, deux}, typing.GetTypeScheme("sum", typing.MkTypeCross(tInt, tInt)))
+	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un, deux}, typing.GetTypeScheme("sum", typing.MkTypeCross(tInt, tInt)))
 	p := types.MakePred(types.Id_eq, []types.Term{sum, un}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
@@ -252,9 +257,9 @@ func TestDiffNegInt() {
 	fmt.Println(" -------- TEST Diff Neg Int -------- ")
 	fmt.Println(" -1 - -2 = 1")
 	moins_un := types.MakerConst(types.MakerId("-1"), tInt)
-	mois_deux := types.MakerConst(types.MakerId("-2"), tInt)
+	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
 	un := types.MakerConst(types.MakerId("1"), tInt)
-	difference := types.MakeFun(types.MakerId("difference"), []types.Term{mois_un, mois_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
+	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_un, moins_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
 	p := types.MakePred(types.Id_eq, []types.Term{difference, un}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
@@ -263,9 +268,9 @@ func TestDiffNegInt2() {
 	fmt.Println(" -------- TEST Diff Neg Int 2 -------- ")
 	fmt.Println(" -3 - 2 = -5")
 	moins_trois := types.MakerConst(types.MakerId("-3"), tInt)
-	mois_deux := types.MakerConst(types.MakerId("-2"), tInt)
+	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
 	cinq := types.MakerConst(types.MakerId("5"), tInt)
-	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_trois, mois_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
+	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_trois, moins_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
 	p := types.MakePred(types.Id_eq, []types.Term{difference, cinq}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
@@ -329,9 +334,9 @@ func TestDiffNegRat3() {
 	fmt.Println(" -------- TEST Diff Neg Rat 3 -------- ")
 	fmt.Println(" -1/3 - -2.5 = 83333/100000?")
 	moins_un_sur_trois := types.MakerConst(types.MakerId("-1/3"), tRat)
-	mois_deux_cinq := types.MakerConst(types.MakerId("-2.5"), tRat)
+	moins_deux_cinq := types.MakerConst(types.MakerId("-2.5"), tRat)
 	frac := types.MakerConst(types.MakerId("83333/100000"), tRat)
-	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un_sur_trois, mois_deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un_sur_trois, moins_deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
 	p := types.MakePred(types.Id_eq, []types.Term{sum, frac}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
