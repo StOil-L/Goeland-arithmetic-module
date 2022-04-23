@@ -170,10 +170,9 @@ func TestSumInt() {
 	fmt.Println(" 1 + 2 = 3")
 	un := types.MakerConst(types.MakerId("1"), tInt)
 	deux := types.MakerConst(types.MakerId("2"), tInt)
-	trois := types.MakerConst(types.MakerId("3"), tInt)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{un, deux}, typing.GetTypeScheme("sum", typing.MkTypeCross(tInt, tInt)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, trois}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(sum)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestSumNegInt() {
@@ -181,10 +180,9 @@ func TestSumNegInt() {
 	fmt.Println(" -1 + 2 = 1")
 	moins_un := types.MakerConst(types.MakerId("-1"), tInt)
 	deux := types.MakerConst(types.MakerId("2"), tInt)
-	un := types.MakerConst(types.MakerId("1"), tInt)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un, deux}, typing.GetTypeScheme("sum", typing.MkTypeCross(tInt, tInt)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, un}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(sum)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestSumRat() {
