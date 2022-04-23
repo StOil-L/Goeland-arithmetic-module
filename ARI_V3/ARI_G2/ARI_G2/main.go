@@ -270,8 +270,8 @@ func TestDiffNegInt2() {
 	fmt.Println(" -------- TEST Diff Neg Int 2 -------- ")
 	fmt.Println(" -3 - 2 = -5")
 	moins_trois := types.MakerConst(types.MakerId("-3"), tInt)
-	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
-	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_trois, moins_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_trois, deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
 	solution,_:=ari.EvaluateFun(difference)
 	fmt.Println("solution = ", solution) 
 }

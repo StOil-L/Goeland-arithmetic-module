@@ -141,18 +141,14 @@ func checkBinaryArithmeticFun(id types.Id) bool {
 func EvaluateFun(f types.Fun) (*big.Rat, error) {
 	var arg1, arg2 types.Term
 	arg1 = f.GetArgs()[0]
-	fmt.Println("here1", f.GetID())
 	if checkBinaryArithmeticFun(f.GetID()) {
-		fmt.Println("here2")
 		arg2 = f.GetArgs()[1]
-		fmt.Println("f =", f)
 	
 	}
 
 	switch f.GetID().GetName() {
 	case "sum":
 		if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			fmt.Println("arg2=",arg2)
 			return zero_rat, err
 		} else {
 			return newRat().Add(res1, res2), nil
