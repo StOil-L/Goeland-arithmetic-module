@@ -135,7 +135,7 @@ func evaluateTerm(t types.Term) (*big.Rat, error) {
 
 func checkBinaryArithmeticFun(id types.Id) bool {
 	s := id.ToString()
-	return  s == "sum" || s == "product" 
+	return  s == "sum" || s == "product" || s == "difference"
 }
 
 func EvaluateFun(f types.Fun) (*big.Rat, error) {
