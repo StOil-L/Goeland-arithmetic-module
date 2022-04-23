@@ -37,10 +37,8 @@ func main() {
     TestSumNegInt()
     TestSumRat()
     TestSumRat2()
-	TestSumRat3()
 	TestSumNegRat()
     TestSumNegRat2()
-    TestSumNegRat3()
 
 	fmt.Println(" ------------- TEST DIFFERENCE ------------- ")
 
@@ -67,6 +65,7 @@ func main() {
     TestProdNegRat()
     TestProdRat2()
     TestProdNegRat2()
+	TestProdNegRat3()
 
 
 	// Tests règle constantes
@@ -332,7 +331,7 @@ func TestDiffNegRat3() {
 	fmt.Println(" -1/3 - -2.5 = 83333/100000?")
 	moins_un_sur_trois := types.MakerConst(types.MakerId("-1/3"), tRat)
 	moins_deux_cinq := types.MakerConst(types.MakerId("-2.5"), tRat)
-	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un_sur_trois, moins_deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_un_sur_trois, moins_deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
 	solution,_:=ari.EvaluateFun(difference)
 	fmt.Println("solution = ", solution) 
 }
@@ -387,8 +386,8 @@ func TestProdNegRat() {
 	fmt.Println("solution = ", solution) 
 }
 
-func TestProdRat3() {
-	fmt.Println(" -------- TEST Prod Rat 3 -------- ")
+func TestProdRat2() {
+	fmt.Println(" -------- TEST Prod Rat 2 -------- ")
 	fmt.Println(" 1/3 * 2.5 = 3333333/25000000?")
 	un_sur_trois := types.MakerConst(types.MakerId("1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
