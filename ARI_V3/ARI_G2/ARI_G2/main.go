@@ -190,10 +190,9 @@ func TestSumRat() {
 	fmt.Println(" 1.2 + 2.5 = 3.7")
 	un_deux := types.MakerConst(types.MakerId("1.2"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	trois_sept := types.MakerConst(types.MakerId("3.7"), tRat)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{un_deux, deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, trois_sept}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(sum)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestSumNegRat() {
@@ -201,10 +200,9 @@ func TestSumNegRat() {
 	fmt.Println(" -1.2 + 2.5 = 1.3")
 	moins_un_deux := types.MakerConst(types.MakerId("-1.2"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	trois_sept := types.MakerConst(types.MakerId("3.7"), tRat)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un_deux, deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, trois_sept}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(sum)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestSumRat2() {
@@ -212,10 +210,9 @@ func TestSumRat2() {
 	fmt.Println(" 1/3 + 2.5 = 83333/100000?")
 	un_sur_trois := types.MakerConst(types.MakerId("1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	frac := types.MakerConst(types.MakerId("833333/100000"), tRat)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{un_sur_trois, deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, frac}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(sum)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestSumNegRat2() {
@@ -223,21 +220,19 @@ func TestSumNegRat2() {
 	fmt.Println(" -1/3 + 2.5 = 83333/100000?")
 	moins_un_sur_trois := types.MakerConst(types.MakerId("-1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	frac := types.MakerConst(types.MakerId("166666/100000"), tRat)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un_sur_trois, deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, frac}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(sum)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffInt() {
 	fmt.Println(" -------- TEST Diff Int -------- ")
 	fmt.Println(" 3 - 1 = 2")
 	un := types.MakerConst(types.MakerId("1"), tInt)
-	deux := types.MakerConst(types.MakerId("2"), tInt)
 	trois := types.MakerConst(types.MakerId("3"), tInt)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{trois, un}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffInt2() {
@@ -245,10 +240,9 @@ func TestDiffInt2() {
 	fmt.Println(" 1 - 2 = -1")
 	un := types.MakerConst(types.MakerId("1"), tInt)
 	deux := types.MakerConst(types.MakerId("2"), tInt)
-	moins_un := types.MakerConst(types.MakerId("-1"), tInt)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{un, deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, moins_un}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffNegInt() {
@@ -256,10 +250,9 @@ func TestDiffNegInt() {
 	fmt.Println(" -1 - -2 = 1")
 	moins_un := types.MakerConst(types.MakerId("-1"), tInt)
 	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
-	un := types.MakerConst(types.MakerId("1"), tInt)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_un, moins_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, un}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffNegInt2() {
@@ -267,10 +260,9 @@ func TestDiffNegInt2() {
 	fmt.Println(" -3 - 2 = -5")
 	moins_trois := types.MakerConst(types.MakerId("-3"), tInt)
 	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
-	cinq := types.MakerConst(types.MakerId("5"), tInt)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_trois, moins_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, cinq}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffRat() {
@@ -278,10 +270,9 @@ func TestDiffRat() {
 	fmt.Println(" 1.2 - 2.5 = -1.3")
 	un_deux := types.MakerConst(types.MakerId("1.2"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	moins_un_trois := types.MakerConst(types.MakerId("-1.3"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{un_deux, deux_cinq}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, moins_un_trois}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffRat2() {
@@ -289,10 +280,9 @@ func TestDiffRat2() {
 	fmt.Println("  2.5 - 1.2 = 1.3")
 	un_deux := types.MakerConst(types.MakerId("1.2"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	un_trois := types.MakerConst(types.MakerId("1.3"), tRat)
-	difference := types.MakeFun(types.MakerId("difference"), []types.Term{un_deux, deux_cinq}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, un_trois}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	difference := types.MakeFun(types.MakerId("difference"), []types.Term{deux_cinq, un_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffRat3() {
@@ -300,10 +290,9 @@ func TestDiffRat3() {
 	fmt.Println(" 1/3 - 2.5 = -2*16666/100000?")
 	un_sur_trois := types.MakerConst(types.MakerId("1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	frac := types.MakerConst(types.MakerId("2*16666/100000"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{un_sur_trois, deux_cinq}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, frac}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffNegRat() {
@@ -311,10 +300,9 @@ func TestDiffNegRat() {
 	fmt.Println(" -1.2 - 2.5 = -3.7")
 	moins_un_deux := types.MakerConst(types.MakerId("-1.2"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
-	moins_trois_sept := types.MakerConst(types.MakerId("-3.7"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_un_deux, deux_cinq}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, moins_trois_sept}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffNegRat2() {
@@ -322,10 +310,9 @@ func TestDiffNegRat2() {
 	fmt.Println(" -1.2 - -2.5 = 1.3")
 	moins_un_deux := types.MakerConst(types.MakerId("-1.2"), tRat)
 	moins_deux_cinq := types.MakerConst(types.MakerId("-2.5"), tRat)
-	un_trois := types.MakerConst(types.MakerId("1.3"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_un_deux, moins_deux_cinq}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{difference, un_trois}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestDiffNegRat3() {
@@ -333,10 +320,9 @@ func TestDiffNegRat3() {
 	fmt.Println(" -1/3 - -2.5 = 83333/100000?")
 	moins_un_sur_trois := types.MakerConst(types.MakerId("-1/3"), tRat)
 	moins_deux_cinq := types.MakerConst(types.MakerId("-2.5"), tRat)
-	frac := types.MakerConst(types.MakerId("83333/100000"), tRat)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un_sur_trois, moins_deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, frac}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	fmt.Printf("%v\n", p.ToString())
+	solution,_:=ari.EvaluateFun(difference)
+	fmt.Println("solution = ", solution) 
 }
 
 func TestUminusInt() {
