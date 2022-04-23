@@ -236,7 +236,7 @@ func TestDiffInt() {
 	deux := types.MakerConst(types.MakerId("2"), tInt)
 	trois := types.MakerConst(types.MakerId("3"), tInt)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{trois, un}, typing.GetTypeScheme("difference", typing.MkTypeCross(tInt, tInt)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
+	p := types.MakePred(types.Id_eq, []types.Term{difference, deux}, typing.MkTypeArrow(typing.MkTypeCross(tInt, tInt), tProp))
 	fmt.Printf("%v\n", p.ToString())
 }
 
