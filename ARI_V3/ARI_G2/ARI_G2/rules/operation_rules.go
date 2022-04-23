@@ -132,17 +132,27 @@ func evaluateTerm(t types.Term) (*big.Rat, error) {
 * faire les opération dur les rat
 * Les 2 returns sur la dernière ligne, c'est pour qu'ils se sentent moins seuls ?
 **/
+
+func checkBinaryArithmeticFun(id types.Id) bool {
+	s := id.ToString()
+	return  s == "sum" || s == "product" 
+}
+
 func EvaluateFun(f types.Fun) (*big.Rat, error) {
 	var arg1, arg2 types.Term
 	arg1 = f.GetArgs()[0]
-
-	if checkBinaryArithmeticPredicate(f.GetID()) {
+	fmt.Println("here1", f.GetID())
+	if checkBinaryArithmeticFun(f.GetID()) {
+		fmt.Println("here2")
 		arg2 = f.GetArgs()[1]
+		fmt.Println("f =", f)
+	
 	}
 
 	switch f.GetID().GetName() {
 	case "sum":
 		if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+			fmt.Println("arg2=",arg2)
 			return zero_rat, err
 		} else {
 			return newRat().Add(res1, res2), nil
@@ -196,6 +206,8 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient_e")
 		}
+
+
 	case "quotient_t":
 		switch f.GetTypeHint() {
 		case tInt:
@@ -427,7 +439,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 		}
 
 	default:
-		return zero_rat, errors.New("Erro in evaluatefun : type of fun unknown")
+		return zero_rat, errors.New("Error in evaluatefun : type of fun unknown")
 	}
 	return zero_rat, errors.New("Error in evaluate : floor")
 }

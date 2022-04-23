@@ -80,6 +80,9 @@ func simplex([]string, []string) (bool, map[string]*big.Rat) {
 * Les deux listes qui concernent les metavariables sont à utiliser comme des pointeurs pour qu'elles puissent se construire tout au long du parsing
 **/
 
+
+
+
 func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []string) {
 	res_for_simplex := []string{}
 	map_variable_metavariables := make(map[string]types.Meta)
@@ -88,60 +91,50 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 	cpt:=0
 	//passe:=0
 	passe:=2
+
 	for passe<3{
+
 		for _, p := range pl {
+			
+			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
+
+			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+			if err1 != nil || err2 != nil  {
+				fmt.Printf("Error in normalizeForSimplex")
+				return nil, nil, nil
+			}
+
 			switch p.GetID().GetName() {
 		
-			case types.Id_eq.GetName():
-				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-				if err1 != nil || err2 != nil {
-					fmt.Printf("Error in normalizeForSimplex")
-					return nil, nil, nil
-				}
+				case types.Id_eq.GetName():
+					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, true)
+					//fmt.Printf("test %T \n", p.GetArgs()[0])
+				case types.Id_neq.GetName():
+
+				//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
+				//il faudrait donc faire 2 systèmes, un avec chacune des équations.. 
+				//et encore, ça ne marche que si on cherche une solution entière..
+				
+				
+				case "less":
+					
 		
-				tab_variable=passe1(p,t1,t2,&cpt,tab_variable, true)
+					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
+
+				case "lesseq":
+					
+		
+					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
+
+				case "great":
+					
+		
+					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
+
+
+				case "greateq":
 				
-			case types.Id_neq.GetName():
-
-			//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
-			//il faudrait donc faire 2 systèmes, un avec chacune des équations.. 
-			//et encore, ça ne marche que si on cherche une solution entière..
-			
-			
-			case "less":
-				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-				if err1 != nil || err2 != nil {
-					fmt.Printf("Error in normalizeForSimplex")
-					return nil, nil, nil
-				}
-				fmt.Println(t1,t2)
-				res_for_simplex = append(res_for_simplex, " > ")
-			
-			case "lesseq":
-				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-				if err1 != nil || err2 != nil  {
-					fmt.Printf("Error in normalizeForSimplex")
-					return nil, nil, nil
-				}
-				
-	
-				tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
-
-			case "great":
-
-
-			case "greateq":
-				t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
-				t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
-				if err1 != nil || err2 != nil  {
-					fmt.Printf("Error in normalizeForSimplex")
-					return nil, nil, nil
-				}
-
-				tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
+					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
 
 			}
 			fmt.Println("tab_var : ",tab_variable)
@@ -179,8 +172,6 @@ func passe1(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []strin
 			if !present{
 				tab_variable=append(tab_variable,variable.GetName())
 			}
-		
-
 		}
 	}	
 	if t1!=nil {
@@ -211,7 +202,7 @@ return tab_variable
 * Je fais beaucoup de disjonction de cas en fonction de int ou rat, mais selon votre format d'entrée ce ne sera peut-être pas nécessaire
 **/
 func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) ([]string, error) {
-	var tab_var = make([]string,0)
+	var tab_var = make([]string,0)	
 	switch ttype := t.(type) {
 	case types.Meta:
 		// C'est ici que je stock les metavairables, que je regarde si elles sont entière et que je fais la correspondence
@@ -223,10 +214,12 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 		tab_var= append(tab_var,var_for_simplex)
 		return tab_var, nil
 	case types.Fun:
-		
-		
+		fmt.Println("t.GetID() ",ttype.GetID())
+
 		switch t.GetName(){
 		case "sum":
+
+		fmt.Println("ici")
 			var arg1, arg2 types.Term
 			arg1 = ttype.GetArgs()[0]
 			arg2 = ttype.GetArgs()[1]
@@ -239,6 +232,7 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 			if var2!=nil{
 				tab_var=append(tab_var,var2...)
 			}
+			
 
 			return tab_var,nil
 		case "product":
@@ -255,6 +249,9 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 			if var2!=nil{
 				tab_var=append(tab_var,var2...)
 			}
+			funT:=types.MakerFun(types.MakerId("product"),[]types.Term{arg1, arg2}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+			i1, _ := funToSimplex(funT,map_v_mv, iv)
+			fmt.Println("i1 = ",i1)
 
 			return tab_var,nil
 		
@@ -280,7 +277,6 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 		default:
 			return tab_var,nil
 		}
-		//return tab_var, nil
 	default:
 		fmt.Printf("Unexpected type in termToSimplex\n")
 		return tab_var, errors.New("Error")
@@ -290,25 +286,69 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 /**
 * TODO
 **/
-func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string) (string, error) {
+
+
+type pair_coef_var struct{
+	coef *big.Rat
+	variable string
+} 
+
+func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string) ([]pair_coef_var, error) {
+
+
+//	var pcv pair_coef_var
+	var tab_pcv = make([]pair_coef_var,0)
+
+
 	switch f.GetID().GetName() {
+	
 	case "sum":
+		var arg1, arg2 types.Term
+			arg1 = f.GetArgs()[0]
+			arg2 = f.GetArgs()[1]
+			new_arg1:=types.MakerConst(types.MakerId(arg1.GetName()),tRat)
+			fmt.Println("Type de arg2 \n",arg2)
+			new_arg2:=types.MakerConst(types.MakerId(arg2.GetName()),tRat)
+			fun := types.MakerFun(types.MakerId("sum"),[]types.Term{new_arg1,new_arg2},typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+			test_rat,_:=EvaluateFun(fun)
+		fmt.Println("test_rat",test_rat)
+		fmt.Println("arg1 et arg2", arg1.GetName(), arg2.GetName())
+
 	case "difference":
+	
 	case "product":
+		var arg1, arg2 types.Term
+			arg1 = f.GetArgs()[0]
+			arg2 = f.GetArgs()[1]
+
+		fmt.Printf("arg1 %T \n",arg1)
+		fmt.Printf("arg2 %T \n",arg2)
 	case "quotient":
+	
 	case "quotient_e":
+	
 	case "quotient_t":
+	
 	case "quotient_f":
+	
 	case "remainder_e":
+	
 	case "remainder_t":
+	
 	case "remainder_f":
+	
 	case "uminus":
+	
 	case "floor":
+	
 	case "ceiling":
+	
 	case "truncate":
+	
 	case "round":
+	
 	default:
-		return "", errors.New("Error")
+		return tab_pcv, errors.New("Error")
 	}
-	return "", errors.New("Error")
+	return tab_pcv, errors.New("Error")
 }
