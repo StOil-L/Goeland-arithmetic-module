@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/big"
 	"math"  
+	"time"
 )
 
 /** 
@@ -59,10 +60,10 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
 			tab_cont_bis = deepCopyTableau(system.tab_cont)
 			tab_coef_bis = deepCopyMatrice(system.tab_coef)
 			//Ajout de la nouvelle contrainte dans les copies de tableau
+			var tabInter []*big.Rat
 			if inf_sup {
 				partiEntiere, _ := system.alpha_tab[system.tab_nom_var[index]].Float64()
 				tab_cont_bis = append(tab_cont_bis, new(big.Rat).SetFloat64(math.Ceil(partiEntiere)))
-				var tabInter []*big.Rat
 				for i := 0; i < len(system.tab_nom_var); i++ {
 					if i == index {
 						tabInter = append(tabInter, big.NewRat(1,1))
@@ -70,9 +71,7 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
 						tabInter = append(tabInter, new(big.Rat))
 					}
 				}
-				tab_coef_bis = append(tab_coef_bis, tabInter)
 			} else  {
-				var tabInter []*big.Rat
 				partiEntiere, _ := system.alpha_tab[system.tab_nom_var[index]].Float64()
 				tab_cont_bis = append(tab_cont_bis, new(big.Rat).SetFloat64(-math.Floor(partiEntiere)))
 				for i := 0; i < len(system.tab_nom_var); i++ {
@@ -82,14 +81,15 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
 						tabInter = append(tabInter, new(big.Rat))
 					}
 				}
-				tab_coef_bis = append(tab_coef_bis, tabInter)
 			}
+			tab_coef_bis = append(tab_coef_bis, tabInter)
 				
 			system.tab_coef = tab_coef_bis
 			system.tab_cont = tab_cont_bis
 
 			//incrémental
-			system = incremental(system) 
+			system = incremental(system)
+			time.Sleep(time.Second*10) 
 			//fin incrémental
 
 			system, gotSol := Simplexe(system)
@@ -150,7 +150,7 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
 	return tab_copy
 }
 
-func incremental(system info_system) (info_system){
+/*func incremental(system info_system) (info_system){
 	alpha_tab_bis := make(map[string]*big.Rat)		
 			cpt:=0
 			cpt2:=0
@@ -197,4 +197,34 @@ func incremental(system info_system) (info_system){
 			}
 			system.alpha_tab = alpha_tab_bis
 			return system
+}*/
+
+func incremental(system info_system) (info_system){
+
+	cal_alpha := new(big.Rat)
+	nbParam := len(system.incremental_coef)/(len(system.tab_coef[0])+1)
+	ligne_modif := len(system.tab_coef)
+	//Represente chaque itération de simplex
+	for i:=0; i < nbParam; i++ {
+		pivot := system.incremental_coef[i*nbParam]
+		//Calcul la nouvelle ligne et l'alpha sur une iteration de simplex
+		for j := 0; j < len(system.tab_coef[0]); j++ {
+			//Calcul ligne matrice
+			if big.NewRat(int64(j),1) == pivot{
+				system.tab_coef[ligne_modif][j].Mul(system.tab_coef[ligne_modif][j], system.incremental_coef[(i*nbParam)+j+1])
+			} else {
+				system.tab_coef[ligne_modif][j].Add(system.tab_coef[ligne_modif][j], new(big.Rat).Mul(system.incremental_coef[(i*nbParam)+j+1],system.tab_coef[ligne_modif][pivot]))
+			}
+			//Calcul alpha
+			cal_alpha.Add(cal_alpha, new(big.Rat).Mul(system.tab_coef[ligne_modif][j], system.incremental_aff[(i*nbParam)+j]))
+		}
+	}
+
+
+	//Maj des tableaux
+	system.alpha_tab[fmt.Sprint("e", len(system.tab_coef))] = cal_alpha
+	system.pos_var_tab = append(system.pos_var_tab, fmt.Sprint("e", len(system.tab_coef)))
+	system.bland = append(system.bland, fmt.Sprint("e", len(system.tab_coef)))
+
+	return system
 }

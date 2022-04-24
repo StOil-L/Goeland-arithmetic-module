@@ -85,9 +85,6 @@ func Simplexe(system info_system) (info_system, bool){
 func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab []string) int{
 	for index, variable := range pos_var_tab[:len(tab_cont)]  {
 		if variable[0] == 'e' {
-			fmt.Println("alpha_tab = ", alpha_tab, "\n")
-			fmt.Println("tab_cont = ", tab_cont, "\n")
-			fmt.Println("variable = ", variable, "\n")
 			if alpha_tab[variable].Cmp(tab_cont[index]) == -1 {
 				return index
 			}	
