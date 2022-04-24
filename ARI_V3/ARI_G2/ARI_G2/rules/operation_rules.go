@@ -171,7 +171,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	// TODO : quotient on rat
+			// 	return new(big.Rat).Quo(res1, res2), nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient")
@@ -193,17 +193,32 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	quo := res1.Mul(res1, new(big.Rat).Inv(res2))
-			//	if (quo.Num()).Cmp(big.NewInt(0)) == -1 {
-			//		quo = quo.Add(quo, big.NewRat(-1, 1))
+			//	divided := res1
+			//	quo := 0
+			//	if res2.Cmp(big.NewInt(0)) == -1 {
+			//		for divided > 0 {
+			//			if (new(big.Rat).Add(divided, new(big.Rat).Neg(res2))).Cmp(zero_rat) == 1 {
+			//				divided.Add(divided, new(big.Rat).Neg(res2)))
+			//				quo = quo + 1
+			//			}
+			//		}
+			//	}
+			//	else if res2.Cmp(big.NewInt(0)) == 1 {
+			//		for divided < 0 {
+			//			if (new(big.Rat).Add(divided, new(big.Rat))).Cmp(zero_rat) == -1 {
+			//				divided.Add(divided, res2))
+			//				quo = quo + 1
+			//			}
+			//		}
+			//		if divided.Cmp(zero_rat) != 0 {
+			//			quo = quo + 1
+			//		}
 			//	}
 			//	return quo, nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient_e")
 		}
-
-
 	case "quotient_t":
 		switch f.GetTypeHint() {
 		case tInt:
@@ -218,7 +233,8 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
 			// 	return zero_rat, err
 			// } else {
-			// 	return res1.Mul(res1, new(big.Rat).Inv(res2)), nil
+			// 	quo := res1.Mul(res1, new(big.Rat).Inv(res2))
+			//	return big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64()), nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient_t")
@@ -237,7 +253,11 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			// 	return zero_rat, err
 			// } else {
 			// 	quo := res1.Mul(res1, new(big.Rat).Inv(res2))
-			//	return big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64()), nil
+			//  flooredquo := big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64())
+			// 	if quo.Cmp(flooredquo) != 0 && flooredquo.Cmp(zero_rat) == -1 {
+			//		flooredquo.Add(flooredquo, big.NewRat(-1, 1))
+			//	}
+			//	return flooredquo, nil
 			// }
 		default:
 			return zero_rat, errors.New("Error in evaluate : quotient_f")
