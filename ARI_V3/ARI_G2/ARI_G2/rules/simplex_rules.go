@@ -16,6 +16,15 @@ import (
 	"math/big"
 )
 
+
+
+type pair_coef_var struct{
+	coef *big.Rat
+	variable types.Meta
+} 
+
+
+
 /* Take a list of formulas, return the fomulas which are a predicate with at least one metavariable */
 func keepRelevantPred(fl types.FormList) []types.Pred {
 	relevant_pred_list := []types.Pred{}
@@ -88,27 +97,40 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 	map_variable_metavariables := make(map[string]types.Meta)
 	int_variables := []string{}
 	var tab_variable = make([]string, 0)
-	cpt:=0
-	//passe:=0
-	passe:=2
-
+	ligne_matrice:=0
+	passe:=0
+	var list_list_pcv = make([][]pair_coef_var,0)
+	
 	for passe<3{
-
-		for _, p := range pl {
 			
-			t1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables)
 
-			t2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables)
+		for number_of_predicate, p := range pl {
+			var list_pcv = make([]pair_coef_var,0)
+			
+			t1, val1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables,passe,ligne_matrice,list_pcv)
+
+			t2, val2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables,passe,ligne_matrice,list_pcv)
 			if err1 != nil || err2 != nil  {
 				fmt.Printf("Error in normalizeForSimplex")
 				return nil, nil, nil
 			}
 
+		
 			switch p.GetID().GetName() {
 		
 				case types.Id_eq.GetName():
-					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, true)
-					//fmt.Printf("test %T \n", p.GetArgs()[0])
+					if passe==0{
+						tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, true)
+					}
+					
+					if passe==1{
+						lenPl:=len(pl)
+						list_list_pcv=passe2(list_list_pcv,number_of_predicate,list_pcv,true, val1,val2, lenPl)
+					}
+
+					
+
+
 				case types.Id_neq.GetName():
 
 				//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
@@ -118,28 +140,25 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				
 				case "less":
 					
-		
-					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
-
+					if passe==0{
+						tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
+					}
 				case "lesseq":
 					
-		
-					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
-
+					if passe==0{
+						tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
+					}
 				case "great":
 					
-		
-					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
-
+					if passe==0{
+						tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
+					}
 
 				case "greateq":
-				
-					tab_variable=passe1(p,t1,t2,&cpt,tab_variable, false)
-
+					if passe==0{
+						tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
+					}
 			}
-			fmt.Println("tab_var : ",tab_variable)
-			fmt.Println("cpt = ",cpt)
-		
 			
 		}
 		passe+=1
@@ -149,6 +168,49 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 }
 
 
+
+
+
+func passe2(list_list_pcv [][]pair_coef_var,number_of_predicate int, list_pcv []pair_coef_var, eg bool,val1 []pair_coef_var,val2 []pair_coef_var, lenPl int )  [][]pair_coef_var{
+
+		for i:=0;i<len(val1);i++{
+			list_pcv=append(list_pcv,val1[i])
+		}
+
+		
+		for i:=0; i<len(val2);i++{
+			list_pcv=append(list_pcv,val2[i]) 
+		}
+
+		list_list_pcv=append(list_list_pcv,list_pcv)
+	
+	if eg{
+		var list_pcv_eg = make([]pair_coef_var,0)
+		for i:=0;i<len(val1);i++{
+			egneg:=new(big.Rat).Mul(val1[i].coef,big.NewRat(-1,1))
+			var pair pair_coef_var
+			pair.variable=val1[i].variable
+			pair.coef=egneg
+			list_pcv_eg=append(list_pcv_eg,pair)
+		}
+
+		for i:=0; i<len(val2);i++{
+			egneg2:=new(big.Rat).Mul(val2[i].coef,big.NewRat(-1,1))
+			var pair2 pair_coef_var
+			pair2.coef=egneg2
+			pair2.variable=val2[i].variable
+			list_pcv_eg=append(list_pcv_eg,pair2)
+		}
+
+		list_list_pcv=append(list_list_pcv,list_pcv_eg)
+	
+	}	
+	if lenPl-1==number_of_predicate{		
+		fmt.Println("list_list_pcv = ",list_list_pcv)
+	}
+	
+	return list_list_pcv
+}
 
 
 
@@ -193,6 +255,9 @@ func passe1(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []strin
 
 	}
 
+	fmt.Println("tab_var : ",tab_variable)
+	fmt.Println("cpt = ",*cpt)
+
 return tab_variable
 }
 
@@ -201,86 +266,119 @@ return tab_variable
 * C'est ici qu'on gère la conversion des variables
 * Je fais beaucoup de disjonction de cas en fonction de int ou rat, mais selon votre format d'entrée ce ne sera peut-être pas nécessaire
 **/
-func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) ([]string, error) {
+func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, passe int, cpt int, pcv []pair_coef_var) ([]string, []pair_coef_var, error) {
+
 	var tab_var = make([]string,0)	
 	switch ttype := t.(type) {
 	case types.Meta:
-		// C'est ici que je stock les metavairables, que je regarde si elles sont entière et que je fais la correspondence
-		var_for_simplex := ttype.ToString()
-		(*map_v_mv)[var_for_simplex] = ttype // Je stock la nouvelle variable de simplexe dans une map pour refaire le lien après
-		if typing.IsInt(ttype.GetTypeHint()) {
-			(*iv) = append((*iv), var_for_simplex) // Je stock aussi la variable dans la liste des variables entière si elle doit être entière
+		if passe==0{
+			// C'est ici que je stock les metavairables, que je regarde si elles sont entière et que je fais la correspondence
+			var_for_simplex := ttype.ToString()
+			(*map_v_mv)[var_for_simplex] = ttype // Je stock la nouvelle variable de simplexe dans une map pour refaire le lien après
+			if typing.IsInt(ttype.GetTypeHint()) {
+				(*iv) = append((*iv), var_for_simplex) // Je stock aussi la variable dans la liste des variables entière si elle doit être entière
+			}
+			tab_var= append(tab_var,var_for_simplex)
+			return tab_var,pcv, nil
 		}
-		tab_var= append(tab_var,var_for_simplex)
-		return tab_var, nil
+		if passe==1{
+//			if arg_meta,ok:=ttype.(types.Meta);ok{
+				var pair pair_coef_var
+				pair.variable=ttype
+				pair.coef=big.NewRat(1,1)
+				pcv=append(pcv,pair)
+				return tab_var,pcv,nil
+//			}
+		}
 	case types.Fun:
-		fmt.Println("t.GetID() ",ttype.GetID())
-
+		
 		switch t.GetName(){
-		case "sum":
+			case "sum":
 
-		fmt.Println("ici")
-			var arg1, arg2 types.Term
-			arg1 = ttype.GetArgs()[0]
-			arg2 = ttype.GetArgs()[1]
-			
-			var1,_:=termToSimplex(arg1,map_v_mv,iv)
-			var2,_:=termToSimplex(arg2,map_v_mv,iv)
-			if var1!=nil{
-				tab_var=append(tab_var,var1...)
-			} 
-			if var2!=nil{
-				tab_var=append(tab_var,var2...)
-			}
-			
-
-			return tab_var,nil
-		case "product":
-
-			var arg1, arg2 types.Term
-			arg1 = ttype.GetArgs()[0]
-			arg2 = ttype.GetArgs()[1]
-			
-			var1,_:=termToSimplex(arg1,map_v_mv,iv)
-			var2,_:=termToSimplex(arg2,map_v_mv,iv)
-			if var1!=nil{
-				tab_var=append(tab_var,var1...)
-			} 
-			if var2!=nil{
-				tab_var=append(tab_var,var2...)
-			}
-			funT:=types.MakerFun(types.MakerId("product"),[]types.Term{arg1, arg2}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
-			i1, _ := funToSimplex(funT,map_v_mv, iv)
-			fmt.Println("i1 = ",i1)
-
-			return tab_var,nil
+				if passe==0{
 		
-		case "difference":
-			
-			var arg1, arg2 types.Term
-			arg1 = ttype.GetArgs()[0]
-			arg2 = ttype.GetArgs()[1]
-			
-			var1,_:=termToSimplex(arg1,map_v_mv,iv)
-			var2,_:=termToSimplex(arg2,map_v_mv,iv)
-			if var1!=nil{
-				tab_var=append(tab_var,var1...)
-			} 
-			if var2!=nil{
-				tab_var=append(tab_var,var2...)
-			}
-			
-			return tab_var,nil
+					var arg1, arg2 types.Term
+					arg1 = ttype.GetArgs()[0]
+					arg2 = ttype.GetArgs()[1]
+					
+					var1,_,_:=termToSimplex(arg1,map_v_mv,iv,passe,cpt,pcv)
+					var2,_,_:=termToSimplex(arg2,map_v_mv,iv,passe,cpt,pcv)
+					if var1!=nil{
+						tab_var=append(tab_var,var1...)
+					} 
+					if var2!=nil{
+						tab_var=append(tab_var,var2...)
+					}
+					
 
+					return tab_var,pcv,nil
+				}
+
+				if passe==1{			
+					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,cpt,pcv)
+					return tab_var,pair,nil 
+				}
+			case "product":
+				if passe==0{
 		
+					var arg1, arg2 types.Term
+					arg1 = ttype.GetArgs()[0]
+					arg2 = ttype.GetArgs()[1]
+					
+					var1,_,_:=termToSimplex(arg1,map_v_mv,iv,passe,cpt,pcv)
+					var2,_,_:=termToSimplex(arg2,map_v_mv,iv,passe,cpt,pcv)
+					if var1!=nil{
+						tab_var=append(tab_var,var1...)
+					} 
+					if var2!=nil{
+						tab_var=append(tab_var,var2...)
+					}
+					
 
-		default:
-			return tab_var,nil
+					return tab_var,pcv,nil
+				}
+				if passe==1{			
+					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,cpt,pcv)
+					fmt.Println("pairT = ",pair[0].coef)
+					return tab_var,pair,nil 
+				}
+			case "difference":
+				if passe==0{
+	
+					var arg1, arg2 types.Term
+					arg1 = ttype.GetArgs()[0]
+					arg2 = ttype.GetArgs()[1]
+					
+					var1,_,_:=termToSimplex(arg1,map_v_mv,iv,passe,cpt,pcv)
+					var2,_,_:=termToSimplex(arg2,map_v_mv,iv,passe,cpt,pcv)
+					if var1!=nil{
+						tab_var=append(tab_var,var1...)
+					} 
+					if var2!=nil{
+						tab_var=append(tab_var,var2...)
+					}
+					
+					return tab_var,pcv,nil
+
+				}		
+				if passe==1{			
+					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,cpt,pcv)
+					return tab_var,pair,nil 
+				}
+
+			default:
+				var pair pair_coef_var
+				monRat,_:=new(big.Rat).SetString(t.GetName())
+				pair.coef=monRat
+				pcv=append(pcv,pair)
+				return tab_var,pcv,nil
 		}
 	default:
 		fmt.Printf("Unexpected type in termToSimplex\n")
-		return tab_var, errors.New("Error")
+		return tab_var,pcv, errors.New("Error")
 	}
+	return tab_var,pcv,nil
+
 }
 
 /**
@@ -288,41 +386,175 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string) 
 **/
 
 
-type pair_coef_var struct{
-	coef *big.Rat
-	variable string
-} 
+func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,cpt int,pcv []pair_coef_var) ([]pair_coef_var,*big.Rat, error) {
 
-func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string) ([]pair_coef_var, error) {
-
-
-//	var pcv pair_coef_var
-	var tab_pcv = make([]pair_coef_var,0)
-
-
+	
 	switch f.GetID().GetName() {
 	
 	case "sum":
-		var arg1, arg2 types.Term
-			arg1 = f.GetArgs()[0]
-			arg2 = f.GetArgs()[1]
-			new_arg1:=types.MakerConst(types.MakerId(arg1.GetName()),tRat)
-			fmt.Println("Type de arg2 \n",arg2)
-			new_arg2:=types.MakerConst(types.MakerId(arg2.GetName()),tRat)
-			fun := types.MakerFun(types.MakerId("sum"),[]types.Term{new_arg1,new_arg2},typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-			test_rat,_:=EvaluateFun(fun)
-		fmt.Println("test_rat",test_rat)
-		fmt.Println("arg1 et arg2", arg1.GetName(), arg2.GetName())
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
+		
+
+		if arg1.IsFun() && arg2.IsMeta(){
+			if arg_fun, ok := arg1.(types.Fun); ok{
+				var pair pair_coef_var
+				if arg_meta,ok2:=arg2.(types.Meta);ok2{
+					pair.variable=arg_meta
+					pair.coef=big.NewRat(1,1)
+					pcv=append(pcv,pair)
+					return funToSimplex(arg_fun,map_v_mv,iv,cpt,pcv)
+				}	
+			}
+		}
+
+		if arg2.IsFun() && arg1.IsMeta(){
+			if arg_fun, ok := arg2.(types.Fun); ok{
+				var pair pair_coef_var
+				if arg_meta,ok2:=arg1.(types.Meta);ok2{
+					pair.variable=arg_meta
+					pair.coef=big.NewRat(1,1)
+					pcv=append(pcv,pair)
+					return funToSimplex(arg_fun,map_v_mv,iv,cpt,pcv)
+				}
+			}
+		}
+
+		if arg1.IsMeta() && arg2.IsMeta(){
+			if arg_meta1,ok1:=arg1.(types.Meta);ok1{
+				if arg_meta2,ok2:=arg2.(types.Meta);ok2{
+					var pair1, pair2 pair_coef_var
+					pair1.variable=arg_meta1
+					pair1.coef=big.NewRat(1,1)
+					pair2.variable=arg_meta2
+					pair2.coef=big.NewRat(1,1)
+					pcv=append(pcv,pair1)
+					pcv=append(pcv,pair2)
+					return pcv, newRat(),nil
+				}
+			}
+		}
+
+
+		if arg1.IsFun() && arg2.IsFun(){
+			if arg_fun2, ok2 := arg2.(types.Fun); ok2 {
+				if arg_fun1, ok1 := arg1.(types.Fun); ok1{
+					if !checkBinaryArithmeticFun(arg_fun1.GetID() ) && ! checkBinaryArithmeticFun(arg_fun2.GetID() ){
+						test_rat,_:=EvaluateFun(f)
+						return pcv,test_rat,nil
+					}
+				}
+			}
+		}
 
 	case "difference":
+
+		fmt.Println("ici2")
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
+
+
+		if arg1.IsFun() && arg2.IsMeta(){
+			fmt.Println("here2")
+			if arg_fun, ok := arg1.(types.Fun); ok{
+				if arg_meta,ok2:=arg2.(types.Meta);ok2{
+					var pair pair_coef_var
+					pair.variable=arg_meta
+					pair.coef=big.NewRat(1,1)
+					pcv=append(pcv,pair)
+					return funToSimplex(arg_fun,map_v_mv,iv,cpt,pcv)
+				}
+			}
+		}
+
+
+		if arg2.IsFun() && arg1.IsMeta(){
+			if arg_fun, ok := arg2.(types.Fun); ok{
+				if arg_meta,ok2:=arg1.(types.Meta);ok2{
+					var pair pair_coef_var
+					pair.variable=arg_meta
+					pair.coef=big.NewRat(1,1)
+					pcv=append(pcv,pair)
+					return funToSimplex(arg_fun,map_v_mv,iv,cpt,pcv)
+				}
+			}
+		}
+
+
+
+		if arg1.IsMeta() && arg2.IsMeta(){
+			if arg_meta1,ok1:=arg1.(types.Meta);ok1{
+				if arg_meta2,ok2:=arg2.(types.Meta);ok2{			
+					var pair1, pair2 pair_coef_var
+					pair1.variable=arg_meta1
+					pair1.coef=big.NewRat(1,1)
+					pair2.variable=arg_meta2
+					pair2.coef=big.NewRat(1,1)
+					pcv=append(pcv,pair1)
+					pcv=append(pcv,pair2)
+					return pcv, newRat(),nil
+				}
+			}
+		}
+
+
+
+		if arg1.IsFun() && arg2.IsFun(){
+			if arg_fun2, ok2 := arg2.(types.Fun); ok2 {
+				if arg_fun1, ok1 := arg1.(types.Fun); ok1{
+					if !checkBinaryArithmeticFun(arg_fun1.GetID() ) && ! checkBinaryArithmeticFun(arg_fun2.GetID() ){
+						test_rat,_:=EvaluateFun(f)
+						return pcv,test_rat,nil
+					}
+				}
+			}
+		}
 	
 	case "product":
-		var arg1, arg2 types.Term
-			arg1 = f.GetArgs()[0]
-			arg2 = f.GetArgs()[1]
+		arg1 := f.GetArgs()[0]
+		arg2 := f.GetArgs()[1]
 
-		fmt.Printf("arg1 %T \n",arg1)
-		fmt.Printf("arg2 %T \n",arg2)
+
+		if arg1.IsFun() && arg2.IsMeta(){
+			if arg_fun, ok := arg1.(types.Fun); ok{
+				if arg_meta,ok2:=arg2.(types.Meta);ok2{
+					_,val,_:=funToSimplex(arg_fun,map_v_mv,iv,cpt,pcv)
+					var pair pair_coef_var
+					pair.variable=arg_meta
+					pair.coef=val
+					pcv=append(pcv,pair)
+					return pcv, newRat(),nil
+				}
+			}
+			
+		}
+
+
+		if arg2.IsFun() && arg1.IsMeta(){
+			if arg_fun, ok := arg2.(types.Fun); ok{
+				if arg_meta,ok2:=arg1.(types.Meta);ok2{
+					_,val,_:=funToSimplex(arg_fun,map_v_mv,iv,cpt,pcv)
+					var pair pair_coef_var
+					pair.variable=arg_meta
+					pair.coef=val
+					pcv=append(pcv,pair)
+					return pcv, newRat(),nil
+				}
+			}
+		}
+
+		if arg1.IsFun() && arg2.IsFun(){
+			if arg_fun2, ok2 := arg2.(types.Fun); ok2 {
+				if arg_fun1, ok1 := arg1.(types.Fun); ok1{
+					if !checkBinaryArithmeticFun(arg_fun1.GetID() ) && ! checkBinaryArithmeticFun(arg_fun2.GetID() ){
+						test_rat,_:=EvaluateFun(f)
+						return pcv,test_rat,nil
+					}
+				}
+			}
+		}
+
+
 	case "quotient":
 	
 	case "quotient_e":
@@ -348,7 +580,7 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string) ([
 	case "round":
 	
 	default:
-		return tab_pcv, errors.New("Error")
+		return pcv,newRat(), errors.New("Error")
 	}
-	return tab_pcv, errors.New("Error")
+	return pcv,newRat(), errors.New("Error")
 }
