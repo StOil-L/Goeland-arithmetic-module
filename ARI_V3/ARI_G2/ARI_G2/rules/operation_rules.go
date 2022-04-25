@@ -8,6 +8,7 @@
 package ari
 
 import (
+	typing "ARI/polymorphism"
 	"ARI/types"
 	"errors"
 	"fmt"
@@ -135,7 +136,7 @@ func evaluateTerm(t types.Term) (*big.Rat, error) {
 
 func checkBinaryArithmeticFun(id types.Id) bool {
 	s := id.ToString()
-	return  s == "sum" || s == "product" || s == "difference"
+	return  s == "sum" || s == "product" || s == "difference" || s == "quotient" || s == "quotient_e" || s == "quotient_t" || s == "quotient_f" || s == "remainder_e" || s == "remainder_t" || s == "remainder_f"
 }
 
 func EvaluateFun(f types.Fun) (*big.Rat, error) {
@@ -166,172 +167,173 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			return newRat().Mul(res1, res2), nil
 		}
 	case "quotient":
-		switch f.GetTypeHint() {
-		case tRat:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	return new(big.Rat).Quo(res1, res2), nil
-			// }
-		default:
-			return zero_rat, errors.New("Error in evaluate : quotient")
-		}
+		// fmt.Println(f.GetTypeHint())
+		// switch f.GetTypeHint() {
+		// case tInt, tRat:
+			if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+				fmt.Print("passage dans if (erreur)")
+				return zero_rat, err
+			} else {
+				fmt.Print("passage dans else (pas d'erreur)")
+				return newRat().Quo(res1, res2), nil
+			}
+		// default:
+		// 	fmt.Print("je passe dans le default")
+		// 	return zero_rat, errors.New("Error in evaluate : quotient")
+		// }
 	case "quotient_e":
-		switch f.GetTypeHint() {
-		case tInt:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : quotien_e on int
-			// 	quo := res1 / res2
-			// 	if res1/res2 < 0 {
-			// 		quo = res1/res2 - 1
-			// 	}
-			// 	return quo, nil
-			// }
-		case tRat:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			//	divided := res1
-			//	quo := 0
-			//	if res2.Cmp(big.NewInt(0)) == -1 {
-			//		for divided > 0 {
-			//			if (new(big.Rat).Add(divided, new(big.Rat).Neg(res2))).Cmp(zero_rat) == 1 {
-			//				divided.Add(divided, new(big.Rat).Neg(res2)))
-			//				quo = quo + 1
-			//			}
-			//		}
-			//	}
-			//	else if res2.Cmp(big.NewInt(0)) == 1 {
-			//		for divided < 0 {
-			//			if (new(big.Rat).Add(divided, new(big.Rat))).Cmp(zero_rat) == -1 {
-			//				divided.Add(divided, res2))
-			//				quo = quo + 1
-			//			}
-			//		}
-			//		if divided.Cmp(zero_rat) != 0 {
-			//			quo = quo + 1
-			//		}
-			//	}
-			//	return quo, nil
-			// }
-		default:
-			return zero_rat, errors.New("Error in evaluate : quotient_e")
-		}
+		// switch f.GetTypeHint() {
+		// case tInt:
+		// 	if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+		// 		return zero_rat, err
+		// 	} else {
+		// 		// TODO : quotien_e on int
+		// 		quo := new(big.Int).Div(res1.Num(), res2.Num())
+		// 		if (new(big.Int).Div(res1.Num(), res2.Num())).Cmp(big.NewInt(0)) == -1 {
+		// 			quo.Add(quo, big.NewInt(-1))
+		// 		}
+		// 		return big.NewRat(quo.Int64(), 1), nil
+		// 	}
+		// case tRat:
+			if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+				return zero_rat, err
+			} else {
+				divided := res1
+				quo := 0
+				if res2.Cmp(zero_rat) == -1 {
+					for divided.Cmp(zero_rat) == 1 {
+						if (newRat().Add(divided, newRat().Neg(res2))).Cmp(zero_rat) == 1 {
+							divided.Add(divided, newRat().Neg(res2))
+							quo = quo + 1
+						}
+					}
+				} else if res2.Cmp(zero_rat) == 1 {
+					for divided.Cmp(zero_rat) == -1 {
+						if (newRat().Add(divided, newRat())).Cmp(zero_rat) == -1 {
+							divided.Add(divided, res2)
+							quo = quo + 1
+						}
+					}
+					if divided.Cmp(zero_rat) != 0 {
+						quo = quo + 1
+					}
+				}
+				return big.NewRat(int64(quo), 1), nil
+			}
+		// default:
+		// 	return zero_rat, errors.New("Error in evaluate : quotient_e")
+		// }
 	case "quotient_t":
-		switch f.GetTypeHint() {
-		case tInt:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : quotient_t on int
-			// 	return res1 / res2, nil
-			// 	return res1.Mul(res1, new(big.Rat).Inv(res2)), nil
-			// }
-		case tRat:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	quo := res1.Mul(res1, new(big.Rat).Inv(res2))
-			//	return big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64()), nil
-			// }
-		default:
-			return zero_rat, errors.New("Error in evaluate : quotient_t")
-		}
+		// switch f.GetTypeHint() {
+		// case tInt:
+		// 	if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+		// 		return zero_rat, err
+		// 	} else {
+		// 		return res1.Mul(res1, newRat().Inv(res2)), nil
+		// 	}
+		// case tRat:
+			if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+				return zero_rat, err
+			} else {
+				quo := res1.Mul(res1, newRat().Inv(res2))
+				return big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64()), nil
+			}
+		// default:
+		// 	return zero_rat, errors.New("Error in evaluate : quotient_t")
+		// }
 	case "quotient_f":
-		switch f.GetTypeHint() {
-		case tInt:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : quotient_f on int
-			// 	return int(math.Floor(float64((res1 * 1.) / res2))), nil
-			// }
-		case tRat:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	quo := res1.Mul(res1, new(big.Rat).Inv(res2))
-			//  flooredquo := big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64())
-			// 	if quo.Cmp(flooredquo) != 0 && flooredquo.Cmp(zero_rat) == -1 {
-			//		flooredquo.Add(flooredquo, big.NewRat(-1, 1))
-			//	}
-			//	return flooredquo, nil
-			// }
-		default:
-			return zero_rat, errors.New("Error in evaluate : quotient_f")
-		}
+		// switch f.GetTypeHint() {
+		// case tInt:
+		// 	if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+		// 		return zero_rat, err
+		// 	} else {
+		// 		// TODO : quotient_f on int
+		// 		return int(math.Floor(float64((res1 * 1.) / res2))), nil
+		// 	}
+		// case tRat:
+			if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+				return zero_rat, err
+			} else {
+				quo := res1.Mul(res1, newRat().Inv(res2))
+				flooredquo := big.NewRat((new(big.Int).Mul(new(big.Int).Quo(quo.Num(), quo.Denom()), quo.Denom())).Int64(), (quo.Denom()).Int64())
+				if quo.Cmp(flooredquo) != 0 && flooredquo.Cmp(zero_rat) == -1 {
+					flooredquo.Add(flooredquo, big.NewRat(-1, 1))
+				}
+				return flooredquo, nil
+			}
+		// default:
+		// 	return zero_rat, errors.New("Error in evaluate : quotient_f")
+		// }
 	case "remainder_e":
-		switch f.GetTypeHint() {
-		case tInt:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : reminder_e on int
-			// 	remain := res1 % res2
-			// 	if res1/res2 < 0 {
-			// 		remain += res2
-			// 	}
-			// 	return remain, nil
-			// }
-		case tRat:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	Rquotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tInt, tInt)))
-			//	quotient_e, _ := FunToRat(Rquotient_e)
-			//	rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_e))))
-			//	return rem, nil
-			// }
-		default:
-			return zero_rat, errors.New("Error in evaluate : remainder_e")
-		}
+		// switch f.GetTypeHint() {
+		// case tInt:
+		// 	if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+		// 		return zero_rat, err
+		// 	} else {
+		// 		// TODO : reminder_e on int
+		// 		remain := res1 % res2
+		// 		if res1/res2 < 0 {
+		// 			remain += res2
+		// 		}
+		// 		return remain, nil
+		// 	}
+		// case tRat:
+			if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+				return zero_rat, err
+			} else {
+				Rquotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tRat, tRat)))
+				quotient_e, _ := EvaluateFun(Rquotient_e)
+				rem := newRat().Set(newRat().Add(res1, newRat().Neg(newRat().Mul(res2, quotient_e))))
+				return rem, nil
+			}
+		// default:
+		// 	return zero_rat, errors.New("Error in evaluate : remainder_e")
+		// }
 	case "remainder_t":
-		switch f.GetTypeHint() {
-		case tInt:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : remainder_t on int
-			// 	return res1 % res2, nil
-			// }
-		case tRat:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	Rquotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tInt, tInt)))
-			//	quotient_t, _ := FunToRat(Rquotient_t)
-			//	rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_t))))
-			//	return rem, nil
-			// }
-		default:
-			return zero_rat, errors.New("Error in evaluate : remainder_t")
-		}
+		// switch f.GetTypeHint() {
+		// case tInt:
+		// 	if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+		// 		return zero_rat, err
+		// 	} else {
+		// 		// TODO : remainder_t on int
+		// 		return res1 % res2, nil
+		// 	}
+		// case tRat:
+			if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+				return zero_rat, err
+			} else {
+				Rquotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tRat, tRat)))
+				quotient_t, _ := EvaluateFun(Rquotient_t)
+				rem := newRat().Set(newRat().Add(res1, newRat().Neg(newRat().Mul(res2, quotient_t))))
+				return rem, nil
+			}
+		// default:
+		// 	return zero_rat, errors.New("Error in evaluate : remainder_t")
+		// }
 	case "remainder_f":
-		switch f.GetTypeHint() {
-		case tInt:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	// TODO : remainder_f on int
-			// 	//peut être faire ça sur chaque remainder ? -> Julie : oui, ça peut être une bonne idée ?
-			// 	Rquotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
-			// 	quotient_f, _ := evaluateFun(Rquotient_f)
-			// 	return res1 - (res2 * quotient_f), nil
-			// }
-		case tRat:
-			// if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
-			// 	return zero_rat, err
-			// } else {
-			// 	Rquotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
-			//	quotient_f, _ := FunToRat(Rquotient_f)
-			//	rem := new(big.Rat).Set(new(big.Rat).Add(res1, new(big.Rat).Neg(new(big.Rat).Mul(res2, quotient_f))))
-			//	return rem, nil
-			// }
-		default:
-			return zero_rat, errors.New("Error in evaluate : remainder_f")
-		}
+		// switch f.GetTypeHint() {
+		// case tInt:
+		// 	if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+		// 		return zero_rat, err
+		// 	} else {
+		// 		// TODO : remainder_f on int
+		// 		//peut être faire ça sur chaque remainder ? -> Julie : oui, ça peut être une bonne idée ?
+		// 		Rquotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
+		// 		quotient_f, _ := EvaluateFun(Rquotient_f)
+		// 		return res1 - (res2 * quotient_f), nil
+		// 	}
+		// case tRat:
+			if res1, res2, err := checkError2Args(arg1, arg2); err != nil {
+				return zero_rat, err
+			} else {
+				Rquotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tRat, tRat)))
+				quotient_f, _ := EvaluateFun(Rquotient_f)
+				rem := newRat().Set(newRat().Add(res1, newRat().Neg(newRat().Mul(res2, quotient_f))))
+				return rem, nil
+			}
+		// default:
+		// 	return zero_rat, errors.New("Error in evaluate : remainder_f")
+		// }
 	case "uminus":
 		switch f.GetTypeHint() {
 		case tInt, tRat:
@@ -397,6 +399,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			return zero_rat, errors.New("Error in evaluate : floor")
 		}
 	case "round":
+		fmt.Println(f.GetTypeHint())
 		switch f.GetTypeHint() {
 		case tInt:
 
