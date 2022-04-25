@@ -99,13 +99,89 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 
 	map_variable_metavariables := make(map[string]types.Meta)
 	int_variables := []string{}
-	var tab_variable = make([]string, 0)
+	var tab_variable = make([]types.Meta, 0)
 	ligne_matrice:=0
 	passe:=0
 	var list_list_pcv = make([][]pair_coef_var,0)
 	
+	
+
 	for passe<3{
-			
+
+
+		if passe==2{
+			var list_list_pcv_sort = make([][]pair_coef_var,0)
+			var meta_const types.Meta
+			for i:=0;i<len(list_list_pcv);i++{
+				var list_pcv_sort = make([]pair_coef_var,0)
+				cpt_var:=0
+				var pair pair_coef_var
+				pair.coef=newRat()
+				for j:=0;j<len(list_list_pcv[i]);j++{
+					again := false
+					if list_list_pcv[i][j].variable==tab_variable[cpt_var]{
+						for k:=0;k<cpt_var;k++{
+							if list_list_pcv[i][j].variable==tab_variable[k]{
+								list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
+								again=true
+							}
+						}
+						
+						if !again{
+							list_pcv_sort=append(list_pcv_sort,list_list_pcv[i][j])
+							if cpt_var<len(tab_variable)-1{
+								cpt_var+=1
+							}
+						}else {again=false}
+					} else {
+						fmt.Println("cpt_var = ",cpt_var)
+						for k:=0;k<cpt_var;k++{
+							fmt.Println("here ", list_list_pcv[i][j].variable)
+							if list_list_pcv[i][j].variable==tab_variable[k]{
+								fmt.Println("here2")
+								list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
+								again=true
+							}
+						}
+						if !again && list_list_pcv[i][j].variable!=meta_const && cpt_var!=0{
+							fmt.Println("ici",list_list_pcv[i][j].variable)
+							var pair2 pair_coef_var
+							pair2.coef=newRat()
+							pair2.variable=tab_variable[cpt_var]
+							list_pcv_sort=append(list_pcv_sort,pair2)
+						} else if list_list_pcv[i][j].variable==meta_const{
+
+							pair.coef.Add(pair.coef,list_list_pcv[i][j].coef)
+						}
+					}
+					again=false
+					if j==len(list_list_pcv[i])-1{
+						for n:=0;n<len(tab_variable);n++{
+							present:=false
+							for m:=0;m<len(list_pcv_sort);m++{
+								if tab_variable[n]==list_pcv_sort[m].variable{
+									present=true
+								}
+							}
+							if !present{
+								var pair2 pair_coef_var
+								pair2.coef=newRat()
+								pair2.variable=tab_variable[n]
+								list_pcv_sort=append(list_pcv_sort,pair2)
+							}else {present=false}
+						}
+						list_pcv_sort=append(list_pcv_sort,pair)
+					}
+				}
+				list_list_pcv_sort=append(list_list_pcv_sort,list_pcv_sort)		
+			}
+			fmt.Println("list_list_pcv_sort = ",list_list_pcv_sort )
+			fmt.Println("taille syteme", len(list_list_pcv_sort))
+		}
+
+
+
+
 
 		for number_of_predicate, p := range pl {
 			var list_pcv = make([]pair_coef_var,0)
@@ -118,48 +194,6 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				return nil, nil, nil
 			}
 
-			if passe==2{
-				var list_list_pcv_sort = make([][]pair_coef_var,0)
-				var list_pcv_sort = make([]pair_coef_var,0)
-				for i:=0;i<len(list_list_pcv);i++{
-					cpt_var:=0
-					var pair pair_coef_var
-					pair.coef=newRat()
-					for j:=0;j<len(list_list_pcv[i]);j++{
-						again := false
-						if list_list_pcv[i][j].variable.GetName()==tab_variable[cpt_var]{
-							list_pcv_sort=append(list_pcv_sort,list_list_pcv[i][j])
-							if cpt_var<len(tab_variable)-1{
-								cpt_var+=1
-							}
-						} else {
-							for k:=0;k<cpt_var;k++{
-								if list_list_pcv[i][j].variable.GetName()==tab_variable[k]{
-									list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
-									again=true
-								}
-							}
-							if ! again && list_list_pcv[i][j].variable.GetName()!=""{
-								var pair2 pair_coef_var
-								pair2.coef=newRat()
-								pair2.variable=map_variable_metavariables[tab_variable[cpt_var]]
-								list_pcv_sort=append(list_pcv_sort,pair2)
-							} else if list_list_pcv[i][j].variable.GetName()==""{
-
-								pair.coef.Add(pair.coef,list_list_pcv[i][j].coef)
-							}
-						}
-						again=false
-
-						if j==len(list_list_pcv[i]){
-							list_pcv_sort=append(list_pcv_sort,pair)
-							list_list_pcv_sort=append(list_list_pcv_sort,list_pcv_sort)
-						}
-
-					}
-				}
-				fmt.Println("list_list_pcv_sort = ",list_list_pcv_sort )
-			}
 			
 			switch p.GetID().GetName() {
 		
@@ -251,7 +285,7 @@ func passe2(list_list_pcv [][]pair_coef_var,number_of_predicate int, list_pcv []
 	
 	}	
 	if lenPl-1==number_of_predicate{		
-		fmt.Println("list_list_pcv = ",list_list_pcv)
+	//	fmt.Println("list_list_pcv = ",list_list_pcv)
 	}
 	
 	return list_list_pcv
@@ -259,7 +293,7 @@ func passe2(list_list_pcv [][]pair_coef_var,number_of_predicate int, list_pcv []
 
 
 
-func passe1(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []string, b bool) ([]string){
+func passe1(p types.Pred,t1 []types.Meta, t2 []types.Meta, cpt *int,tab_variable []types.Meta, b bool) ([]types.Meta){
 	if b{
 		*cpt+=2
 	}else {
@@ -272,12 +306,12 @@ func passe1(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []strin
 			present=false
 			fmt.Println("variable2 =",variable.GetName())
 			for i:=0;i<len(tab_variable);i++{
-				if tab_variable[i]==variable.GetName(){
+				if tab_variable[i]==variable{
 					present=true
 				}
 			}
 			if !present{
-				tab_variable=append(tab_variable,variable.GetName())
+				tab_variable=append(tab_variable,variable)
 			}
 		}
 	}	
@@ -285,14 +319,14 @@ func passe1(p types.Pred,t1 []string, t2 []string, cpt *int,tab_variable []strin
 		for i:=0;i<len(t1);i++{
 			variable := p.GetArgs()[0].GetMetas()[i]
 			present=false
-			fmt.Println("variable1 =",variable.GetName())
+			fmt.Println("variable1 =",variable)
 			for i:=0;i<len(tab_variable);i++{
-				if tab_variable[i]==variable.GetName(){
+				if tab_variable[i]==variable{
 					present=true
 				}
 			}
 			if !present{
-				tab_variable=append(tab_variable,variable.GetName())
+				tab_variable=append(tab_variable,variable)
 			}
 		
 
@@ -311,9 +345,9 @@ return tab_variable
 * C'est ici qu'on gère la conversion des variables
 * Je fais beaucoup de disjonction de cas en fonction de int ou rat, mais selon votre format d'entrée ce ne sera peut-être pas nécessaire
 **/
-func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, passe int, cpt int, pcv []pair_coef_var) ([]string, []pair_coef_var, error) {
+func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, passe int, cpt int, pcv []pair_coef_var) ([]types.Meta, []pair_coef_var, error) {
 
-	var tab_var = make([]string,0)	
+	var tab_var = make([]types.Meta,0)	
 	switch ttype := t.(type) {
 	case types.Meta:
 		if passe==0{
@@ -323,7 +357,7 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, 
 			if typing.IsInt(ttype.GetTypeHint()) {
 				(*iv) = append((*iv), var_for_simplex) // Je stock aussi la variable dans la liste des variables entière si elle doit être entière
 			}
-			tab_var= append(tab_var,var_for_simplex)
+			tab_var= append(tab_var,ttype)
 			return tab_var,pcv, nil
 		}
 		if passe==1{
@@ -494,13 +528,11 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,cpt
 
 	case "difference":
 
-		fmt.Println("ici2")
 		arg1 := f.GetArgs()[0]
 		arg2 := f.GetArgs()[1]
 
 
 		if arg1.IsFun() && arg2.IsMeta(){
-			fmt.Println("here2")
 			if arg_fun, ok := arg1.(types.Fun); ok{
 				if arg_meta,ok2:=arg2.(types.Meta);ok2{
 					var pair pair_coef_var
