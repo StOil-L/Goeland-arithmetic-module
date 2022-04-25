@@ -197,6 +197,8 @@ func main() {
 	TestSimplexeSumRat()
 	TestSimplexeBeaucoupRat_2()
 
+	fmt.Println(" ------------- TEST Passe2 ------------- ")
+	*/ 
 	TestSimplexePasse2()
 	TestSimplexePasse2_calcul_sum()
 	TestSimplexeSum()
@@ -207,7 +209,7 @@ func main() {
 	TestSimplexeSum_var()
 	TestSimplexeBeaucoupRat()
 	TestSimplexePasse2MultiEg()
-*/
+
 }
 
 /*** Test création de termes ***/
