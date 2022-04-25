@@ -28,7 +28,7 @@ func main() {
 		fmt.Println("x+y>=2,2x-y>=0,-x+2y>=1")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -60,7 +60,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -91,7 +91,7 @@ func main() {
 		fmt.Println("x+y>=0,x+y>=1,x+y>=2,x+y>=3,x+y>=4")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -124,7 +124,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -155,7 +155,7 @@ func main() {
 		fmt.Println("x+y>=0,x+2y>=1,x+3y>=2,x+4y>=3,x+5y>=4")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -189,7 +189,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -220,7 +220,7 @@ func main() {
 		fmt.Println("x>=1/4,x<=1/5")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -254,7 +254,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -285,7 +285,7 @@ func main() {
 		fmt.Println("x=1/4")
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -319,7 +319,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -387,7 +387,7 @@ func main() {
 		fmt.Println("\nmatrice des coefficients saisis :",tableau,"\ntableau des contraintes saisies :" ,tab_cont)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -458,7 +458,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -499,7 +499,7 @@ func main() {
         fmt.Println("tab_var = ",tab_var)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -538,7 +538,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -591,7 +591,7 @@ func main() {
         fmt.Println("tab_var = ",tab_var)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -642,7 +642,7 @@ func main() {
 		channel := make(chan branch_and_bound)
 
 	//creation tableau des affectations : taille = nombre de ligne + nombre de colonnes
-	alpha_tab := create_alpha_tab(tableau, tab_var)
+	alpha_tab := Create_alpha_tab(tableau, tab_var)
 	//tableau qui nous donne la postion des variables dans le tableau alpha_tab
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
@@ -677,7 +677,7 @@ func main() {
  *   - `tab_nom_var`, an array of the system's starting variable
  * It returns the create map 
  **/
-func create_alpha_tab(tab_coef [][]*big.Rat, tab_nom_var []string) map[string]*big.Rat{
+func Create_alpha_tab(tab_coef [][]*big.Rat, tab_nom_var []string) map[string]*big.Rat{
 	alpha_tab := make(map[string]*big.Rat)
 	//Creation variable d'ecart
 	for i := 0; i < len(tab_coef); i++ {

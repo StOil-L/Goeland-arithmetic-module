@@ -193,15 +193,14 @@ func updateMatrice(system info_system, colonne_pivot int, ligne_pivot int) (info
 	//ajout numéro colonne pivot 
 	system.incremental_coef=append(system.incremental_coef,big.NewRat(int64(colonne_pivot), 1))
 	//ajout pivot
-	var inv_pivot = new(big.Rat)
-	inv_pivot.Set(new(big.Rat).Inv(system.tab_coef[ligne_pivot][colonne_pivot]))
+	inv_pivot := new(big.Rat).Set(new(big.Rat).Inv(system.tab_coef[ligne_pivot][colonne_pivot]))
 	for i := 0; i < len(system.tab_coef[0]); i++ {
 		if i == colonne_pivot {
 			system.incremental_coef=append(system.incremental_coef,inv_pivot)
-			system.tab_coef[ligne_pivot][i]=inv_pivot
+			system.tab_coef[ligne_pivot][i]=new(big.Rat).Set(inv_pivot)
 		} else {
 			system.tab_coef[ligne_pivot][i].Mul(new(big.Rat).Neg(system.tab_coef[ligne_pivot][i]), inv_pivot)
-			system.incremental_coef=append(system.incremental_coef,system.tab_coef[ligne_pivot][i])
+			system.incremental_coef=append(system.incremental_coef,new(big.Rat).Set(system.tab_coef[ligne_pivot][i]))
 		}
 
 	}
