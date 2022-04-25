@@ -18,8 +18,7 @@ import (
  **/
 func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system, tab_rat_bool []bool) (map[string]*big.Rat, bool){
 
-	fmt.Println("\033[0m ") 
-	
+	//fmt.Println("\033[0m ") 
 	solutionEntiere,index:=estSol(system.alpha_tab,system.tab_nom_var, tab_rat_bool)
 	
 	//Cas d'arret si solution est fait seulement d'entier
@@ -29,21 +28,12 @@ func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system
         return system.alpha_tab, true
     }
 
-	/*tab_coef [][]*big.Rat
-    tab_cont []*big.Rat
-    tab_nom_var []string
-	pos_var_tab []string
-	bland []string
-	alpha_tab map[string]*big.Rat
-    incremental_coef []*big.Rat
-    incremental_aff []*big.Rat*/
-
     tab_coef := deepCopyMatrice(system.tab_coef)
     tab_cont := deepCopyTableau(system.tab_cont)
     tab_nom_var := system.tab_nom_var
     pos_var_tab := system.pos_var_tab
     bland := system.bland
-    alpha_tab := Create_alpha_tab(tab_coef, tab_nom_var)
+    alpha_tab := copy_alpha_tab(tab_coef, tab_nom_var, system.alpha_tab)
     incremental_coef := deepCopyTableau(system.incremental_coef)
     incremental_aff := deepCopyTableau(system.incremental_aff)
 
@@ -118,7 +108,6 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
 			system, gotSol := Simplexe(system)
 
 			sol, solBool := Branch_bound(gotSol, channelBis, system, tab_rat_bool)
-
 			str_bandb := branch_and_bound{solBoolStr: solBool, solStr: sol}
 			select {
 				case channel <- str_bandb:
@@ -247,8 +236,8 @@ func incremental(system info_system) (info_system){
 		cal_alpha.Add(cal_alpha, new(big.Rat).Mul(system.tab_coef[ligne_modif][i], system.alpha_tab[system.pos_var_tab[i + len(system.tab_coef)-1]]))
 	}
 
-	fmt.Println("Alpha = ", cal_alpha)
-	fmt.Println("TabCoef = ", system.tab_coef[ligne_modif])
+	/*fmt.Println("Alpha = ", cal_alpha)
+	fmt.Println("TabCoef = ", system.tab_coef[ligne_modif])*/
 
 	//Maj des tableaux
 	system.alpha_tab[fmt.Sprint("e", len(system.tab_coef)-1)] = cal_alpha
@@ -256,4 +245,23 @@ func incremental(system info_system) (info_system){
 	system.bland = append(system.bland, fmt.Sprint("e", len(system.tab_coef)-1))
 
 	return system
+}
+
+func copy_alpha_tab(tab_coef [][]*big.Rat, tab_nom_var []string, alpha_tab map[string]*big.Rat) map[string]*big.Rat{
+	alpha_tab_bis := make(map[string]*big.Rat)
+	//Creation variable d'ecart
+	for i := 0; i < len(tab_coef); i++ {
+		alpha_tab_bis[fmt.Sprint("e", i)] = new(big.Rat)
+	}
+	//Creation variable initial
+	if len(tab_nom_var) == 0 {
+	    for i := 0; i < len(tab_coef[0]); i++ {
+		alpha_tab_bis[fmt.Sprint("x", i)] = new(big.Rat).Set(alpha_tab[fmt.Sprint("x", i)])
+	    }
+    } else {
+        for i := 0; i < len(tab_coef[0]); i++ {
+            alpha_tab_bis[tab_nom_var[i]] = new(big.Rat).Set(alpha_tab[tab_nom_var[i]])
+	    }
+    }
+	return alpha_tab_bis
 }

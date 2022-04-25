@@ -15,10 +15,10 @@ import (
  **/
 func Simplexe(system info_system) (info_system, bool){
 
-	fmt.Println("system.tab_nom_var",system.tab_nom_var)
+	/*fmt.Println("system.tab_nom_var",system.tab_nom_var)
 	fmt.Println("tab_cont",system.tab_cont)
 	fmt.Println("alpha_tab",system.alpha_tab)
-	fmt.Println("tab_coef",system.tab_coef)
+	fmt.Println("tab_coef",system.tab_coef)*/
 
 	var pos_var_tab_bis =make([]string,len(system.pos_var_tab))
 	for i:=0;i<len(system.pos_var_tab);i++{
@@ -36,17 +36,17 @@ func Simplexe(system info_system) (info_system, bool){
 		}
 
 	}
-	fmt.Println("pos_var_tab_bis : ",pos_var_tab_bis)
+	//fmt.Println("pos_var_tab_bis : ",pos_var_tab_bis)
 	//incrémental aff ? 
 
-	fmt.Println("\033[0m") 
+	//fmt.Println("\033[0m") 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
 		//ligne_pivot est la ligne qui ne respecte pas sa contrainte
 		ligne_pivot := checkCont(system.alpha_tab, system.tab_cont, pos_var_tab_bis)		
 		if ligne_pivot == -1 {
-			fmt.Println(" \033[33m La solution est : ")
-			fmt.Println("alpha_tab_bis ", system.alpha_tab, "\n")
+			/*fmt.Println(" \033[33m La solution est : ")
+			fmt.Println("alpha_tab_bis ", system.alpha_tab, "\n")*/
 			system.pos_var_tab = pos_var_tab_bis
 			return system, true
 		}
@@ -54,8 +54,8 @@ func Simplexe(system info_system) (info_system, bool){
 		colonne_pivot := 0
 		system, colonne_pivot = pivot(system, ligne_pivot, pos_var_tab_bis)
 		if colonne_pivot == -1 {
-			fmt.Println(" \033[33m") 
-			fmt.Println("Il n'existe pas de solution pour ces contraintes")
+			/*fmt.Println(" \033[33m") 
+			fmt.Println("Il n'existe pas de solution pour ces contraintes")*/
 			return system, false
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
@@ -64,8 +64,8 @@ func Simplexe(system info_system) (info_system, bool){
 			system = updateAlpha(system,ligne_pivot,pos_var_tab_bis)
 
 			//time.Sleep(time.Second)
-			fmt.Println("\033[35m matrice des coefficients :",system.tab_coef,"\033[0m")
-			fmt.Println("\033[34m affectations :" ,system.alpha_tab,"\033[0m")
+			/*fmt.Println("\033[35m matrice des coefficients :",system.tab_coef,"\033[0m")
+			fmt.Println("\033[34m affectations :" ,system.alpha_tab,"\033[0m")*/
 			
 		}
 	}
@@ -84,10 +84,12 @@ func Simplexe(system info_system) (info_system, bool){
  **/
 func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab []string) int{
 	for index, variable := range pos_var_tab[:len(tab_cont)]  {
+		fmt.Println(pos_var_tab[:len(tab_cont)], "\n", alpha_tab)
 		if variable[0] == 'e' {
-			if alpha_tab[variable].Cmp(tab_cont[index]) == -1 {
+			num_var, _ := strconv.Atoi(string(variable[1]))
+			if alpha_tab[variable].Cmp(tab_cont[num_var]) == -1 {
 				return index
-			}	
+			}
 		}	
 	}
 	return -1
@@ -166,14 +168,14 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 			for index2, element2 := range system.tab_coef[pivot_line] {
 					alpha_ligne.Add(alpha_ligne, new(big.Rat).Mul(element2, system.alpha_tab[pos_var_tab[index2+len(system.tab_coef)]]))
 			}
-			fmt.Println("alpha_colonne", alpha_colonne)
-			fmt.Println("alpha_ligne",alpha_ligne)
+			/*fmt.Println("alpha_colonne", alpha_colonne)
+			fmt.Println("alpha_ligne",alpha_ligne)*/
 			system.alpha_tab[pos_var_tab[pivot_line]].Set(alpha_ligne)
 			system.alpha_tab[var_pivot].Set(alpha_colonne)
-			fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",
-			pos_var_tab[pivot_line]+"\033[0m")
+			/*fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",
+			pos_var_tab[pivot_line]+"\033[0m")*/
 			pos_var_tab[pivot_line], pos_var_tab[colonne_pivot] = pos_var_tab[colonne_pivot], pos_var_tab[pivot_line]
-			fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
+			//fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
 			return system, colonne_pivot-len(system.tab_coef)
 		}
 	}
