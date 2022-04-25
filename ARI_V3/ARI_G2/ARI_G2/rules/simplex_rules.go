@@ -93,7 +93,10 @@ func simplex([]string, []string) (bool, map[string]*big.Rat) {
 
 
 func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []string) {
+	//ce truc sera remplacé par une struct
 	res_for_simplex := []string{}
+
+
 	map_variable_metavariables := make(map[string]types.Meta)
 	int_variables := []string{}
 	var tab_variable = make([]string, 0)
@@ -115,7 +118,49 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 				return nil, nil, nil
 			}
 
-		
+			if passe==2{
+				var list_list_pcv_sort = make([][]pair_coef_var,0)
+				var list_pcv_sort = make([]pair_coef_var,0)
+				for i:=0;i<len(list_list_pcv);i++{
+					cpt_var:=0
+					var pair pair_coef_var
+					pair.coef=newRat()
+					for j:=0;j<len(list_list_pcv[i]);j++{
+						again := false
+						if list_list_pcv[i][j].variable.GetName()==tab_variable[cpt_var]{
+							list_pcv_sort=append(list_pcv_sort,list_list_pcv[i][j])
+							if cpt_var<len(tab_variable)-1{
+								cpt_var+=1
+							}
+						} else {
+							for k:=0;k<cpt_var;k++{
+								if list_list_pcv[i][j].variable.GetName()==tab_variable[k]{
+									list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
+									again=true
+								}
+							}
+							if ! again && list_list_pcv[i][j].variable.GetName()!=""{
+								var pair2 pair_coef_var
+								pair2.coef=newRat()
+								pair2.variable=map_variable_metavariables[tab_variable[cpt_var]]
+								list_pcv_sort=append(list_pcv_sort,pair2)
+							} else if list_list_pcv[i][j].variable.GetName()==""{
+
+								pair.coef.Add(pair.coef,list_list_pcv[i][j].coef)
+							}
+						}
+						again=false
+
+						if j==len(list_list_pcv[i]){
+							list_pcv_sort=append(list_pcv_sort,pair)
+							list_list_pcv_sort=append(list_list_pcv_sort,list_pcv_sort)
+						}
+
+					}
+				}
+				fmt.Println("list_list_pcv_sort = ",list_list_pcv_sort )
+			}
+			
 			switch p.GetID().GetName() {
 		
 				case types.Id_eq.GetName():
