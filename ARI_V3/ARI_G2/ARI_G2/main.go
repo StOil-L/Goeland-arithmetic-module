@@ -67,7 +67,7 @@ func main() {
     TestProdRat2()
     TestProdNegRat2()
 	TestProdNegRat3()
-
+/*
 	fmt.Println(" ------------- TEST Quotient Rat ------------- ")
 
 	TestQuoRat()
@@ -192,17 +192,17 @@ func main() {
 	TestRoundNegRat2() 
 
 	fmt.Println(" ------------- TEST Passe1 ------------- ")
-/*	 
+	 
 	// Tests règles simplexe
 	TestSimplexeRat1()
 	TestSimplexeRat2()
 	TestSimplexeRat()
 	TestSimplexeSumRat()
 	TestSimplexeBeaucoupRat_2()
-*/
-//	TestSimplexePasse2()
-//	TestSimplexePasse2_calcul_sum()
-//	TestSimplexeSum()
+
+	TestSimplexePasse2()
+	TestSimplexePasse2_calcul_sum()
+	TestSimplexeSum()
 	TestSimplexeSum_number()
 	TestSimplexeProd_number()
 	TestSimplexeSum_number_inv()
@@ -210,6 +210,7 @@ func main() {
 	TestSimplexeSum_var()
 	TestSimplexeBeaucoupRat()
 	TestSimplexePasse2MultiEg()
+*/
 }
 
 /*** Test création de termes ***/
