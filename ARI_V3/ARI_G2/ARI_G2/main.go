@@ -5,7 +5,7 @@ import (
 	ari "ARI/rules"
 	"ARI/types"
 	"fmt"
-	"math/big"
+	//"math/big"
 )
 
 var tInt typing.TypeHint
@@ -64,54 +64,58 @@ func main() {
     TestProdRat2()
     TestProdNegRat2()
 	TestProdNegRat3()
-/*
+
 	fmt.Println(" ------------- TEST Quotient Rat ------------- ")
 
 	TestQuoRat()
 	TestQuoNegRat()
 	TestQuoInt()
 
-	// fmt.Println(" ------------- TEST Quotient_E ------------- ")
+	fmt.Println(" ------------- TEST Quotient_E ------------- ")
 
-	// TestQuoEInt()
-	// TestQuoENegInt()
-	// TestQuoERat()
-	// TestQuoENegRat()
+	TestQuoEInt()
+	TestQuoENegInt()
+	TestQuoERat1()
+	TestQuoENegRat1()
+	TestQuoERat2()
+	TestQuoENegRat2()
 
-	// fmt.Println(" ------------- TEST Quotient_T ------------- ")
+	fmt.Println(" ------------- TEST Quotient_T ------------- ")
 
-	// TestQuoTInt()
-	// TestQuoTNegInt()
-	// TestQuoTRat()
-	// TestQuoTNegRat()
+	TestQuoTInt()
+	TestQuoTNegInt()
+	TestQuoTRat()
+	TestQuoTNegRat()
 
-	// fmt.Println(" ------------- TEST Quotient_F ------------- ")
+	fmt.Println(" ------------- TEST Quotient_F ------------- ")
 
-	// TestQuoFInt()
-	// TestQuoFNegInt()
-	// TestQuoFRat()
-	// TestQuoFNegRat()
+	TestQuoFInt()
+	TestQuoFNegInt()
+	TestQuoFRat()
+	TestQuoFNegRat()
 
-	// fmt.Println(" ------------- TEST Remainder_E ------------- ")
+	fmt.Println(" ------------- TEST Remainder_E ------------- ")
 
-	// TestRemEInt()
-	// TestRemENegInt()
-	// TestRemERat()
-	// TestRemENegRat()
+	TestRemEInt()
+	TestRemENegInt()
+	TestRemERat1()
+	TestRemENegRat1()
+	TestRemERat2()
+	TestRemENegRat2()
 
-	// fmt.Println(" ------------- TEST Remainder_T ------------- ")
+	fmt.Println(" ------------- TEST Remainder_T ------------- ")
 
-	// TestRemTInt()
-	// TestRemTNegInt()
-	// TestRemTRat()
-	// TestRemTNegRat()
+	TestRemTInt()
+	TestRemTNegInt()
+	TestRemTRat()
+	TestRemTNegRat()
 
-	// fmt.Println(" ------------- TEST Remainder_F ------------- ")
+	fmt.Println(" ------------- TEST Remainder_F ------------- ")
 
-	// TestRemFInt()
-	// TestRemFNegInt()
-	// TestRemFRat()
-	// TestRemFNegRat()
+	TestRemFInt()
+	TestRemFNegInt()
+	TestRemFRat()
+	TestRemFNegRat()
 
 	// Tests règle constantes
 	TestConstEq1()
@@ -187,7 +191,7 @@ func main() {
 	TestRoundNegRat() 
 	TestRoundRat2()
 	TestRoundNegRat2() 
-
+/*
 	fmt.Println(" ------------- TEST Passe1 ------------- ")
 	 
 	// Tests règles simplexe
@@ -470,58 +474,346 @@ func TestProdNegRat3() {
 }
 
 func TestQuoRat() {
-	fmt.Println(" -------- TEST Quo Rat -------- ")
-	// fmt.Println(" (7/2) / (11/5) = 35/22")
-	// sept_sur_deux := types.MakerConst(types.MakerId("7/2"), tRat)
-	// fmt.Println(sept_sur_deux)
-	// onze_sur_cinq := types.MakerConst(types.MakerId("11/5"), tRat)
-	// fmt.Println(onze_sur_cinq)
-	fmt.Println(" (35/1) / (5/1) = 7/1")
-	trente_cinq := types.MakerConst(types.MakerId("35/1"), tRat)
-	cinq := types.MakerConst(types.MakerId("5/1"), tRat)
-	quotient := types.MakeFun(types.MakerId("quotient"), []types.Term{trente_cinq, cinq}, typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
-	fmt.Println(quotient)
-	solution,_:=ari.EvaluateFun(quotient)
-	fmt.Println("solution = ", solution)
-	fmt.Println("attendu = ", big.NewRat(0, 1).Quo(big.NewRat(35, 1), big.NewRat(5, 1)))
+    fmt.Println(" -------- TEST Quo Rat -------- ")
+    fmt.Println(" (35/1) / (5/1) = 7/1")
+    trente_cinq := types.MakerConst(types.MakerId("35/1"), tRat)
+    cinq := types.MakerConst(types.MakerId("5/1"), tRat)
+    quotient := types.MakeFun(types.MakerId("quotient"), []types.Term{trente_cinq, cinq}, typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient.ToString())
+    solution, err := ari.EvaluateFun(quotient)
+    fmt.Printf("solution = %v - %v\n", solution, err)
 }
 
 func TestQuoInt() {
-	fmt.Println(" -------- TEST Quo Int -------- ")
-	// fmt.Println(" (7/2) / (11/5) = 35/22")
-	// sept_sur_deux := types.MakerConst(types.MakerId("7/2"), tRat)
-	// fmt.Println(sept_sur_deux)
-	// onze_sur_cinq := types.MakerConst(types.MakerId("11/5"), tRat)
-	// fmt.Println(onze_sur_cinq)
-	fmt.Println(" 35 / 5 = 7")
-	trente_cinq := types.MakerConst(types.MakerId("35"), tInt)
-	cinq := types.MakerConst(types.MakerId("5"), tInt)
-	quotient := types.MakeFun(types.MakerId("quotient"), []types.Term{trente_cinq, cinq}, typing.GetTypeScheme("quotient", typing.MkTypeCross(tInt, tInt)))
-	fmt.Println(quotient)
-	solution,_:=ari.EvaluateFun(quotient)
-	fmt.Println("solution = ", solution)
-	fmt.Println("attendu = 7")
+    fmt.Println(" -------- TEST Quo Int -------- ")
+    fmt.Println(" 35 / 5 = 7 (erreur attendue)")
+    trente_cinq := types.MakerConst(types.MakerId("35"), tInt)
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+    quotient := types.MakeFun(types.MakerId("quotient"), []types.Term{trente_cinq, cinq}, typing.GetTypeScheme("quotient", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(quotient.ToString())
+    solution, err := ari.EvaluateFun(quotient)
+    fmt.Printf("solution = %v - %v\n", solution, err)
 }
 
 func TestQuoNegRat() {
-	fmt.Println(" -------- TEST Quo Neg Rat -------- ")
-	fmt.Println(" (-11/2) / (7/5) = -55/14")
-	moins_onze_demis := types.MakerConst(types.MakerId("-11/2"), tRat)
-	sept_sur_cinq := types.MakerConst(types.MakerId("7/5"), tRat)
-	quotient := types.MakeFun(types.MakerId("quotient"), []types.Term{moins_onze_demis, sept_sur_cinq}, typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
-	solution,_:=ari.EvaluateFun(quotient)
-	fmt.Println("solution = ", solution)
+    fmt.Println(" -------- TEST Quo Neg Rat -------- ")
+    fmt.Println(" (-11/2) / (7/5) = -55/14")
+    moins_onze_demis := types.MakerConst(types.MakerId("-11/2"), tRat)
+    sept_sur_cinq := types.MakerConst(types.MakerId("7/5"), tRat)
+    quotient := types.MakeFun(types.MakerId("quotient"), []types.Term{moins_onze_demis, sept_sur_cinq}, typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient.ToString())
+    solution, err := ari.EvaluateFun(quotient)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+    fmt.Println("solution = ", solution)
 }
 
-// func TestQuoInt() {
-// 	fmt.Println(" -------- TEST Quo Neg Rat -------- ")
-// 	fmt.Println(" (-11/2) / 1.4 = -55/14")
-// 	moins_onze_demis := types.MakerConst(types.MakerId("-11/2"), tRat)
-// 	un_quatre := types.MakerConst(types.MakerId("1.4"), tRat)
-// 	quotient := types.MakeFun(types.MakerId("quotient"), []types.Term{moins_onze_demis, un_quatre}, typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
-// 	solution,_:=ari.EvaluateFun(quotient)
-// 	fmt.Println("solution = ", solution)
-// }
+func TestQuoEInt() {
+    fmt.Println(" -------- TEST QuoE Int -------- ")
+    fmt.Println(" 36 / 5 = 7")
+    trente_six := types.MakerConst(types.MakerId("36"), tInt)
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+    quotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{trente_six, cinq}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(quotient_e.ToString())
+    solution, err := ari.EvaluateFun(quotient_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoENegInt() {
+    fmt.Println(" -------- TEST QuoE Neg Int -------- ")
+    fmt.Println(" 36 / -5 = -8")
+    trente_six := types.MakerConst(types.MakerId("36"), tInt)
+    moins_cinq := types.MakerConst(types.MakerId("-5"), tInt)
+    quotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{trente_six, moins_cinq}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(quotient_e.ToString())
+    solution, err := ari.EvaluateFun(quotient_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoERat1() {
+    fmt.Println(" -------- TEST QuoE Rat 1 -------- ")
+    fmt.Println(" (87/12) / (7/3) = 3")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    quotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_e.ToString())
+    solution, err := ari.EvaluateFun(quotient_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoENegRat1() {
+    fmt.Println(" -------- TEST QuoE Neg Rat 1 -------- ")
+    fmt.Println(" (87/12) / (-7/3) = -4")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    quotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_e.ToString())
+    solution, err := ari.EvaluateFun(quotient_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoERat2() {
+    fmt.Println(" -------- TEST QuoE Rat 2 -------- ")
+    fmt.Println(" (-87/12) / (-7/3) = 3")
+    moins_quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("-87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    quotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{moins_quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_e.ToString())
+    solution, err := ari.EvaluateFun(quotient_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoENegRat2() {
+    fmt.Println(" -------- TEST QuoE Neg Rat 2 -------- ")
+    fmt.Println(" (-87/12) / (7/3) = -4")
+    moins_quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("-87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    quotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{moins_quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_e.ToString())
+    solution, err := ari.EvaluateFun(quotient_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoTInt() {
+    fmt.Println(" -------- TEST QuoT Int -------- ")
+    fmt.Println(" 5 / 2 = 2")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+    quotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{cinq, deux}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(quotient_t.ToString())
+    solution, err := ari.EvaluateFun(quotient_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoTNegInt() {
+    fmt.Println(" -------- TEST QuoT Neg Int -------- ")
+    fmt.Println(" 5 / -2 = -2")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
+    quotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{cinq, moins_deux}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(quotient_t.ToString())
+    solution, err := ari.EvaluateFun(quotient_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoTRat() {
+    fmt.Println(" -------- TEST QuoT Rat -------- ")
+    fmt.Println(" (87/12) / (7/3) = 3")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    quotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_t.ToString())
+    solution, err := ari.EvaluateFun(quotient_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoTNegRat() {
+    fmt.Println(" -------- TEST QuoT Neg Rat -------- ")
+    fmt.Println(" (87/12) / (-7/3) = -3")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    quotient_t := types.MakeFun(types.MakerId("quotient_t"), []types.Term{quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("quotient_t", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_t.ToString())
+    solution, err := ari.EvaluateFun(quotient_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoFInt() {
+    fmt.Println(" -------- TEST QuoF Int -------- ")
+    fmt.Println(" 5 / 2 = 2")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+    quotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{cinq, deux}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(quotient_f.ToString())
+    solution, err := ari.EvaluateFun(quotient_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoFNegInt() {
+    fmt.Println(" -------- TEST QuoF Neg Int -------- ")
+    fmt.Println(" 5 / -2 = -3")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
+    quotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{cinq, moins_deux}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(quotient_f.ToString())
+    solution, err := ari.EvaluateFun(quotient_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoFRat() {
+    fmt.Println(" -------- TEST QuoF Rat -------- ")
+    fmt.Println(" (87/12) / (7/3) = 3")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    quotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_f.ToString())
+    solution, err := ari.EvaluateFun(quotient_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestQuoFNegRat() {
+    fmt.Println(" -------- TEST QuoF Neg Rat -------- ")
+    fmt.Println(" (87/12) / (-7/3) = -4")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    quotient_f := types.MakeFun(types.MakerId("quotient_f"), []types.Term{quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("quotient_f", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(quotient_f.ToString())
+    solution, err := ari.EvaluateFun(quotient_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemEInt() {
+    fmt.Println(" -------- TEST RemE Int -------- ")
+    fmt.Println(" 36 % 5 = 1")
+    trente_six := types.MakerConst(types.MakerId("36"), tInt)
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+    remainder_e := types.MakeFun(types.MakerId("remainder_e"), []types.Term{trente_six, cinq}, typing.GetTypeScheme("remainder_e", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(remainder_e.ToString())
+    solution, err := ari.EvaluateFun(remainder_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemENegInt() {
+    fmt.Println(" -------- TEST RemE Neg Int -------- ")
+    fmt.Println(" 36 % -5 = -4")
+    trente_six := types.MakerConst(types.MakerId("36"), tInt)
+    moins_cinq := types.MakerConst(types.MakerId("-5"), tInt)
+    remainder_e := types.MakeFun(types.MakerId("remainder_e"), []types.Term{trente_six, moins_cinq}, typing.GetTypeScheme("remainder_e", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(remainder_e.ToString())
+    solution, err := ari.EvaluateFun(remainder_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemERat1() {
+    fmt.Println(" -------- TEST RemE Rat 1 -------- ")
+    fmt.Println(" (87/12) % (7/3) = 1/4")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    remainder_e := types.MakeFun(types.MakerId("remainder_e"), []types.Term{quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("remainder_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_e.ToString())
+    solution, err := ari.EvaluateFun(remainder_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemENegRat1() {
+    fmt.Println(" -------- TEST RemE Neg Rat 1 -------- ")
+    fmt.Println(" (87/12) % (-7/3) = -25/12")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    remainder_e := types.MakeFun(types.MakerId("remainder_e"), []types.Term{quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("remainder_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_e.ToString())
+    solution, err := ari.EvaluateFun(remainder_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemERat2() {
+    fmt.Println(" -------- TEST RemE Rat 2 -------- ")
+    fmt.Println(" (-87/12) % (-7/3) = -1/4")
+    moins_quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("-87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    remainder_e := types.MakeFun(types.MakerId("remainder_e"), []types.Term{moins_quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("remainder_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_e.ToString())
+    solution, err := ari.EvaluateFun(remainder_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemENegRat2() {
+    fmt.Println(" -------- TEST RemE Neg Rat 2 -------- ")
+    fmt.Println(" (-87/12) % (7/3) = 25/12")
+    moins_quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("-87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    remainder_e := types.MakeFun(types.MakerId("remainder_e"), []types.Term{moins_quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("remainder_e", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_e.ToString())
+    solution, err := ari.EvaluateFun(remainder_e)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemTInt() {
+    fmt.Println(" -------- TEST RemT Int -------- ")
+    fmt.Println(" 5 % 2 = 1")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+    remainder_t := types.MakeFun(types.MakerId("remainder_t"), []types.Term{cinq, deux}, typing.GetTypeScheme("remainder_t", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(remainder_t.ToString())
+    solution, err := ari.EvaluateFun(remainder_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemTNegInt() {
+    fmt.Println(" -------- TEST RemT Neg Int -------- ")
+    fmt.Println(" 5 % -2 = -1")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
+    remainder_t := types.MakeFun(types.MakerId("remainder_t"), []types.Term{cinq, moins_deux}, typing.GetTypeScheme("remainder_t", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(remainder_t.ToString())
+    solution, err := ari.EvaluateFun(remainder_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemTRat() {
+    fmt.Println(" -------- TEST RemT Rat -------- ")
+    fmt.Println(" (87/12) % (7/3) = 3/28")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    remainder_t := types.MakeFun(types.MakerId("remainder_t"), []types.Term{quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("remainder_t", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_t.ToString())
+    solution, err := ari.EvaluateFun(remainder_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemTNegRat() {
+    fmt.Println(" -------- TEST RemT Neg Rat -------- ")
+    fmt.Println(" (87/12) / (-7/3) = -3/28")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    remainder_t := types.MakeFun(types.MakerId("remainder_t"), []types.Term{quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("remainder_t", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_t.ToString())
+    solution, err := ari.EvaluateFun(remainder_t)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemFInt() {
+    fmt.Println(" -------- TEST RemF Int -------- ")
+    fmt.Println(" 5 % 2 = 1")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+    remainder_f := types.MakeFun(types.MakerId("remainder_f"), []types.Term{cinq, deux}, typing.GetTypeScheme("remainder_f", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(remainder_f.ToString())
+    solution, err := ari.EvaluateFun(remainder_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemFNegInt() {
+    fmt.Println(" -------- TEST RemF Neg Int -------- ")
+    fmt.Println(" 5 % -2 = -1")
+    cinq := types.MakerConst(types.MakerId("5"), tInt)
+	moins_deux := types.MakerConst(types.MakerId("-2"), tInt)
+    remainder_f := types.MakeFun(types.MakerId("remainder_f"), []types.Term{cinq, moins_deux}, typing.GetTypeScheme("remainder_f", typing.MkTypeCross(tInt, tInt)))
+    fmt.Println(remainder_f.ToString())
+    solution, err := ari.EvaluateFun(remainder_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemFRat() {
+    fmt.Println(" -------- TEST RemF Rat -------- ")
+    fmt.Println(" (87/12) % (7/3) = 3/28")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    sept_sur_trois := types.MakerConst(types.MakerId("7/3"), tRat)
+    remainder_f := types.MakeFun(types.MakerId("remainder_f"), []types.Term{quatre_vingt_sept_sur_douze, sept_sur_trois}, typing.GetTypeScheme("remainder_f", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_f.ToString())
+    solution, err := ari.EvaluateFun(remainder_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
+
+func TestRemFNegRat() {
+    fmt.Println(" -------- TEST RemF Neg Rat -------- ")
+    fmt.Println(" (87/12) % (-7/3) = -3/28")
+    quatre_vingt_sept_sur_douze := types.MakerConst(types.MakerId("87/12"), tRat)
+    moins_sept_sur_trois := types.MakerConst(types.MakerId("-7/3"), tRat)
+    remainder_f := types.MakeFun(types.MakerId("remainder_f"), []types.Term{quatre_vingt_sept_sur_douze, moins_sept_sur_trois}, typing.GetTypeScheme("remainder_f", typing.MkTypeCross(tRat, tRat)))
+    fmt.Println(remainder_f.ToString())
+    solution, err := ari.EvaluateFun(remainder_f)
+    fmt.Printf("solution = %v - %v\n", solution, err)
+}
 
 func TestUminusInt() {
 	fmt.Println(" -------- TEST Uminus Int -------- ")
