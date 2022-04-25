@@ -262,7 +262,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			} else {
 				Rquotient_e := types.MakeFun(types.MakerId("quotient_e"), []types.Term{arg1, arg2}, typing.GetTypeScheme("quotient_e", typing.MkTypeCross(tRat, tRat)))
 				quotient_e, _ := EvaluateFun(Rquotient_e)
-				rem := big.NewRat(newRat().Add(res1, newRat().Neg(newRat().Mul(res2, quotient_e))))
+				rem := newRat().Set(newRat().Add(res1, newRat().Neg(newRat().Mul(res2, quotient_e))))
 				return rem, nil
 			}
 		default:
