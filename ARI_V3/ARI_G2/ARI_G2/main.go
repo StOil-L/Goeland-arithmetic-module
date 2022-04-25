@@ -51,7 +51,6 @@ func main() {
     TestDiffRat2()
 	TestDiffRat3()
     TestDiffNegRat()
-    TestDiffNegRat()
     TestDiffNegRat2()
     TestDiffNegRat3()
 
@@ -343,8 +342,8 @@ func TestDiffRat() {
 func TestDiffRat2() {
 	fmt.Println(" -------- TEST Diff Rat 2 -------- ")
 	fmt.Println("  2.5 - 1.2 = 1.3 (13/10)")
-	un_deux := types.MakerConst(types.MakerId("1.2"), tRat)
-	deux_cinq := types.MakerConst(types.MakerId("2.5"), tRat)
+	un_deux := types.MakerConst(types.MakerId("6/5"), tRat)
+	deux_cinq := types.MakerConst(types.MakerId("5/2"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{deux_cinq, un_deux}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
 	solution,_:=ari.EvaluateFun(difference)
 	fmt.Println("solution = ", solution) 
@@ -363,7 +362,7 @@ func TestDiffRat3() {
 func TestDiffNegRat() {
 	fmt.Println(" -------- TEST Diff Neg Rat -------- ")
 	fmt.Println(" -1.2 - 2.5 = -3.7 (-37/10)")
-	moins_un_deux := types.MakerConst(types.MakerId("-1.2"), tRat)
+	moins_un_deux := types.MakerConst(types.MakerId("-6/5"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("5/2"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_un_deux, deux_cinq}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
 	solution,_:=ari.EvaluateFun(difference)
