@@ -34,8 +34,8 @@ func main() {
 	// Fonctions binaires
 	fmt.Println(" ------------- TEST SUM ------------- ")
 
-	TestSumInt()
-    TestSumNegInt()
+	//TestSumInt()
+    //TestSumNegInt()
     TestSumRat()
     TestSumRat2()
 	TestSumNegRat()
@@ -43,25 +43,23 @@ func main() {
 
 	fmt.Println(" ------------- TEST DIFFERENCE ------------- ")
 
-    TestDiffInt()
-    TestDiffInt2()
-    TestDiffNegInt()
-    TestDiffNegInt2()
+    //TestDiffInt()
+    //TestDiffInt2()
+    //TestDiffNegInt()
+    //TestDiffNegInt2()
     TestDiffRat()
     TestDiffRat2()
+	TestDiffRat3()
     TestDiffNegRat()
     TestDiffNegRat()
     TestDiffNegRat2()
     TestDiffNegRat3()
-    TestDiffRat()
-    TestDiffRat2()
-    TestDiffRat3()
 
 	fmt.Println(" ------------- TEST Prod ------------- ")
 
-	TestProdInt()
-    TestProdNegInt()
-	TestProdNegInt2()
+	//TestProdInt()
+    //TestProdNegInt()
+	//TestProdNegInt2()
     TestProdRat()
     TestProdNegRat()
     TestProdRat2()
@@ -274,7 +272,7 @@ func TestSumNegRat() {
 
 func TestSumRat2() {
 	fmt.Println(" -------- TEST Sum Rat 2 -------- ")
-	fmt.Println(" 1/3 + 2.5 = 83333/100000?")
+	fmt.Println(" 1/3 + 2.5 = 17/6?")
 	un_sur_trois := types.MakerConst(types.MakerId("1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("5/2"), tRat)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{un_sur_trois, deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
@@ -284,7 +282,7 @@ func TestSumRat2() {
 
 func TestSumNegRat2() {
 	fmt.Println(" -------- TEST Sum Neg Rat 2 -------- ")
-	fmt.Println(" -1/3 + 2.5 = 83333/100000?")
+	fmt.Println(" -1/3 + 2.5 = 13/6")
 	moins_un_sur_trois := types.MakerConst(types.MakerId("-1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("5/2"), tRat)
 	sum := types.MakeFun(types.MakerId("sum"), []types.Term{moins_un_sur_trois, deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
@@ -354,7 +352,7 @@ func TestDiffRat2() {
 
 func TestDiffRat3() {
 	fmt.Println(" -------- TEST Diff Rat 3 -------- ")
-	fmt.Println(" 1/3 - 2.5 = -2*16666/100000?")
+	fmt.Println(" 1/3 - 2.5 = -13/6?")
 	un_sur_trois := types.MakerConst(types.MakerId("1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("5/2"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{un_sur_trois, deux_cinq}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
@@ -384,7 +382,7 @@ func TestDiffNegRat2() {
 
 func TestDiffNegRat3() {
 	fmt.Println(" -------- TEST Diff Neg Rat 3 -------- ")
-	fmt.Println(" -1/3 - -2.5 = 83333/100000?")
+	fmt.Println(" -1/3 - -2.5 = 13/6?")
 	moins_un_sur_trois := types.MakerConst(types.MakerId("-1/3"), tRat)
 	moins_deux_cinq := types.MakerConst(types.MakerId("-5/2"), tRat)
 	difference := types.MakeFun(types.MakerId("difference"), []types.Term{moins_un_sur_trois, moins_deux_cinq}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
@@ -444,7 +442,7 @@ func TestProdNegRat() {
 
 func TestProdRat2() {
 	fmt.Println(" -------- TEST Prod Rat 2 -------- ")
-	fmt.Println(" 1/3 * 2.5 = 3333333/25000000?")
+	fmt.Println(" 1/3 * 2.5 = 5/6")
 	un_sur_trois := types.MakerConst(types.MakerId("1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("5/2"), tRat)
 	product := types.MakeFun(types.MakerId("product"), []types.Term{un_sur_trois, deux_cinq}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
@@ -464,7 +462,7 @@ func TestProdNegRat2() {
 
 func TestProdNegRat3() {
 	fmt.Println(" -------- TEST Sum Prod Rat 3 -------- ")
-	fmt.Println(" -1/3 + 2.5 = -3333333/25000000?")
+	fmt.Println(" -1/3 * 2.5 = -5/6")
 	moins_un_sur_trois := types.MakerConst(types.MakerId("-1/3"), tRat)
 	deux_cinq := types.MakerConst(types.MakerId("5/2"), tRat)
 	product := types.MakeFun(types.MakerId("product"), []types.Term{moins_un_sur_trois, deux_cinq}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
