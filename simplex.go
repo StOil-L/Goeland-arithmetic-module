@@ -40,13 +40,13 @@ func Simplexe(system info_system) (info_system, bool){
 	//fmt.Println("pos_var_tab_bis : ",pos_var_tab_bis)
 
 	//fmt.Println("\033[0m") 
-	//boucle sur le nombre maximum de pivotation que l'on peut avoir
+	//boucle sur le nombre maximum de pivot que l'on peut avoir
 	for true {
 		//ligne_pivot est la ligne qui ne respecte pas sa contrainte
 		ligne_pivot := checkCont(system.alpha_tab, system.tab_cont, pos_var_tab_bis)		
 		if ligne_pivot == -1 {
-			/*fmt.Println(" \033[33m La solution est : ")
-			fmt.Println("alpha_tab_bis ", system.alpha_tab, "\n")*/
+			fmt.Println(" \033[33m La solution est : ")
+			fmt.Println("alpha_tab_bis ", system.alpha_tab, "\n")
 			system.pos_var_tab = pos_var_tab_bis
 			return system, true
 		}
@@ -54,8 +54,8 @@ func Simplexe(system info_system) (info_system, bool){
 		colonne_pivot := 0
 		system, colonne_pivot = pivot(system, ligne_pivot, pos_var_tab_bis)
 		if colonne_pivot == -1 {
-			/*fmt.Println(" \033[33m") 
-			fmt.Println("Il n'existe pas de solution pour ces contraintes")*/
+			fmt.Println(" \033[33m") 
+			fmt.Println("Il n'existe pas de solution pour ces contraintes")
 			return system, false
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
@@ -162,14 +162,14 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 			for index2, element2 := range system.tab_coef[pivot_line] {
 					alpha_ligne.Add(alpha_ligne, new(big.Rat).Mul(element2, system.alpha_tab[pos_var_tab[index2+len(system.tab_coef)]]))
 			}
-			/*fmt.Println("alpha_colonne", alpha_colonne)
-			fmt.Println("alpha_ligne",alpha_ligne)*/
+			fmt.Println("alpha_colonne", alpha_colonne)
+			fmt.Println("alpha_ligne",alpha_ligne)
 			system.alpha_tab[pos_var_tab[pivot_line]].Set(alpha_ligne)
 			system.alpha_tab[var_pivot].Set(alpha_colonne)
-			/*fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",
-			pos_var_tab[pivot_line]+"\033[0m")*/
+			fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",
+			pos_var_tab[pivot_line]+"\033[0m")
 			pos_var_tab[pivot_line], pos_var_tab[colonne_pivot] = pos_var_tab[colonne_pivot], pos_var_tab[pivot_line]
-			//fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
+			fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
 			return system, colonne_pivot-len(system.tab_coef)
 		}
 	}
