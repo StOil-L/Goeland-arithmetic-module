@@ -19,7 +19,7 @@ func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system
 
 	//fmt.Println("\033[0m ") 
 	solutionEntiere,index:=estSol(system.alpha_tab,system.tab_nom_var, tab_rat_bool)
-	
+			
 	//Cas d'arret si solution est fait seulement d'entier
 	if (!gotSol) {
         return system.alpha_tab, false
@@ -123,6 +123,7 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
  * It returns a boolean which inform of the solution is natural and the index of the decimal number in `solution` if there is one
  **/
 func estSol(solution map[string]*big.Rat, tab_nom_var []string, tab_rat_bool []bool) (bool,int){
+	fmt.Println("tab_nom_var", tab_nom_var)
 	for i:=0;i<len(tab_nom_var);i++ {
 		if tab_rat_bool[i] && !solution[tab_nom_var[i]].IsInt() {
 			return false, i

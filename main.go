@@ -39,6 +39,7 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -71,6 +72,8 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
+		tab_rat_bool[i] = true
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -102,6 +105,7 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -135,6 +139,9 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
+		tab_rat_bool[i] = true
+
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -166,6 +173,7 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -200,6 +208,8 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
+		tab_rat_bool[i] = true
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -231,6 +241,7 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -265,6 +276,8 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
+		tab_rat_bool[i] = true
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -296,6 +309,7 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -330,6 +344,8 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
+		tab_rat_bool[i] = true
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -398,6 +414,7 @@ func main() {
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
 	}
 	
 	var PosConst = make([]int, len(tab_cont))
@@ -462,13 +479,13 @@ func main() {
 	var pos_var_tab = create_pos_var_tab(tableau, tab_var)
 	var bland = make([]string, len(pos_var_tab))
 	fmt.Println("\033[0m") 
-
 	for i:=0;i<len(tableau);i++ {
 		bland[i+len(tableau[0])]=pos_var_tab[i]
 	}
 	
 	for i:=0;i<len(tableau[0]);i++{
 		bland[i]=pos_var_tab[i+len(tableau)]
+		tab_var=append(tab_var,pos_var_tab[i+len(tableau)])
 		tab_rat_bool[i] = true
 	}
 	
@@ -482,7 +499,7 @@ func main() {
 			incremental_coef: incremental_coef}
 		system, gotSol := Simplexe(system)
 		fmt.Println(Branch_bound(gotSol, channel, system, tab_rat_bool))
-		
+
 	}
 	fmt.Println("\033[0m")
 	if x == 13 {
