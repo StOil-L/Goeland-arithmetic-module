@@ -39,8 +39,8 @@ func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
 			incremental_coef: incremental_coef}
 
-	go go_branch_and_bound(false, channel, index, system_copy, tab_rat_bool)
-	go go_branch_and_bound(true, channel, index, system, tab_rat_bool)
+	go go_branch_and_bound(false, channel, index, system, tab_rat_bool)
+	go go_branch_and_bound(true, channel, index, system_copy, tab_rat_bool)
 	
 	str_bandb := <- channel
 	if(!str_bandb.solBoolStr){
@@ -161,7 +161,6 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
 }
 
 func incremental(system info_system) (info_system){
-
 	nbParam := len(system.tab_coef[0])+1
 	ligne_modif := len(system.tab_coef)-1
 	//Represente chaque itération de simplex
@@ -190,11 +189,11 @@ func incremental(system info_system) (info_system){
 
 	//Maj des tableaux
 	var new_pos_var_tab []string
-	for i := 0; i < len(system.tab_cont); i++ {
+	for i := 0; i < len(system.tab_cont)-1; i++ {
 		new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
 	}
 	new_pos_var_tab = append(new_pos_var_tab, fmt.Sprint("e", len(system.tab_coef)-1))
-	for i := len(system.tab_cont); i < len(system.pos_var_tab); i++ {
+	for i := len(system.tab_cont)-1; i < len(system.pos_var_tab); i++ {
 		new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
 	}
 	system.pos_var_tab = new_pos_var_tab
