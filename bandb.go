@@ -3,8 +3,7 @@ package main
 import (
 	"fmt"
 	"math/big"
-	"math"  
-	//"time"
+	"math"
 )
 
 /** 
@@ -35,11 +34,10 @@ func Branch_bound(gotSol bool, channel chan branch_and_bound, system info_system
     bland := system.bland
     alpha_tab := copy_alpha_tab(tab_coef, tab_nom_var, system.alpha_tab)
     incremental_coef := deepCopyTableau(system.incremental_coef)
-    incremental_aff := deepCopyTableau(system.incremental_aff)
 
     system_copy := info_system{tab_coef: tab_coef, tab_cont: tab_cont, tab_nom_var: tab_nom_var,
 			pos_var_tab: pos_var_tab, bland: bland, alpha_tab: alpha_tab,
-			incremental_coef: incremental_coef, incremental_aff: incremental_aff}
+			incremental_coef: incremental_coef}
 
 	go go_branch_and_bound(false, channel, index, system_copy, tab_rat_bool)
 	go go_branch_and_bound(true, channel, index, system, tab_rat_bool)
@@ -162,55 +160,6 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
 	return tab_copy
 }
 
-/*func incremental(system info_system) (info_system){
-	alpha_tab_bis := make(map[string]*big.Rat)		
-			cpt:=0
-			cpt2:=0
-			for cpt < len(system.incremental_coef){		
-				var case_pivot =new(big.Rat)
-				case_pivot.Set(system.tab_coef[len(system.tab_coef)-1][system.incremental_coef[cpt].Num().Int64()])
-				for j := 0; j < len(system.tab_coef[0]); j++ {				
-					if int64(j)==system.incremental_coef[cpt].Num().Int64(){
-						system.tab_coef[len(system.tab_coef)-1][j].Mul(system.tab_coef[len(system.tab_coef)-1][j],
-						system.incremental_coef[int64(cpt)+system.incremental_coef[cpt].Num().Int64()+1])
-					} else {
-						system.tab_coef[len(system.tab_coef)-1][j].Add(system.tab_coef[len(system.tab_coef)-1][j],
-						new(big.Rat).Mul(case_pivot,system.incremental_coef[j+1]))			
-					}
-
-				}		
-				var calAlpha = new(big.Rat)
-				for j :=0; j<len(system.tab_coef[0]);j++{
-					calAlpha.Add(calAlpha,new(big.Rat).Mul(system.incremental_aff[j+cpt2],system.tab_coef[len(system.tab_coef)-1][j]))
-				}
-
-
-				for i := 0; i < len(system.tab_coef)-1; i++ {
-					alpha_tab_bis[fmt.Sprint("e", i)] = new(big.Rat)
-					alpha_tab_bis[fmt.Sprint("e", i)].Set(system.alpha_tab[fmt.Sprint("e", i)]) 
-				}
-				alpha_tab_bis[fmt.Sprint("e", len(system.tab_coef)-1)]=new(big.Rat)
-				alpha_tab_bis[fmt.Sprint("e", len(system.tab_coef)-1)].Set(calAlpha)
-				if len(system.tab_nom_var) == 0 {
-					for i := 0; i < len(system.tab_coef[0]); i++ {
-					alpha_tab_bis[fmt.Sprint("x", i)] = new(big.Rat)
-					alpha_tab_bis[fmt.Sprint("x", i)].Set(system.alpha_tab[fmt.Sprint("x", i)])
-					}
-				} else {
-					for i := 0; i < len(system.tab_coef[0]); i++ {
-						alpha_tab_bis[system.tab_nom_var[i]] = new(big.Rat)
-						alpha_tab_bis[system.tab_nom_var[i]].Set(system.alpha_tab[system.tab_nom_var[i]])
-					
-					}
-				}
-
-				cpt+=1+len(system.tab_coef[0])
-				cpt2+=len(system.tab_coef[0])
-			}
-			system.alpha_tab = alpha_tab_bis
-			return system
-}*/
-
 func incremental(system info_system) (info_system){
 
 	nbParam := len(system.tab_coef[0])+1
@@ -240,10 +189,17 @@ func incremental(system info_system) (info_system){
 	fmt.Println("TabCoef = ", system.tab_coef[ligne_modif])*/
 
 	//Maj des tableaux
+	var new_pos_var_tab []string
+	for i := 0; i < len(system.tab_cont); i++ {
+		new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
+	}
+	new_pos_var_tab = append(new_pos_var_tab, fmt.Sprint("e", len(system.tab_coef)-1))
+	for i := len(system.tab_cont); i < len(system.pos_var_tab); i++ {
+		new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
+	}
+	system.pos_var_tab = new_pos_var_tab
 	system.alpha_tab[fmt.Sprint("e", len(system.tab_coef)-1)] = cal_alpha
-	system.pos_var_tab = append(system.pos_var_tab, fmt.Sprint("e", len(system.tab_coef)-1))
 	system.bland = append(system.bland, fmt.Sprint("e", len(system.tab_coef)-1))
-
 	return system
 }
 
@@ -251,7 +207,7 @@ func copy_alpha_tab(tab_coef [][]*big.Rat, tab_nom_var []string, alpha_tab map[s
 	alpha_tab_bis := make(map[string]*big.Rat)
 	//Creation variable d'ecart
 	for i := 0; i < len(tab_coef); i++ {
-		alpha_tab_bis[fmt.Sprint("e", i)] = new(big.Rat)
+		alpha_tab_bis[fmt.Sprint("e", i)] = new(big.Rat).Set(alpha_tab[fmt.Sprint("e", i)])
 	}
 	//Creation variable initial
 	if len(tab_nom_var) == 0 {

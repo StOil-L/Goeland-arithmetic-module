@@ -10,7 +10,6 @@ import "math/big"
 `bland`, an array containing the Bland order of variable
 `alpha_tab`, a map associating the name of the variable and his alpha value
 `incremental_coef` 
-`incremental_aff`
 */
 type info_system struct {
     tab_coef [][]*big.Rat
@@ -20,7 +19,6 @@ type info_system struct {
 	bland []string
 	alpha_tab map[string]*big.Rat
     incremental_coef []*big.Rat
-    incremental_aff []*big.Rat
 }
 
 type branch_and_bound struct {

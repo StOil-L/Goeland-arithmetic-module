@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
-	"math/big"   
+	"math/big"
 )
 
 /** 
@@ -18,7 +18,8 @@ func Simplexe(system info_system) (info_system, bool){
 	/*fmt.Println("system.tab_nom_var",system.tab_nom_var)
 	fmt.Println("tab_cont",system.tab_cont)
 	fmt.Println("alpha_tab",system.alpha_tab)
-	fmt.Println("tab_coef",system.tab_coef)*/
+	fmt.Println("tab_coef",system.tab_coef)
+	fmt.Println("pos_var_tab",system.pos_var_tab)*/
 
 	var pos_var_tab_bis =make([]string,len(system.pos_var_tab))
 	for i:=0;i<len(system.pos_var_tab);i++{
@@ -37,7 +38,6 @@ func Simplexe(system info_system) (info_system, bool){
 
 	}
 	//fmt.Println("pos_var_tab_bis : ",pos_var_tab_bis)
-	//incrémental aff ? 
 
 	//fmt.Println("\033[0m") 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
@@ -62,11 +62,6 @@ func Simplexe(system info_system) (info_system, bool){
 			system = updateMatrice(system,colonne_pivot,ligne_pivot)
 			//calcul des nouveaux alpha
 			system = updateAlpha(system,ligne_pivot,pos_var_tab_bis)
-
-			//time.Sleep(time.Second)
-			/*fmt.Println("\033[35m matrice des coefficients :",system.tab_coef,"\033[0m")
-			fmt.Println("\033[34m affectations :" ,system.alpha_tab,"\033[0m")*/
-			
 		}
 	}
 	return system, false
@@ -84,7 +79,6 @@ func Simplexe(system info_system) (info_system, bool){
  **/
 func checkCont(alpha_tab map[string]*big.Rat,  tab_cont []*big.Rat, pos_var_tab []string) int{
 	for index, variable := range pos_var_tab[:len(tab_cont)]  {
-		fmt.Println(pos_var_tab[:len(tab_cont)], "\n", alpha_tab)
 		if variable[0] == 'e' {
 			num_var, _ := strconv.Atoi(string(variable[1]))
 			if alpha_tab[variable].Cmp(tab_cont[num_var]) == -1 {
@@ -245,9 +239,6 @@ func updateAlpha(system info_system, ligne_pivot int, pos_var_tab []string) (inf
 			}
 			system.alpha_tab[pos_var_tab[i]].Set(cal_alpha)
 		}
-	}
-	for j :=0; j<len(system.tab_coef[0]);j++{
-		system.incremental_aff=append(system.incremental_aff,system.alpha_tab[pos_var_tab[j + len(system.tab_coef)]])
 	}
 	return system
 }
