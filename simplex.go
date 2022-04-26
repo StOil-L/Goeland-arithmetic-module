@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"math/big"
+	"time"
 )
 
 /** 
@@ -39,7 +40,6 @@ func Simplexe(system info_system) (info_system, bool){
 
 	}
 	fmt.Println("pos_var_tab_bis : ",pos_var_tab_bis)
-
 	fmt.Println("\033[0m") 
 	//boucle sur le nombre maximum de pivotation que l'on peut avoir
 	for true {
@@ -49,6 +49,7 @@ func Simplexe(system info_system) (info_system, bool){
 			fmt.Println(" \033[33m La solution est : ")
 			fmt.Println("alpha_tab_bis ", system.alpha_tab, "\n")
 			system.pos_var_tab = pos_var_tab_bis
+			time.Sleep(time.Second)
 			return system, true
 		}
 		//on cherche la colonne du pivot
@@ -169,7 +170,9 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 			fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",
 			pos_var_tab[pivot_line]+"\033[0m")
 			pos_var_tab[pivot_line], pos_var_tab[colonne_pivot] = pos_var_tab[colonne_pivot], pos_var_tab[pivot_line]
-			//fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
+			fmt.Println("\033[36m theta\033[0m =\033[36m",theta,"\033[0m")
+			fmt.Println("alpha_colonne", alpha_colonne)
+			fmt.Println("alpha_ligne",alpha_ligne)
 			return system, colonne_pivot-len(system.tab_coef)
 		}
 	}
