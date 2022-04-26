@@ -106,84 +106,13 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 	
 	
 
-	for passe<3{
-
-
-		if passe==2{
-			var list_list_pcv_sort = make([][]pair_coef_var,0)
-			var meta_const types.Meta
-			for i:=0;i<len(list_list_pcv);i++{
-				var list_pcv_sort = make([]pair_coef_var,0)
-				cpt_var:=0
-				var pair pair_coef_var
-				pair.coef=newRat()
-				for j:=0;j<len(list_list_pcv[i]);j++{
-					again := false
-					if list_list_pcv[i][j].variable==tab_variable[cpt_var]{
-						for k:=0;k<cpt_var;k++{
-							if list_list_pcv[i][j].variable==tab_variable[k]{
-								list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
-								again=true
-							}
-						}
-						
-						if !again{
-							list_pcv_sort=append(list_pcv_sort,list_list_pcv[i][j])
-							if cpt_var<len(tab_variable)-1{
-								cpt_var+=1
-							}
-						}else {again=false}
-					} else {
-						fmt.Println("cpt_var = ",cpt_var)
-						for k:=0;k<cpt_var;k++{
-							fmt.Println("here ", list_list_pcv[i][j].variable)
-							if list_list_pcv[i][j].variable==tab_variable[k]{
-								fmt.Println("here2")
-								list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
-								again=true
-							}
-						}
-						if !again && list_list_pcv[i][j].variable!=meta_const && cpt_var!=0{
-							fmt.Println("ici",list_list_pcv[i][j].variable)
-							var pair2 pair_coef_var
-							pair2.coef=newRat()
-							pair2.variable=tab_variable[cpt_var]
-							list_pcv_sort=append(list_pcv_sort,pair2)
-						} else if list_list_pcv[i][j].variable==meta_const{
-
-							pair.coef.Add(pair.coef,list_list_pcv[i][j].coef)
-						}
-					}
-					again=false
-					if j==len(list_list_pcv[i])-1{
-						for n:=0;n<len(tab_variable);n++{
-							present:=false
-							for m:=0;m<len(list_pcv_sort);m++{
-								if tab_variable[n]==list_pcv_sort[m].variable{
-									present=true
-								}
-							}
-							if !present{
-								var pair2 pair_coef_var
-								pair2.coef=newRat()
-								pair2.variable=tab_variable[n]
-								list_pcv_sort=append(list_pcv_sort,pair2)
-							}else {present=false}
-						}
-						list_pcv_sort=append(list_pcv_sort,pair)
-					}
-				}
-				list_list_pcv_sort=append(list_list_pcv_sort,list_pcv_sort)		
-			}
-			fmt.Println("list_list_pcv_sort = ",list_list_pcv_sort )
-			fmt.Println("taille syteme", len(list_list_pcv_sort))
-		}
 
 
 
 
 
-		for number_of_predicate, p := range pl {
+
+		for _, p := range pl {
 			var list_pcv = make([]pair_coef_var,0)
 			
 			t1, val1, err1 := termToSimplex(p.GetArgs()[0], &map_variable_metavariables, &int_variables,passe,ligne_matrice,list_pcv)
@@ -198,18 +127,8 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 			switch p.GetID().GetName() {
 		
 				case types.Id_eq.GetName():
-					if passe==0{
-						tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, true)
-					}
+					tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, true)
 					
-					if passe==1{
-						lenPl:=len(pl)
-						list_list_pcv=passe2(list_list_pcv,number_of_predicate,list_pcv,true, val1,val2, lenPl)
-					}
-
-					
-
-
 				case types.Id_neq.GetName():
 
 				//à réfléchir, si on a 2x != 3 alors on a 2x > 3  OU  2x < 3
@@ -238,10 +157,75 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 						tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
 					}
 			}
+		
+			list_list_pcv=passe2(list_list_pcv,list_pcv,true, val1,val2)
 			
 		}
-		passe+=1
-	}
+		
+	var list_list_pcv_sort = make([][]pair_coef_var,0)
+	var meta_const types.Meta
+	for i:=0;i<len(list_list_pcv);i++{
+		var list_pcv_sort = make([]pair_coef_var,0)
+		cpt_var:=0
+		var pair pair_coef_var
+		pair.coef=newRat()
+		for j:=0;j<len(list_list_pcv[i]);j++{
+			again := false
+			if list_list_pcv[i][j].variable==tab_variable[cpt_var]{
+				for k:=0;k<cpt_var;k++{
+					if list_list_pcv[i][j].variable==tab_variable[k]{
+						list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
+						again=true
+					}
+				}
+				
+				if !again{
+					list_pcv_sort=append(list_pcv_sort,list_list_pcv[i][j])
+					if cpt_var<len(tab_variable)-1{
+						cpt_var+=1
+					}
+				}else {again=false}
+			} else {
+				for k:=0;k<cpt_var;k++{
+					if list_list_pcv[i][j].variable==tab_variable[k]{
+						list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
+						again=true
+					}
+				}
+				if !again && list_list_pcv[i][j].variable!=meta_const && cpt_var!=0{
+					var pair2 pair_coef_var
+					pair2.coef=newRat()
+					pair2.variable=tab_variable[cpt_var]
+					list_pcv_sort=append(list_pcv_sort,pair2)
+				} else if list_list_pcv[i][j].variable==meta_const{
+
+					pair.coef.Add(pair.coef,list_list_pcv[i][j].coef)
+				}
+			}
+			again=false
+			if j==len(list_list_pcv[i])-1{
+				for n:=0;n<len(tab_variable);n++{
+					present:=false
+					for m:=0;m<len(list_pcv_sort);m++{
+						if tab_variable[n]==list_pcv_sort[m].variable{
+							present=true
+						}
+					}
+					if !present{
+						var pair2 pair_coef_var
+						pair2.coef=newRat()
+						pair2.variable=tab_variable[n]
+						list_pcv_sort=append(list_pcv_sort,pair2)
+					}else {present=false}
+				}
+				list_pcv_sort=append(list_pcv_sort,pair)
+			}
+		}
+		list_list_pcv_sort=append(list_list_pcv_sort,list_pcv_sort)		
+		}
+		fmt.Println("list_list_pcv_sort = ",list_list_pcv_sort )
+		fmt.Println("taille syteme", len(list_list_pcv_sort))
+	
 
 	return res_for_simplex, map_variable_metavariables, int_variables
 }
@@ -250,46 +234,6 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 
 
 
-func passe2(list_list_pcv [][]pair_coef_var,number_of_predicate int, list_pcv []pair_coef_var, eg bool,val1 []pair_coef_var,val2 []pair_coef_var, lenPl int )  [][]pair_coef_var{
-
-		for i:=0;i<len(val1);i++{
-			list_pcv=append(list_pcv,val1[i])
-		}
-
-		
-		for i:=0; i<len(val2);i++{
-			list_pcv=append(list_pcv,val2[i]) 
-		}
-
-		list_list_pcv=append(list_list_pcv,list_pcv)
-	
-	if eg{
-		var list_pcv_eg = make([]pair_coef_var,0)
-		for i:=0;i<len(val1);i++{
-			egneg:=new(big.Rat).Mul(val1[i].coef,big.NewRat(-1,1))
-			var pair pair_coef_var
-			pair.variable=val1[i].variable
-			pair.coef=egneg
-			list_pcv_eg=append(list_pcv_eg,pair)
-		}
-
-		for i:=0; i<len(val2);i++{
-			egneg2:=new(big.Rat).Mul(val2[i].coef,big.NewRat(-1,1))
-			var pair2 pair_coef_var
-			pair2.coef=egneg2
-			pair2.variable=val2[i].variable
-			list_pcv_eg=append(list_pcv_eg,pair2)
-		}
-
-		list_list_pcv=append(list_list_pcv,list_pcv_eg)
-	
-	}	
-	if lenPl-1==number_of_predicate{		
-	//	fmt.Println("list_list_pcv = ",list_list_pcv)
-	}
-	
-	return list_list_pcv
-}
 
 
 
@@ -299,45 +243,77 @@ func passe1(p types.Pred,t1 []types.Meta, t2 []types.Meta, cpt *int,tab_variable
 	}else {
 		*cpt+=1
 	}
-	present:=false
-	if t2!=nil{
-		for i:=0;i<len(t2);i++{
-			variable := p.GetArgs()[1].GetMetas()[i]
-			present=false
-			fmt.Println("variable2 =",variable.GetName())
-			for i:=0;i<len(tab_variable);i++{
-				if tab_variable[i]==variable{
-					present=true
-				}
-			}
-			if !present{
-				tab_variable=append(tab_variable,variable)
-			}
-		}
-	}	
-	if t1!=nil {
-		for i:=0;i<len(t1);i++{
-			variable := p.GetArgs()[0].GetMetas()[i]
-			present=false
-			fmt.Println("variable1 =",variable)
-			for i:=0;i<len(tab_variable);i++{
-				if tab_variable[i]==variable{
-					present=true
-				}
-			}
-			if !present{
-				tab_variable=append(tab_variable,variable)
-			}
-		
-
-		}
-
-	}
-
+	tab_variable=append(tab_variable,auxPasse1(t2,p,tab_variable,1)...)
+	tab_variable=append(tab_variable,auxPasse1(t1,p,tab_variable,0)...)
 	fmt.Println("tab_var : ",tab_variable)
 	fmt.Println("cpt = ",*cpt)
 
 return tab_variable
+}
+
+
+func auxPasse1(t []types.Meta, p types.Pred, tab_variable []types.Meta,number int) []types.Meta{
+	var tab_variable2 =make([]types.Meta,0)
+	for i:=0;i<len(t);i++{
+		variable := p.GetArgs()[number].GetMetas()[i]
+		present:=false
+		for i:=0;i<len(tab_variable);i++{
+			if tab_variable[i]==variable {
+				present=true
+			}
+		}
+		for i:=0;i<len(tab_variable2);i++{
+			if tab_variable2[i]==variable {
+				present=true
+			}
+		}
+		
+		if !present{
+			tab_variable2=append(tab_variable2,variable)
+		}
+	}
+	return tab_variable2
+}
+
+
+func passe2(list_list_pcv [][]pair_coef_var, list_pcv []pair_coef_var, eg bool,val1 []pair_coef_var,val2 []pair_coef_var )  [][]pair_coef_var{
+
+	for i:=0;i<len(val1);i++{
+		list_pcv=append(list_pcv,val1[i])
+	}
+	for i:=0; i<len(val2);i++{
+		list_pcv=append(list_pcv,val2[i]) 
+	}
+	list_list_pcv=append(list_list_pcv,list_pcv)
+
+	if eg{
+		list_list_pcv=append(list_list_pcv,egPasse2(val1,val2))	
+	}	
+
+return list_list_pcv
+}
+
+
+func egPasse2(val1 []pair_coef_var,val2 []pair_coef_var) []pair_coef_var{
+	var list_pcv_eg = make([]pair_coef_var,0)
+	for i:=0;i<len(val1);i++{
+		egneg:=new(big.Rat).Mul(val1[i].coef,big.NewRat(-1,1))
+		var pair pair_coef_var
+		pair.variable=val1[i].variable
+		pair.coef=egneg
+		list_pcv_eg=append(list_pcv_eg,pair)
+	}
+
+	for i:=0; i<len(val2);i++{
+		egneg2:=new(big.Rat).Mul(val2[i].coef,big.NewRat(-1,1))
+		var pair2 pair_coef_var
+		pair2.coef=egneg2
+		pair2.variable=val2[i].variable
+		list_pcv_eg=append(list_pcv_eg,pair2)
+	}
+
+	return list_pcv_eg
+
 }
 
 
