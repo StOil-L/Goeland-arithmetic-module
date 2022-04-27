@@ -1770,7 +1770,7 @@ func TestSimplexePasse2MultiSup() {
 	fmt.Println(" X >= 3/2 et Y => 2/3  et  3/2 => Z et X => 2/3 ")
 	x := types.MakerMeta("X", -1, tInt)
 	y := types.MakerMeta("Y", -1, tInt)
-	z := types.MakerMeta("Z", -1, tRat)
+	z := types.MakerMeta("Z", -1, tInt)
 	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
 	deux_tiers := types.MakerConst(types.MakerId("2/3"), tRat)
 	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{x, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))

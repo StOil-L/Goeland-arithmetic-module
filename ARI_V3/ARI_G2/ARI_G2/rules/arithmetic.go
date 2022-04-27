@@ -11,6 +11,7 @@ import (
 	treetypes "ARI/tree-types"
 	"ARI/types"
 	"fmt"
+	"math/big"
 )
 
 /** Apply const rule
@@ -85,12 +86,17 @@ func ApplySimplexRule(fl types.FormList) (bool, treetypes.Substitutions) {
 	normalized_pred_list, map_metavariable_simplexvariables := normalizeForSimplex(pred_list_for_simplex)
 	// Call to simplex, return something like variable - value
 	 res_simplex,has_solution := Simplexe(normalized_pred_list)
+	 fmt.Println("finito")
 	if !has_solution {
+		fmt.Println("pippo")
 		return false, treetypes.MakeEmptySubstitution()
 	}
-
+	var solution = make(map[string]*big.Rat,0)
+	for i:=0;i<len(res_simplex.tab_nom_var);i++{
+		solution[res_simplex.tab_nom_var[i]]=res_simplex.alpha_tab[res_simplex.tab_nom_var[i]]
+	}
 	// Rebuild a substitution from the simplex's result
-	subst_res := buildSubstitutionFromSimplexResult(res_simplex.alpha_tab, map_metavariable_simplexvariables)
+	subst_res := buildSubstitutionFromSimplexResult(solution, map_metavariable_simplexvariables)
 
 	return true, subst_res
 }
