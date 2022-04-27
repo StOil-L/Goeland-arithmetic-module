@@ -82,17 +82,15 @@ func ApplySimplexRule(fl types.FormList) (bool, treetypes.Substitutions) {
 	// Keep only relevant predicat, aka arithmetic predicat with binary arity and a variable like x <= 3...
 	pred_list_for_simplex := keepRelevantPred(fl)
 	// Normalization to fits with simplex's input
-	normalized_pred_list, map_metavariable_simplexvariables, list_int_variable := normalizeForSimplex(pred_list_for_simplex)
-
+	normalized_pred_list, map_metavariable_simplexvariables := normalizeForSimplex(pred_list_for_simplex)
 	// Call to simplex, return something like variable - value
-	has_solution, res_simplex := simplex(normalized_pred_list, list_int_variable)
-
+	 res_simplex,has_solution := Simplexe(normalized_pred_list)
 	if !has_solution {
 		return false, treetypes.MakeEmptySubstitution()
 	}
 
 	// Rebuild a substitution from the simplex's result
-	subst_res := buildSubstitutionFromSimplexResult(res_simplex, map_metavariable_simplexvariables)
+	subst_res := buildSubstitutionFromSimplexResult(res_simplex.alpha_tab, map_metavariable_simplexvariables)
 
 	return true, subst_res
 }

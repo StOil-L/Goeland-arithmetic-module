@@ -68,7 +68,7 @@ func buildSubstitutionFromSimplexResult(res_simplex map[string]*big.Rat, map_mv_
 }
 
 /*** TODO : cette fonction est juste là pour que ça compile ***/
-func simplex([]string, []string) (bool, map[string]*big.Rat) {
+func simplex(info_system, []string) (bool, map[string]*big.Rat) {
 	return false, nil
 }
 
@@ -92,11 +92,7 @@ func simplex([]string, []string) (bool, map[string]*big.Rat) {
 
 
 
-func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []string) {
-	//ce truc sera remplacé par une struct
-	res_for_simplex := []string{}
-
-
+func normalizeForSimplex(pl []types.Pred) (info_system, map[string]types.Meta) {
 	map_variable_metavariables := make(map[string]types.Meta)
 	int_variables := []string{}
 	var tab_variable = make([]types.Meta, 0)
@@ -110,7 +106,8 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 		t2, val2, err2 := termToSimplex(p.GetArgs()[1], &map_variable_metavariables, &int_variables,false,list_pcv)
 		if err1 != nil || err2 != nil  {
 			fmt.Printf("Error in normalizeForSimplex")
-			return nil, nil, nil
+			var mauvais_system info_system
+			return mauvais_system, nil
 		}
 
 		
@@ -167,12 +164,60 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 	}
 
 	fmt.Println()	  
-	fmt.Println("varInt",int_variables)
-	return res_for_simplex, map_variable_metavariables, int_variables
+	//ici le system
+	system :=constrSystem(list_list_pcv_sort,int_variables) 
+	return system, map_variable_metavariables
 }
 
 
+func constrSystem(list_list_pcv_sort [][]pair_coef_var, int_variables []string) info_system{
+	var system info_system
+	var matrice_coef =make([][]*big.Rat,0)
+	var tab_constr = make([]*big.Rat,0)
+	var tab_var = make([]string,0)
+	for i:=0;i<len(list_list_pcv_sort);i++{
+		var ligne_matrice = make([]*big.Rat,0)
+		for j:=0;j<len(list_list_pcv_sort[i]);j++{
+			if j==len(list_list_pcv_sort[i])-1{
+				tab_constr=append(tab_constr,list_list_pcv_sort[i][j].coef )
+				matrice_coef=append(matrice_coef,ligne_matrice)
+			} else {
+				ligne_matrice=append(ligne_matrice,list_list_pcv_sort[i][j].coef)
+				if i==0{
+					tab_var=append(tab_var,list_list_pcv_sort[i][j].variable.ToString())
+				}
+			}
+		}
+	}
 
+
+	system.tab_coef=matrice_coef
+	system.tab_cont=tab_constr
+	system.tab_nom_var=tab_var
+
+	pos_var_tab:=create_pos_var_tab(system.tab_coef,system.tab_nom_var)
+	system.pos_var_tab=pos_var_tab
+	bland:=bland(system.pos_var_tab, system.tab_coef, system.tab_nom_var)
+	system.bland=bland
+	alpha_tab:=create_alpha_tab(system.tab_coef, system.tab_nom_var)
+	system.alpha_tab=alpha_tab
+	var tab_int_bool = make([]bool,0)
+	for i:=0;i<len(system.tab_nom_var);i++{
+		present :=false
+		for j:=0;j<len(int_variables);j++{
+			if int_variables[j]==system.tab_nom_var[i]{
+				present=true
+			}
+		}
+		if present{
+			tab_int_bool=append(tab_int_bool,true)
+		} else {
+			tab_int_bool=append(tab_int_bool,false)
+		}
+	}
+	system.tab_int_bool=tab_int_bool
+	return system
+}
 
 func passe3(list_list_pcv [][]pair_coef_var, tab_variable []types.Meta)[][]pair_coef_var{
 	
