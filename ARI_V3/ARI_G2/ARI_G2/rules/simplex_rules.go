@@ -102,15 +102,6 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 	var tab_variable = make([]types.Meta, 0)
 	ligne_matrice:=0
 	var list_list_pcv = make([][]pair_coef_var,0)
-	
-	
-
-
-
-
-
-
-
 	for _, p := range pl {
 		var list_pcv = make([]pair_coef_var,0)
 		
@@ -127,6 +118,7 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 	
 			case types.Id_eq.GetName():
 				tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, true)
+				list_list_pcv=passe2(list_list_pcv,list_pcv,2, val1,val2)
 				
 			case types.Id_neq.GetName():
 
@@ -140,8 +132,8 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 					tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
 				
 			case "lesseq":
-				
 					tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
+					list_list_pcv=passe2(list_list_pcv,list_pcv,1, val1,val2)
 				
 			case "great":
 					tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
@@ -149,13 +141,41 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 
 			case "greateq":
 					tab_variable=passe1(p,t1,t2,&ligne_matrice,tab_variable, false)
+					list_list_pcv=passe2(list_list_pcv,list_pcv,0, val1,val2)
 				
 		}
 	
-		list_list_pcv=passe2(list_list_pcv,list_pcv,true, val1,val2)
 		
 	}
-		
+	list_list_pcv_sort:=passe3(list_list_pcv, tab_variable)
+	fmt.Println("taille syteme", len(list_list_pcv_sort))
+
+
+	for _, tab := range list_list_pcv {
+		for _, ma_struct := range tab {
+		  fmt.Print(ma_struct.coef," ",ma_struct.variable.GetName(),"  ---  ")
+		}
+	}
+
+	fmt.Println()	  
+	fmt.Println()	  
+	fmt.Println()	  
+	for _, tab := range list_list_pcv_sort {
+		for _, ma_struct := range tab {
+		fmt.Print(ma_struct.coef," ",ma_struct.variable.GetName(),"  ---  ")
+		}
+	}
+
+	fmt.Println()	  
+	fmt.Println("varInt",int_variables)
+	return res_for_simplex, map_variable_metavariables, int_variables
+}
+
+
+
+
+func passe3(list_list_pcv [][]pair_coef_var, tab_variable []types.Meta)[][]pair_coef_var{
+	
 	var list_list_pcv_sort = make([][]pair_coef_var,0)
 	var meta_const types.Meta
 	for i:=0;i<len(list_list_pcv);i++{
@@ -166,10 +186,11 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 		for j:=0;j<len(list_list_pcv[i]);j++{
 			again := false
 			if list_list_pcv[i][j].variable==tab_variable[cpt_var]{
-				for k:=0;k<cpt_var;k++{
-					if list_list_pcv[i][j].variable==tab_variable[k]{
+				for k:=0;k<len(list_pcv_sort);k++{
+					if list_list_pcv[i][j].variable==list_pcv_sort[k].variable{
 						list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
 						again=true
+
 					}
 				}
 				if !again{
@@ -179,17 +200,28 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 					}
 				}else {again=false}
 			} else {
-				for k:=0;k<cpt_var;k++{
-					if list_list_pcv[i][j].variable==tab_variable[k]{
+				for k:=0;k<len(list_pcv_sort);k++{
+					if list_list_pcv[i][j].variable==list_pcv_sort[k].variable{
 						list_pcv_sort[k].coef.Add(list_pcv_sort[k].coef,list_list_pcv[i][j].coef)
 						again=true
 					}
 				}
-				if !again && list_list_pcv[i][j].variable!=meta_const && cpt_var!=0{
+				if !again && list_list_pcv[i][j].variable!=meta_const {
+					//ajouter les variables précédentes
+					for list_list_pcv[i][j].variable !=tab_variable[cpt_var]{
+						var pair2 pair_coef_var
+						pair2.coef=newRat()
+						pair2.variable=tab_variable[cpt_var]
+						list_pcv_sort=append(list_pcv_sort,pair2)
+						cpt_var+=1
+					}
 					var pair2 pair_coef_var
-					pair2.coef=newRat()
-					pair2.variable=tab_variable[cpt_var]
+					pair2.coef=list_list_pcv[i][j].coef
+					pair2.variable=list_list_pcv[i][j].variable
 					list_pcv_sort=append(list_pcv_sort,pair2)
+					if cpt_var<len(tab_variable)-1{
+						cpt_var+=1
+					}
 				} else if list_list_pcv[i][j].variable==meta_const{
 
 					pair.coef.Add(pair.coef,list_list_pcv[i][j].coef)
@@ -216,29 +248,8 @@ func normalizeForSimplex(pl []types.Pred) ([]string, map[string]types.Meta, []st
 		}
 		list_list_pcv_sort=append(list_list_pcv_sort,list_pcv_sort)		
 	}
-//	fmt.Println("list_list_pcv_sort = ",list_list_pcv_sort )
-	fmt.Println("taille syteme", len(list_list_pcv_sort))
-	for _, tab := range list_list_pcv {
-		for _, ma_struct := range tab {
-		  fmt.Print(ma_struct.coef," ",ma_struct.variable," ")
-		}
-	  }
-	fmt.Println()	  
-/*
-for _, tab := range list_list_pcv_sort {
-	for _, ma_struct := range tab {
-	  fmt.Print(ma_struct.coef," ",ma_struct.variable," ")
-	}
-  }
-fmt.Println()	  
-*/
-	return res_for_simplex, map_variable_metavariables, int_variables
+	return list_list_pcv_sort
 }
-
-
-
-
-
 
 
 
@@ -250,8 +261,9 @@ func passe1(p types.Pred,t1 []types.Meta, t2 []types.Meta, cpt *int,tab_variable
 	}
 	tab_variable=append(tab_variable,auxPasse1(t2,p,tab_variable,1)...)
 	tab_variable=append(tab_variable,auxPasse1(t1,p,tab_variable,0)...)
-	fmt.Println("tab_var : ",tab_variable)
-	fmt.Println("cpt = ",*cpt)
+
+	//fmt.Println("tab_var : ",tab_variable)
+	//fmt.Println("cpt = ",*cpt)
 
 return tab_variable
 }
@@ -281,17 +293,19 @@ func auxPasse1(t []types.Meta, p types.Pred, tab_variable []types.Meta,number in
 }
 
 
-func passe2(list_list_pcv [][]pair_coef_var, list_pcv []pair_coef_var, eg bool,val1 []pair_coef_var,val2 []pair_coef_var )  [][]pair_coef_var{
-
-	for i:=0;i<len(val1);i++{
-		list_pcv=append(list_pcv,val1[i])
+func passe2(list_list_pcv [][]pair_coef_var, list_pcv []pair_coef_var, connector int,val1 []pair_coef_var,val2 []pair_coef_var )  [][]pair_coef_var{
+	
+	if connector !=1{
+		for i:=0;i<len(val1);i++{
+			list_pcv=append(list_pcv,val1[i])
+		}
+		for i:=0; i<len(val2);i++{
+			list_pcv=append(list_pcv,val2[i]) 
+		}
+		list_list_pcv=append(list_list_pcv,list_pcv)
 	}
-	for i:=0; i<len(val2);i++{
-		list_pcv=append(list_pcv,val2[i]) 
-	}
-	list_list_pcv=append(list_list_pcv,list_pcv)
 
-	if eg{
+	if connector==2 || connector==1{
 		list_list_pcv=append(list_list_pcv,egPasse2(val1,val2))	
 	}	
 
@@ -332,23 +346,33 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, 
 	switch ttype := t.(type) {
 	
 		case types.Meta:
-			//if passe==0{
 			// C'est ici que je stock les metavairables, que je regarde si elles sont entière et que je fais la correspondence
 			var_for_simplex := ttype.ToString()
 			(*map_v_mv)[var_for_simplex] = ttype // Je stock la nouvelle variable de simplexe dans une map pour refaire le lien après
 			if typing.IsInt(ttype.GetTypeHint()) {
-				(*iv) = append((*iv), var_for_simplex) // Je stock aussi la variable dans la liste des variables entière si elle doit être entière
+				is_in_tab_int:=false
+				for i:=0;i<len(*iv);i++{
+					if var_for_simplex == (*iv)[i]{
+						is_in_tab_int=true
+					}
+				}
+				if ! is_in_tab_int{
+					(*iv) = append((*iv), var_for_simplex) // Je stock aussi la variable dans la liste des variables entière si elle doit être entière
+				}
 			}
+			
+			
+			var pair pair_coef_var
+			pair.variable=ttype
+			if left{
+				pair.coef=big.NewRat(1,1)
+			}else {
+				pair.coef=big.NewRat(-1,1)
+			}
+			pcv=append(pcv,pair)
 			tab_var= append(tab_var,ttype)
 			return tab_var,pcv, nil
-		//}
-//		if passe==1{
-				var pair pair_coef_var
-				pair.variable=ttype
-				pair.coef=big.NewRat(1,1)
-				pcv=append(pcv,pair)
-		//		return tab_var,pcv,nil
-//		}
+			
 		case types.Fun:
 		
 			switch t.GetName(){
@@ -440,6 +464,16 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 						pair.coef=big.NewRat(-1,1)
 					}
 					pcv=append(pcv,pair)
+				}
+				if !checkBinaryArithmeticFun(arg_fun.GetID() ){
+					var pair2 pair_coef_var
+					monRat,_:=new(big.Rat).SetString(arg_fun.GetName())				
+					pair2.coef=monRat
+					if left{
+						monRat.Mul(monRat,big.NewRat(-1,1))
+					}
+					pcv=append(pcv,pair2)
+				}else{
 					return funToSimplex(arg_fun,map_v_mv,iv,pcv,left)
 				}	
 			}
@@ -456,6 +490,16 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 						pair.coef=big.NewRat(-1,1)
 					}
 					pcv=append(pcv,pair)
+				}
+				if !checkBinaryArithmeticFun(arg_fun.GetID() ){
+					var pair2 pair_coef_var
+					monRat,_:=new(big.Rat).SetString(arg_fun.GetName())				
+					pair2.coef=monRat
+					if left{
+						monRat.Mul(monRat,big.NewRat(-1,1))
+					}
+					pcv=append(pcv,pair2)
+				}else{
 					return funToSimplex(arg_fun,map_v_mv,iv,pcv,left)
 				}
 			}
@@ -466,9 +510,14 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 				if arg_meta2,ok2:=arg2.(types.Meta);ok2{
 					var pair1, pair2 pair_coef_var
 					pair1.variable=arg_meta1
-					pair1.coef=big.NewRat(1,1)
 					pair2.variable=arg_meta2
-					pair2.coef=big.NewRat(1,1)
+					if left{
+						pair1.coef=big.NewRat(1,1)
+						pair2.coef=big.NewRat(1,1)
+					} else {
+						pair1.coef=big.NewRat(-1,1)
+						pair2.coef=big.NewRat(-1,1)
+					}
 					pcv=append(pcv,pair1)
 					pcv=append(pcv,pair2)
 					return pcv, newRat(),nil
@@ -508,6 +557,16 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 						pair.coef=big.NewRat(1,1)
 					}
 					pcv=append(pcv,pair)
+				}
+				if !checkBinaryArithmeticFun(arg_fun.GetID() ){
+					var pair2 pair_coef_var
+					monRat,_:=new(big.Rat).SetString(arg_fun.GetName())				
+					pair2.coef=monRat
+					if left{
+						monRat.Mul(monRat,big.NewRat(-1,1))
+					}
+					pcv=append(pcv,pair2)
+				}else{
 					return funToSimplex(arg_fun,map_v_mv,iv,pcv,left)
 				}
 			}
@@ -525,8 +584,17 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 						pair.coef=big.NewRat(-1,1)
 					}
 					pcv=append(pcv,pair)
-					//on envoie ! left pour faire passer la différence de l'autre côté
-					return funToSimplex(arg_fun,map_v_mv,iv,pcv,!left)
+				}
+				if !checkBinaryArithmeticFun(arg_fun.GetID() ){
+					var pair2 pair_coef_var
+					monRat,_:=new(big.Rat).SetString(arg_fun.GetName())				
+					pair2.coef=monRat
+					if !left{
+						monRat.Mul(monRat,big.NewRat(-1,1))
+					}
+					pcv=append(pcv,pair2)
+				}else{
+					return funToSimplex(arg_fun,map_v_mv,iv,pcv,left)
 				}
 			}
 		}
@@ -574,7 +642,6 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 		arg1 := f.GetArgs()[0]
 		arg2 := f.GetArgs()[1]
 
-
 		if arg1.IsFun() && arg2.IsMeta(){
 			if arg_fun, ok := arg1.(types.Fun); ok{
 				if arg_meta,ok2:=arg2.(types.Meta);ok2{
@@ -585,6 +652,7 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 					val.Mul(val,big.NewRat(-1,1))
 					pair.coef=val
 					pcv=append(pcv,pair)
+					//3*(3*x) a voir si pas de problèmes
 					return pcv, newRat(),nil
 				}
 			}
@@ -612,6 +680,9 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,pcv
 				if arg_fun1, ok1 := arg1.(types.Fun); ok1{
 					if !checkBinaryArithmeticFun(arg_fun1.GetID() ) && ! checkBinaryArithmeticFun(arg_fun2.GetID() ){
 						test_rat,_:=EvaluateFun(f)
+						if left{
+							test_rat.Mul(test_rat,big.NewRat(-1,1))
+						}
 						return pcv,test_rat,nil
 					}
 				}

@@ -206,14 +206,17 @@ func main() {
 	TestSimplexePasse2()
 	TestSimplexePasse2_calcul_sum()
 	TestSimplexeSum()
+
 	TestSimplexeSum_number()
 	TestSimplexeProd_number()
 	TestSimplexeSum_number_inv()
 	TestSimplexeProd_number_inv()
 	TestSimplexeSum_var()
 	TestSimplexeBeaucoupRat()
+	TestSimplexeBeaucoupRatInv()
 	TestSimplexePasse2MultiEg()
-
+	TestSimplexePasse2MultiInf()
+	TestSimplexePasse2MultiSup()
 }
 
 /*** Test création de termes ***/
@@ -1518,6 +1521,29 @@ func TestSimplexeBeaucoupRat() {
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
 }
 
+
+func TestSimplexeBeaucoupRatInv() {
+	fmt.Println(" -------- TEST 28.998 -------- ")
+	fmt.Println(" 3/2 = (((((X + Y)-Z)+K)+Y)-Z)+K) ")
+	x := types.MakerMeta("X_0__", -1)
+	y := types.MakerMeta("Y", -1)
+	z := types.MakerMeta("Z", -1)
+	k := types.MakerMeta("K", -1)
+	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
+	sum := types.MakeFun(types.MakerId("sum"), []types.Term{x, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	diff := types.MakeFun(types.MakerId("difference"), []types.Term{sum, z}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	prod := types.MakeFun(types.MakerId("sum"), []types.Term{diff, k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+	sum2 := types.MakeFun(types.MakerId("sum"), []types.Term{prod, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	diff2 := types.MakeFun(types.MakerId("difference"), []types.Term{sum2, z}, typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	prod2 := types.MakeFun(types.MakerId("sum"), []types.Term{diff2, k}, typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+	p := types.MakePred(types.Id_eq, []types.Term{trois_demi,prod2}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
+
 func TestSimplexeBeaucoupRat_2() {
 	fmt.Println(" -------- TEST 28.999 -------- ")
 	fmt.Println(" 1) (((((X_0__ + Y)-Z)*K)+Y)-Z)*K) = (A+B)*(C+K)  2)  X_0__ + Y = 3/2 + M       ")
@@ -1691,12 +1717,12 @@ func TestSimplexeProd_number_inv(){
 func TestSimplexeSum_var(){
 
 	fmt.Println(" -------- TEST Passe2 sum number inv-------- ")
-	fmt.Println("  X + Y = 3/2 ")
+	fmt.Println(" 3/2 = X + Y ")
 	x := types.MakerMeta("X", -1)
 	y := types.MakerMeta("Y", -1)
 	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
 	sum := types.MakerFun(types.MakerId("sum"),[]types.Term{x, y}, typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
-	p := types.MakePred(types.Id_eq, []types.Term{sum,trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p := types.MakePred(types.Id_eq, []types.Term{trois_demi,sum}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	systeme := []types.Form{p}
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
@@ -1716,6 +1742,41 @@ func TestSimplexePasse2MultiEg() {
 	p2 := types.MakePred(types.Id_eq, []types.Term{y, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	p3 := types.MakePred(types.Id_eq, []types.Term{ trois_demi, z}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	p4 := types.MakePred(types.Id_eq, []types.Term{x, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1, p2, p3, p4}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+func TestSimplexePasse2MultiInf() {
+	fmt.Println(" -------- TEST passe2 multiInf -------- ")
+	fmt.Println(" X <= 3/2 et Y <= 2/3  et  3/2 <= Z et X <= 2/3 ")
+	x := types.MakerMeta("X", -1)
+	y := types.MakerMeta("Y", -1)
+	z := types.MakerMeta("Z", -1)
+	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
+	deux_tiers := types.MakerConst(types.MakerId("2/3"), tRat)
+	p1 := types.MakePred(types.MakerId("lesseq"), []types.Term{x, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p2 := types.MakePred(types.MakerId("lesseq"), []types.Term{y, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p3 := types.MakePred(types.MakerId("lesseq"), []types.Term{ trois_demi, z}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p4 := types.MakePred(types.MakerId("lesseq"), []types.Term{x, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1, p2, p3, p4}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
+func TestSimplexePasse2MultiSup() {
+	fmt.Println(" -------- TEST passe2 multiSup -------- ")
+	fmt.Println(" X >= 3/2 et Y => 2/3  et  3/2 => Z et X => 2/3 ")
+	x := types.MakerMeta("X", -1, tInt)
+	y := types.MakerMeta("Y", -1, tInt)
+	z := types.MakerMeta("Z", -1, tRat)
+	trois_demi := types.MakerConst(types.MakerId("3/2"), tRat)
+	deux_tiers := types.MakerConst(types.MakerId("2/3"), tRat)
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{x, trois_demi}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p2 := types.MakePred(types.MakerId("greateq"), []types.Term{y, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p3 := types.MakePred(types.MakerId("greateq"), []types.Term{ trois_demi, z}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p4 := types.MakePred(types.MakerId("greateq"), []types.Term{x, deux_tiers}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	systeme := []types.Form{p1, p2, p3, p4}
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())

@@ -81,7 +81,7 @@ func ApplyNormalizationRule(p types.Form) []types.FormList {
 func ApplySimplexRule(fl types.FormList) (bool, treetypes.Substitutions) {
 	// Keep only relevant predicat, aka arithmetic predicat with binary arity and a variable like x <= 3...
 	pred_list_for_simplex := keepRelevantPred(fl)
-	// Noramlization to fits with simplex's input
+	// Normalization to fits with simplex's input
 	normalized_pred_list, map_metavariable_simplexvariables, list_int_variable := normalizeForSimplex(pred_list_for_simplex)
 
 	// Call to simplex, return something like variable - value
