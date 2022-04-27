@@ -21,7 +21,7 @@ func Simplexe(system info_system) (info_system, bool){
 	fmt.Println("alpha_tab",system.alpha_tab)
 	fmt.Println("tab_coef",system.tab_coef)
 	fmt.Println("pos_var_tab",system.pos_var_tab)
-
+	fmt.Println("tab_int_bool",system.tab_int_bool)
 	var pos_var_tab_bis =make([]string,len(system.pos_var_tab))
 	for i:=0;i<len(system.pos_var_tab);i++{
 		pos_var_tab_bis[i] = system.pos_var_tab[i]
