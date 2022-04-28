@@ -9,7 +9,7 @@ import "math/big"
 `pos_var_tab`, an array containing the variable positions in the matrice starting by the out-base variable
 `bland`, an array containing the Bland order of variable
 `alpha_tab`, a map associating the name of the variable and his alpha value
-`incremental_coef` 
+`incremental_coef` a array which contains the column pivot and the coefficient pivot's line
 */
 type info_system struct {
     tab_coef [][]*big.Rat

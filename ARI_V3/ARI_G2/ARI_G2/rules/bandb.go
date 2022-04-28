@@ -159,6 +159,12 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
 	return tab_copy
 }
 
+/** 
+ * This function update the new coefficient line, the alpha of the new variable, the variable position and the bland order
+ * It takes the following parameters:
+ *   - `system`, a struct containing all information about the system
+ * It returns the update system
+ **/
 func incremental(system info_system) (info_system){
 	nbParam := len(system.tab_coef[0])+1
 	ligne_modif := len(system.tab_coef)-1
@@ -201,6 +207,14 @@ func incremental(system info_system) (info_system){
 	return system
 }
 
+/** 
+ * This function make a deep copy of the map give in parameter
+ * It takes the following parameters:
+ * 	 - `alpha_tab`, the map that will be copied
+ *	 - `tab_coef`, the matrice with the normalized inequations
+ * 	 - `tab_nom_var`, an array of the system's starting variable
+ * It returns the copied array
+ **/
 func copy_alpha_tab(tab_coef [][]*big.Rat, tab_nom_var []string, alpha_tab map[string]*big.Rat) map[string]*big.Rat{
 	alpha_tab_bis := make(map[string]*big.Rat)
 	//Creation variable d'ecart
