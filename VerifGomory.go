@@ -1,45 +1,44 @@
 // déclaration de la structure Gomory
 type Gomory struct {
-	valide bool
 	variable string
-	borne float64
+	borne *big.Rat
 }
 
 //Verifier si on a les conditions pour faire une Gomory cut
 //NombreVariables = len(TabVar)
-func VerifGomory(NombreVariables int ,posVarTableau []string, alphaTab map[string]*big.Rat )(Gomory){
+func VerifGomory(tabVar []string ,posVarTableau []string, alphaTab map[string]*big.Rat )([]Gomory){
 
-  GomoryStruct := Gomory{false,"0",0}
-  
-  var valideVariableEcart = regexp.MustCompile(`[e][0-9]`)
-  var TestEcart = true
-  
-  //Test tous les variables dans la base
-  for i := len(posVarTableau)-1; i >= len(posVarTableau)- NombreVariables;i--{
+  var tab_gomory = make([]Gomory,0)
+  var GomoryStruct Gomory 
+
+  //Test tous les variables hors base
+  for i := len(posVarTableau)-1; i >= len(posVarTableau)- len(tabVar);i--{
     
     //Vérifie si ce sont que des variables d'écarts
-    if !valideVariableEcart.MatchString(posVarTableau[i]){
-      TestEcart = false;
+    if posVarTableau[i][0]!='e' || alphaTab[posVarTableau[i]]{
+      return tab_gomory
     }
   }
   
+
+
+
   //Si c'est vrai, deuxième vérification, il faut que l'affectation d'une des variables initiales soit non entières
-  if(TestEcart){
-      var i = 0;
-    for i <= NombreVariables{
-  	xi := fmt.Sprint("x", i)
-      //Regarde si ce n'est pas un entier
-      if(alphaTab[xi].IsInt()){
-        //Si c'est vrai, renvoyer la struct avec le booléen à true / la variable qui a son affection non entière / La nouvelle contrainte qui est crée
-        GomoryStruct.valide = true;
-        GomoryStruct.variable = xi;
-        var contrainte float64
-        contrainte,_ = alphaTab[xi].Float64()
-        GomoryStruct.borne = math.Floor(contrainte) + 1
-      }
-      i++
+  var i = 0;
+  for i <= len(tabVar){
+    //Regarde si ce n'est pas un entier
+    if alphaTab[tabVar[i]].IsInt() {
+      //Si c'est vrai, renvoyer la struct avec le booléen à true / la variable qui a son affection non entière / La nouvelle contrainte qui est crée
+      GomoryStruct.variable = tabVar[i];
+      var contrainte float64
+      contrainte,_ = alphaTab[tabVar[i]].Float64()
+      borne := math.Floor(contrainte) + 1
+      GomoryStruct.borne = new(Rat).SetFloat64(borne)
+      tab_gomory=append(tab_gomory,GomoryStruct)
     }
+    i++
   }
   
-  return GomoryStruct
+  
+  return tab_gomory
 } 
