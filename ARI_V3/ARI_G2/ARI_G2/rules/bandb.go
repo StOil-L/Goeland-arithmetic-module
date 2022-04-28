@@ -98,7 +98,8 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
 			system.tab_cont = tab_cont_bis
 
 			//incrémental
-			system = incremental(system)
+			tab_gom:=VerifGomory(system.tab_nom_var,system.tab_cont,system.pos_var_tab,system.alpha_tab)
+			system = incremental(system, tab_gom)
 			//time.Sleep(time.Second*10) 
 			//fin incrémental
 
@@ -165,45 +166,64 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
  *   - `system`, a struct containing all information about the system
  * It returns the update system
  **/
-func incremental(system info_system) (info_system){
-	nbParam := len(system.tab_coef[0])+1
-	ligne_modif := len(system.tab_coef)-1
-	//Represente chaque itération de simplex
-	for i:=0; i < len(system.incremental_coef)/(len(system.tab_coef[0])+1); i++ {
-		pivot := int(system.incremental_coef[i*nbParam].Num().Int64())
-		coef_pivot := new(big.Rat).Set(system.tab_coef[ligne_modif][pivot])
-		//Calcul la nouvelle ligne et l'alpha sur une iteration de simplex
-		for j := 0; j < len(system.tab_coef[0]); j++ {
-			//Calcul ligne matrice
-			if j == pivot {
-				system.tab_coef[ligne_modif][j].Mul(system.tab_coef[ligne_modif][j], system.incremental_coef[(i*nbParam)+j+1])
-			} else {
-				system.tab_coef[ligne_modif][j].Add(system.tab_coef[ligne_modif][j], new(big.Rat).Mul(system.incremental_coef[(i*nbParam)+j+1],coef_pivot))
+func incremental(system info_system, tab_gom []Gomory) (info_system){
+	
+	for iconstraint:=0;iconstraint<len(tab_gom)+1;iconstraint++{
+
+		//ajout contrainte gomory 
+		if iconstraint>0{
+			var ligne_coef_gom = make([]*big.Rat,0)
+			system.tab_cont=append(system.tab_cont,tab_gom[iconstraint-1].borne)
+			for ivariable:=0;ivariable<len(system.tab_nom_var);ivariable++{
+				if system.tab_nom_var[ivariable]==tab_gom[iconstraint-1].variable{
+					ligne_coef_gom=append(ligne_coef_gom,big.NewRat(1,1))
+				} else{
+					ligne_coef_gom=append(ligne_coef_gom,new(big.Rat))
+				}
+
+			}
+			system.tab_coef=append(system.tab_coef,ligne_coef_gom)
+		}
+
+		nbParam := len(system.tab_coef[0])+1
+		ligne_modif := len(system.tab_coef)-1
+		//Represente chaque itération de simplex
+		for i:=0; i < len(system.incremental_coef)/(len(system.tab_coef[0])+1); i++ {
+			pivot := int(system.incremental_coef[i*nbParam].Num().Int64())
+			coef_pivot := new(big.Rat).Set(system.tab_coef[ligne_modif][pivot])
+			//Calcul la nouvelle ligne et l'alpha sur une iteration de simplex
+			for j := 0; j < len(system.tab_coef[0]); j++ {
+				//Calcul ligne matrice
+				if j == pivot {
+					system.tab_coef[ligne_modif][j].Mul(system.tab_coef[ligne_modif][j], system.incremental_coef[(i*nbParam)+j+1])
+				} else {
+					system.tab_coef[ligne_modif][j].Add(system.tab_coef[ligne_modif][j], new(big.Rat).Mul(system.incremental_coef[(i*nbParam)+j+1],coef_pivot))
+				}
 			}
 		}
-	}
 
-	//Calcul alpha
-	var cal_alpha = new(big.Rat)
-	for i := 0; i < len(system.tab_coef[0]); i++ {
-		cal_alpha.Add(cal_alpha, new(big.Rat).Mul(system.tab_coef[ligne_modif][i], system.alpha_tab[system.pos_var_tab[i + len(system.tab_coef)-1]]))
-	}
+		//Calcul alpha
+		var cal_alpha = new(big.Rat)
+		for i := 0; i < len(system.tab_coef[0]); i++ {
+			cal_alpha.Add(cal_alpha, new(big.Rat).Mul(system.tab_coef[ligne_modif][i], system.alpha_tab[system.pos_var_tab[i + len(system.tab_coef)-1]]))
+		}
 
-	/*fmt.Println("Alpha = ", cal_alpha)
-	fmt.Println("TabCoef = ", system.tab_coef[ligne_modif])*/
+		/*fmt.Println("Alpha = ", cal_alpha)
+		fmt.Println("TabCoef = ", system.tab_coef[ligne_modif])*/
 
-	//Maj des tableaux
-	var new_pos_var_tab []string
-	for i := 0; i < len(system.tab_cont)-1; i++ {
-		new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
+		//Maj des tableaux
+		var new_pos_var_tab []string
+		for i := 0; i < len(system.tab_cont)-1; i++ {
+			new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
+		}
+		new_pos_var_tab = append(new_pos_var_tab, fmt.Sprint("e", len(system.tab_coef)-1))
+		for i := len(system.tab_cont)-1; i < len(system.pos_var_tab); i++ {
+			new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
+		}
+		system.pos_var_tab = new_pos_var_tab
+		system.alpha_tab[fmt.Sprint("e", len(system.tab_coef)-1)] = cal_alpha
+		system.bland = append(system.bland, fmt.Sprint("e", len(system.tab_coef)-1))
 	}
-	new_pos_var_tab = append(new_pos_var_tab, fmt.Sprint("e", len(system.tab_coef)-1))
-	for i := len(system.tab_cont)-1; i < len(system.pos_var_tab); i++ {
-		new_pos_var_tab = append(new_pos_var_tab, system.pos_var_tab[i])
-	}
-	system.pos_var_tab = new_pos_var_tab
-	system.alpha_tab[fmt.Sprint("e", len(system.tab_coef)-1)] = cal_alpha
-	system.bland = append(system.bland, fmt.Sprint("e", len(system.tab_coef)-1))
 	return system
 }
 
