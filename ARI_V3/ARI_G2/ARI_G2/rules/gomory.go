@@ -13,7 +13,7 @@ type Gomory struct {
 
 //Verifier si on a les conditions pour faire une Gomory cut
 //NombreVariables = len(TabVar)
-func VerifGomory(tabVar []string, tabcont []*big.Rat,posVarTableau []string, alphaTab map[string]*big.Rat )([]Gomory){
+func VerifGomory(tab_int_bool []bool,tabVar []string, tabcont []*big.Rat,posVarTableau []string, alphaTab map[string]*big.Rat )([]Gomory){
 
   var tab_gomory = make([]Gomory,0)
   var GomoryStruct Gomory 
@@ -24,16 +24,16 @@ func VerifGomory(tabVar []string, tabcont []*big.Rat,posVarTableau []string, alp
       return tab_gomory
     } else {
 		j,_:= strconv.Atoi(posVarTableau[i][1:])
-		if alphaTab[posVarTableau[i]].Cmp(tabcont[j])>0{
-			return tab_gomory
-		}
-	}
+	  	if alphaTab[posVarTableau[i]].Cmp(tabcont[j])>0{
+		  	return tab_gomory
+		  }
+	  }
   }
   
 //toutes les variables initiales dont l'affectation est une fraction va provoquer une gomory cut
   var i = 0;
   for i < len(tabVar){
-    if !alphaTab[tabVar[i]].IsInt() {
+    if !alphaTab[tabVar[i]].IsInt() &&tab_int_bool[i]{
       GomoryStruct.variable = tabVar[i];
       var contrainte float64
       contrainte,_ = alphaTab[tabVar[i]].Float64()

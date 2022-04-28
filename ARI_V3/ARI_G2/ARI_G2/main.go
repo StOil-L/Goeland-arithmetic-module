@@ -5,7 +5,6 @@ import (
 	ari "ARI/rules"
 	"ARI/types"
 	"fmt"
-	//"math/big"
 )
 
 var tInt typing.TypeHint
@@ -217,6 +216,7 @@ func main() {
 	TestSimplexePasse2MultiEg()
 	TestSimplexePasse2MultiInf()
 	TestSimplexePasse2MultiSup()
+	TestGomoryCut()
 }
 
 /*** Test création de termes ***/
@@ -1780,4 +1780,18 @@ func TestSimplexePasse2MultiSup() {
 	systeme := []types.Form{p1, p2, p3, p4}
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+func TestGomoryCut(){
+	fmt.Println(" -------- TEST Gomory Cut -------- ")
+	fmt.Println(" X >=1/4 ET Y >=1/4 ")
+	x := types.MakerMeta("X", -1, tInt)
+	y := types.MakerMeta("Y", -1, tRat)
+	un_quart := types.MakerConst(types.MakerId("1/4"), tRat)
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{x, un_quart}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	p2 := types.MakePred(types.MakerId("greateq"), []types.Term{y, un_quart}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1, p2}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
 }

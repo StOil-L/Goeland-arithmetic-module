@@ -98,7 +98,7 @@ func go_branch_and_bound(inf_sup bool, channel chan branch_and_bound, index int,
 			system.tab_cont = tab_cont_bis
 
 			//incrémental
-			tab_gom:=VerifGomory(system.tab_nom_var,system.tab_cont,system.pos_var_tab,system.alpha_tab)
+			tab_gom:=VerifGomory(system.tab_int_bool,system.tab_nom_var,system.tab_cont,system.pos_var_tab,system.alpha_tab)
 			system = incremental(system, tab_gom)
 			//time.Sleep(time.Second*10) 
 			//fin incrémental
