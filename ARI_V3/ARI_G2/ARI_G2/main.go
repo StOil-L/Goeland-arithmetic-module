@@ -203,7 +203,7 @@ func main() {
 
 	fmt.Println(" ------------- TEST Passe2 ------------- ")
 	*/ 
-/*	TestSimplexePasse2()
+	TestSimplexePasse2()
 	TestSimplexePasse2_calcul_sum()
 	TestSimplexeSum()
 
@@ -216,7 +216,7 @@ func main() {
 	TestSimplexeBeaucoupRatInv()
 	TestSimplexePasse2MultiEg()
 	TestSimplexePasse2MultiInf()
-*/	TestSimplexePasse2MultiSup()
+	TestSimplexePasse2MultiSup()
 }
 
 /*** Test création de termes ***/
