@@ -167,15 +167,47 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
  * It returns the update system
  **/
 func incremental(system info_system, tab_gom []Gomory) (info_system){
-	
-	for iconstraint:=0;iconstraint<len(tab_gom)+1;iconstraint++{
+
+
+	theta:=big.NewRat(0,1)
+	for i:=0;i<len(system.tab_coef)-1;i++{
+		for j:=0;j<len(system.tab_coef[0]);j++{
+			if theta.Cmp(system.tab_coef[i][j])<0{
+				theta=system.tab_coef[i][j]
+			}
+		}
+	}
+
+	M:=big.NewRat(int64(len(system.tab_coef))-1,1)
+	N:=big.NewRat(int64(len(system.tab_coef[0])),1)
+	for iconstraint:=0; iconstraint<len(system.tab_nom_var)+len(tab_gom)+1; iconstraint++{
+
+// x<=((M+N)*N*théta)^N
+		if iconstraint>0 && iconstraint<=len(system.tab_nom_var){
+			
+			constraint_will_not_infinite_loop:=big.NewRat(1,1)
+			for powN:=0;powN<len(system.tab_coef[0]);powN++{
+				constraint_will_not_infinite_loop.Mul(constraint_will_not_infinite_loop,new(big.Rat).Mul(new(big.Rat).Mul(new(big.Rat).Add(M,N),N),theta))
+			}
+			
+			system.tab_cont=append(system.tab_cont,new(big.Rat).Mul(constraint_will_not_infinite_loop,big.NewRat(-1,1)))
+			var ligne_coef_gom = make([]*big.Rat,0)
+			for ivariable:=0;ivariable<len(system.tab_nom_var);ivariable++{
+				if iconstraint-1==ivariable{
+					ligne_coef_gom=append(ligne_coef_gom,big.NewRat(-1,1))
+				} else{
+					ligne_coef_gom=append(ligne_coef_gom,new(big.Rat))
+				}
+			}
+			system.tab_coef=append(system.tab_coef,ligne_coef_gom)
+		}
 
 		//ajout contrainte gomory 
-		if iconstraint>0{
+		if iconstraint>len(system.tab_nom_var){
 			var ligne_coef_gom = make([]*big.Rat,0)
-			system.tab_cont=append(system.tab_cont,tab_gom[iconstraint-1].borne)
+			system.tab_cont=append(system.tab_cont,tab_gom[iconstraint-1-len(system.tab_nom_var)].borne)
 			for ivariable:=0;ivariable<len(system.tab_nom_var);ivariable++{
-				if system.tab_nom_var[ivariable]==tab_gom[iconstraint-1].variable{
+				if system.tab_nom_var[ivariable]==tab_gom[iconstraint-1-len(system.tab_nom_var)].variable{
 					ligne_coef_gom=append(ligne_coef_gom,big.NewRat(1,1))
 				} else{
 					ligne_coef_gom=append(ligne_coef_gom,new(big.Rat))

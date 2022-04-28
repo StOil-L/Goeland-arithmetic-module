@@ -216,7 +216,7 @@ func main() {
 	TestSimplexePasse2MultiEg()
 	TestSimplexePasse2MultiInf()
 	TestSimplexePasse2MultiSup()
-	TestGomoryCut()
+	//TestGomoryCut()
 }
 
 /*** Test création de termes ***/
