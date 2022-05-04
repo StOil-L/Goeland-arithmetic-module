@@ -216,7 +216,9 @@ func main() {
 	TestSimplexePasse2MultiEg()
 	TestSimplexePasse2MultiInf()
 	TestSimplexePasse2MultiSup()
-	//TestGomoryCut()
+	TestGomoryCut()
+//	TestSimplexePasse2Quotient()
+//	TestSimplexeCenseBoucle()
 }
 
 /*** Test création de termes ***/
@@ -1794,4 +1796,37 @@ func TestGomoryCut(){
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
 
+}
+
+
+func TestSimplexePasse2Quotient(){
+	fmt.Println(" -------- TEST Quotient -------- ")
+	fmt.Println(" x/3 >=4 ")
+	x := types.MakerMeta("X", -1, tRat)
+	quatre := types.MakerConst(types.MakerId("4/1"), tRat)
+	trois:= types.MakerConst(types.MakerId("3/1"),tRat)
+	quo:=types.MakerFun(types.MakerId("quotient"), []types.Term{x, trois},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{quo, quatre}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
+func TestSimplexeBoucle(){
+	fmt.Println(" -------- TEST boucle infini -------- ")
+	fmt.Println(" 3x-3y >=1 Et 3x-3y<=2 ")
+	x := types.MakerMeta("X", -1, tInt)
+	y := types.MakerMeta("Y", -1, tInt)
+	un := types.MakerConst(types.MakerId("1"), tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{trois, y},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	diff:=types.MakerFun(types.MakerId("difference"), []types.Term{prod1,prod2},typing.GetTypeScheme("difference", typing.MkTypeCross(tRat, tRat)))
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{diff, un}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	p2 := types.MakePred(types.MakerId("lesseq"), []types.Term{diff, deux}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p1,p2}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
 }

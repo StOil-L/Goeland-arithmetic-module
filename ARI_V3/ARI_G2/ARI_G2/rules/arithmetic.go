@@ -85,10 +85,8 @@ func ApplySimplexRule(fl types.FormList) (bool, treetypes.Substitutions) {
 	// Normalization to fits with simplex's input
 	normalized_pred_list, map_metavariable_simplexvariables := normalizeForSimplex(pred_list_for_simplex)
 	// Call to simplex, return something like variable - value
-	 res_simplex,has_solution := Simplexe(normalized_pred_list)
-	 fmt.Println("finito")
+	 res_simplex,has_solution := simplex(normalized_pred_list)
 	if !has_solution {
-		fmt.Println("pippo")
 		return false, treetypes.MakeEmptySubstitution()
 	}
 	var solution = make(map[string]*big.Rat,0)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"math/big"
+	"time"
 )
 
 /** 
@@ -16,12 +17,6 @@ import (
 func Simplexe(system info_system) (info_system, bool){
 
 	
-	fmt.Println("system.tab_nom_var",system.tab_nom_var)
-	fmt.Println("tab_cont",system.tab_cont)
-	fmt.Println("alpha_tab",system.alpha_tab)
-	fmt.Println("tab_coef",system.tab_coef)
-	fmt.Println("pos_var_tab",system.pos_var_tab)
-	fmt.Println("tab_int_bool",system.tab_int_bool)
 	var pos_var_tab_bis =make([]string,len(system.pos_var_tab))
 	for i:=0;i<len(system.pos_var_tab);i++{
 		pos_var_tab_bis[i] = system.pos_var_tab[i]
@@ -54,19 +49,21 @@ func Simplexe(system info_system) (info_system, bool){
 		}
 		//on cherche la colonne du pivot
 		colonne_pivot := 0
+		time.Sleep(time.Second)
 		system, colonne_pivot = pivot(system, ligne_pivot, pos_var_tab_bis)
 		if colonne_pivot == -1 {
 			fmt.Println(" \033[33m") 
 			fmt.Println("Il n'existe pas de solution pour ces contraintes")
-			fmt.Println("ici")
 			return system, false
 		} else {
 			//on modifie le tableau des coefficients pour la ligne du pivot
 			system = updateMatrice(system,colonne_pivot,ligne_pivot)
-			fmt.Println("tab_coef = ", system.tab_coef)
+			fmt.Println("\033[34m tab_coef = ", system.tab_coef)
+			fmt.Println("\033[0m")
 			//calcul des nouveaux alpha
 			system = updateAlpha(system,ligne_pivot,pos_var_tab_bis)
-			fmt.Println("alpha_tab = ", system.alpha_tab, "\n")
+			fmt.Println("\033[32m alpha_tab = ", system.alpha_tab)
+			fmt.Println("\033[0m")
 		}
 	}
 	return system, false
@@ -152,10 +149,10 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 		if colonne_pivot < len(system.tab_coef)+len(system.tab_coef[0]) && (coef_colonne.Cmp(new(big.Rat))!=0) && var_pivot!=vide && (var_pivot[0] !='e' || coef_colonne.Cmp(new(big.Rat))==1 || (coef_colonne.Cmp(new(big.Rat))==-1 && checkContHorsBase(system.tab_cont, pos_var_tab, var_ecart) && system.alpha_tab[var_pivot].Cmp(system.tab_cont[num_var_ecart])>0))  {
 		//	 time.Sleep(time.Second)
 			var theta = new(big.Rat)
-			fmt.Println("num_var_ecart = ", num_var_ecart, system.alpha_tab[pos_var_tab[pivot_line]], coef_colonne)
 			theta.Mul(new(big.Rat).Add(system.tab_cont[num_var_ecart], new(big.Rat).Neg(system.alpha_tab[pos_var_tab[pivot_line]])), 
 				new(big.Rat).Inv(coef_colonne))
-			fmt.Println("theta = ", theta)
+			fmt.Println("\033[35m theta = ", theta)
+			fmt.Println("\033[0m")
 			var alpha_colonne = new(big.Rat)	
 			alpha_colonne.Add(system.alpha_tab[var_pivot], theta)
 			system.alpha_tab[var_pivot]=alpha_colonne
@@ -164,8 +161,6 @@ func pivot(system info_system, pivot_line int, pos_var_tab []string) (info_syste
 			for index2, element2 := range system.tab_coef[pivot_line] {
 					alpha_ligne.Add(alpha_ligne, new(big.Rat).Mul(element2, system.alpha_tab[pos_var_tab[index2+len(system.tab_coef)]]))
 			}
-			fmt.Println("alpha_colonne", alpha_colonne)
-			fmt.Println("alpha_ligne",alpha_ligne)
 			system.alpha_tab[pos_var_tab[pivot_line]].Set(alpha_ligne)
 			system.alpha_tab[var_pivot].Set(alpha_colonne)
 			fmt.Println("\033[0m variable \033[36m colonne:",var_pivot+"\033[0m","variable \033[36m ligne:",

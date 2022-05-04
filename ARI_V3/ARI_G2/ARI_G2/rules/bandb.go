@@ -169,12 +169,17 @@ func deepCopyTableau(tab []*big.Rat) []*big.Rat {
 func incremental(system info_system, tab_gom []Gomory) (info_system){
 
 
-	theta:=big.NewRat(0,1)
+	theta:=new(big.Rat).Set(system.tab_coef[0][0])
 	for i:=0;i<len(system.tab_coef)-1;i++{
-		for j:=0;j<len(system.tab_coef[0]);j++{
+		for j:=1;j<len(system.tab_coef[0]);j++{
 			if theta.Cmp(system.tab_coef[i][j])<0{
-				theta=system.tab_coef[i][j]
+				theta=new(big.Rat).Set(system.tab_coef[i][j])
 			}
+		}
+	}
+	for i:=0;i<len(system.tab_cont);i++{
+		if theta.Cmp(system.tab_cont[i])<0{
+			theta=new(big.Rat).Set(system.tab_cont[i])
 		}
 	}
 
@@ -189,8 +194,8 @@ func incremental(system info_system, tab_gom []Gomory) (info_system){
 			for powN:=0;powN<len(system.tab_coef[0]);powN++{
 				constraint_will_not_infinite_loop.Mul(constraint_will_not_infinite_loop,new(big.Rat).Mul(new(big.Rat).Mul(new(big.Rat).Add(M,N),N),theta))
 			}
-			
 			system.tab_cont=append(system.tab_cont,new(big.Rat).Mul(constraint_will_not_infinite_loop,big.NewRat(-1,1)))
+	
 			var ligne_coef_gom = make([]*big.Rat,0)
 			for ivariable:=0;ivariable<len(system.tab_nom_var);ivariable++{
 				if iconstraint-1==ivariable{
