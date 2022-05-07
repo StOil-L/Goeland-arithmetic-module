@@ -219,6 +219,14 @@ func main() {
 	TestGomoryCut()
 //	TestSimplexePasse2Quotient()
 //	TestSimplexeCenseBoucle()
+	TestSimplexe3etoile3x()
+	TestSimplexe3xetoile3()
+	TestSimplexe3xetoile3Droite()
+	TestSimplexeMultiEtoile()
+	TestSimplexeMultiEtoile2()
+	TestSimplexUnaryUminus()
+	TestSimplexUnaryUminusGauche()
+	TestSimplexUnaryUminusGaucheCombo()
 }
 
 /*** Test création de termes ***/
@@ -1830,3 +1838,138 @@ func TestSimplexeBoucle(){
 	found, solution := ari.ApplySimplexRule(systeme)
 	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
 }
+
+
+func TestSimplexe3etoile3x(){
+	fmt.Println(" -------- TEST multiplication simplexe -------- ")
+	fmt.Println(" 3*3x >=2 ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{trois, prod1},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{prod2, deux}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+	
+}
+
+func TestSimplexe3xetoile3(){
+	fmt.Println(" -------- TEST multiplication simplexe -------- ")
+	fmt.Println(" 3x*3 >=2 ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{prod1,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{prod2, deux}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+	
+}
+
+func TestSimplexe3xetoile3Droite(){
+	fmt.Println(" -------- TEST multiplication simplexe -------- ")
+	fmt.Println("  2 >= 3x*3 ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{prod1,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{deux, prod2}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+	
+}
+
+func TestSimplexeMultiEtoile(){
+	fmt.Println(" -------- TEST multiplication simplexe -------- ")
+	fmt.Println("  2 >= 3x*3*3*3*3 ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{prod1,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod3:=types.MakerFun(types.MakerId("product"), []types.Term{prod2,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod4:=types.MakerFun(types.MakerId("product"), []types.Term{prod3,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod5:=types.MakerFun(types.MakerId("product"), []types.Term{prod4,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{deux, prod5}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+	
+}
+
+
+func TestSimplexeMultiEtoile2(){
+	fmt.Println(" -------- TEST multiplication simplexe -------- ")
+	fmt.Println("  2 >= x*3*3*3*3*3 ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{x, trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{prod1,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod3:=types.MakerFun(types.MakerId("product"), []types.Term{prod2,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod4:=types.MakerFun(types.MakerId("product"), []types.Term{prod3,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod5:=types.MakerFun(types.MakerId("product"), []types.Term{prod4,trois},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{deux, prod5}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
+func TestSimplexUnaryUminus(){
+	
+	fmt.Println(" -------- TEST uminus simplex -------- ")
+	fmt.Println("  3x >= uminus(2) ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{deux}, tInt)
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{prod, uminus}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
+func TestSimplexUnaryUminusGauche(){
+	
+	fmt.Println(" -------- TEST uminus simplex -------- ")
+	fmt.Println("   uminus(2) >= 3x  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{deux}, tInt)
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{uminus, prod}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
+
+func TestSimplexUnaryUminusGaucheCombo(){
+	
+	fmt.Println(" -------- TEST uminus simplex -------- ")
+	fmt.Println("   uminus(2) + 2x >= 3x  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{deux}, tInt)
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{uminus, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tInt, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum, prod1}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
