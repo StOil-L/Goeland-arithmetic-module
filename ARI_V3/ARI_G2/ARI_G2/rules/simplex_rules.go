@@ -5,6 +5,17 @@
 * This file provides rules to manage simplex rules
 **/
 
+
+
+
+//TODO
+//remainders
+//types des variables pour quotients
+//cas 2 fonctions unaires pour opérations multiplicatives
+
+
+
+
 package ari
 
 import (
@@ -142,8 +153,6 @@ func normalizeForSimplex(pl []types.Pred) (info_system, map[string]types.Meta) {
 	
 		
 	}
-	list_list_pcv_sort:=passe3(list_list_pcv, tab_variable)
-
 	for _, tab := range list_list_pcv {
 		for _, ma_struct := range tab {
 		  fmt.Print(ma_struct.coef," ",ma_struct.variable.GetName(),"  ---  ")
@@ -153,6 +162,8 @@ func normalizeForSimplex(pl []types.Pred) (info_system, map[string]types.Meta) {
 	fmt.Println()	  
 	fmt.Println()	  
 	fmt.Println()	  
+	list_list_pcv_sort:=passe3(list_list_pcv, tab_variable)		
+	
 	for _, tab := range list_list_pcv_sort {
 		for _, ma_struct := range tab {
 		fmt.Print(ma_struct.coef," ",ma_struct.variable.GetName(),"  ---  ")
@@ -448,6 +459,67 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, 
 					}
 					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,pcv,left)
 					pcv=append(pcv,pair...)
+
+			case "quotient":
+					var arg1, arg2 types.Term
+					arg1 = ttype.GetArgs()[0]
+					arg2 = ttype.GetArgs()[1]
+					var1,_,_:=termToSimplex(arg1,map_v_mv,iv,left,pcv)
+					var2,_,_:=termToSimplex(arg2,map_v_mv,iv,left,pcv)
+					if var1!=nil{
+						tab_var=append(tab_var,var1...)
+					} 
+					if var2!=nil{
+						tab_var=append(tab_var,var2...)
+					}
+					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,pcv,left)
+					pcv=append(pcv,pair...)
+
+			case "quotient_e":
+					var arg1, arg2 types.Term
+					arg1 = ttype.GetArgs()[0]
+					arg2 = ttype.GetArgs()[1]
+					var1,_,_:=termToSimplex(arg1,map_v_mv,iv,left,pcv)
+					var2,_,_:=termToSimplex(arg2,map_v_mv,iv,left,pcv)
+					if var1!=nil{
+						tab_var=append(tab_var,var1...)
+					} 
+					if var2!=nil{
+						tab_var=append(tab_var,var2...)
+					}
+					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,pcv,left)
+					pcv=append(pcv,pair...)
+
+			case "quotient_t":
+					var arg1, arg2 types.Term
+					arg1 = ttype.GetArgs()[0]
+					arg2 = ttype.GetArgs()[1]
+					var1,_,_:=termToSimplex(arg1,map_v_mv,iv,left,pcv)
+					var2,_,_:=termToSimplex(arg2,map_v_mv,iv,left,pcv)
+					if var1!=nil{
+						tab_var=append(tab_var,var1...)
+					} 
+					if var2!=nil{
+						tab_var=append(tab_var,var2...)
+					}
+					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,pcv,left)
+					pcv=append(pcv,pair...)
+
+			case "quotient_f":
+					var arg1, arg2 types.Term
+					arg1 = ttype.GetArgs()[0]
+					arg2 = ttype.GetArgs()[1]
+					var1,_,_:=termToSimplex(arg1,map_v_mv,iv,left,pcv)
+					var2,_,_:=termToSimplex(arg2,map_v_mv,iv,left,pcv)
+					if var1!=nil{
+						tab_var=append(tab_var,var1...)
+					} 
+					if var2!=nil{
+						tab_var=append(tab_var,var2...)
+					}
+					pair,_,_:=funToSimplex(ttype,map_v_mv,iv,pcv,left)
+					pcv=append(pcv,pair...)
+
 			case "difference":
 					var arg1, arg2 types.Term
 					arg1 = ttype.GetArgs()[0]
@@ -473,7 +545,7 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, 
 				}
 				if left{
 					value.Mul(value,big.NewRat(-1,1))
-				}	
+				}		
 				pair.coef=value
 				pcv=append(pcv,pair)
 			}
@@ -492,7 +564,6 @@ func termToSimplex(t types.Term, map_v_mv *map[string]types.Meta, iv *[]string, 
 
 func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,tab_pcv []pair_coef_var, left bool) ([]pair_coef_var,*big.Rat, error) {
 
-	
 	switch f.GetID().GetName() {
 	
 	case "sum":
@@ -571,79 +642,62 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,tab
 			tab_pcv,value=binaryMultiplicativeFuncSimplex2Fun(arg1, arg2, tab_pcv, f,map_v_mv, iv, left)
 			return tab_pcv,value,nil
 		}
-/*
-
 	case "quotient":
 		arg1 := f.GetArgs()[0]
 		arg2 := f.GetArgs()[1]
-
-
-		if arg2.IsFun() && arg1.IsMeta(){
-			if arg_fun, ok := arg2.(types.Fun); ok{
-					
-
-
-
-
-
-
-
-
-
-				if arg_meta,ok2:=arg1.(types.Meta);ok2{
-					_,val,_:=funToSimplex(arg_fun,map_v_mv,iv,pcv,left)
-					var pair pair_coef_var
-					pair.variable=arg_meta
-					//si j'ai une méta à gauche, je multiplie par -1 pour retrouver le bon signe du coef. Si la meta est à droite, je multiplie par -1 pour obtenir le bon signe
-					val.Mul(val,big.NewRat(-1,1))
-					pair.coef=val
-					pcv=append(pcv,pair)
-					return pcv, newRat(),nil
-				}
-			}
-		}
-
-		if arg1.IsFun() && arg2.IsFun(){
-			if arg_fun2, ok2 := arg2.(types.Fun); ok2 {
-				if arg_fun1, ok1 := arg1.(types.Fun); ok1{
-					if !checkBinaryArithmeticFun(arg_fun1.GetID() ) && ! checkBinaryArithmeticFun(arg_fun2.GetID() ){
-						test_rat,_:=EvaluateFun(f)
-						if left{
-							test_rat.Mul(test_rat,big.NewRat(-1,1))
-						}
-						return pcv,test_rat,nil
-					}
-				}
-			}
+		if arg1.IsMeta() && arg2.IsFun(){
+			tab_pcv=quotientMetaFun(arg1, arg2, "quotient", tab_pcv, left)
+			return tab_pcv, newRat(),nil
 		}
 	
+		if arg1.IsFun() && arg2.IsFun(){
+			var value *big.Rat
+			tab_pcv,value=binaryMultiplicativeFuncSimplex2Fun(arg1, arg2, tab_pcv, f,map_v_mv, iv, left)
+			return tab_pcv,value,nil
+		}
 	case "quotient_e":
 		arg1 := f.GetArgs()[0]
 		arg2 := f.GetArgs()[1]
-	
+		if arg1.IsMeta() && arg2.IsFun(){
+			tab_pcv=quotientMetaFun(arg1, arg2, "quotient_e", tab_pcv, left)
+			return tab_pcv, newRat(),nil
+		}
+		if arg1.IsFun() && arg2.IsFun(){
+			var value *big.Rat
+			tab_pcv,value=binaryMultiplicativeFuncSimplex2Fun(arg1, arg2, tab_pcv, f,map_v_mv, iv, left)
+			return tab_pcv,value,nil
+		}
+
 	case "quotient_t":
 		arg1 := f.GetArgs()[0]
 		arg2 := f.GetArgs()[1]
-
+		if arg1.IsMeta() && arg2.IsFun(){
+			tab_pcv=quotientMetaFun(arg1, arg2, "quotient_t", tab_pcv, left)
+			return tab_pcv, newRat(),nil
+		}
+		if arg1.IsFun() && arg2.IsFun(){
+			var value *big.Rat
+			tab_pcv,value=binaryMultiplicativeFuncSimplex2Fun(arg1, arg2, tab_pcv, f,map_v_mv, iv, left)
+			return tab_pcv,value,nil
+		}
 	case "quotient_f":
 		arg1 := f.GetArgs()[0]
 		arg2 := f.GetArgs()[1]
-	
+		if arg1.IsMeta() && arg2.IsFun(){
+			tab_pcv=quotientMetaFun(arg1, arg2, "quotient_f", tab_pcv, left)
+			return tab_pcv, newRat(),nil
+		}
+		if arg1.IsFun() && arg2.IsFun(){
+			var value *big.Rat
+			tab_pcv,value=binaryMultiplicativeFuncSimplex2Fun(arg1, arg2, tab_pcv, f,map_v_mv, iv, left)
+			return tab_pcv,value,nil
+		}
 	case "remainder_e":
-		arg1 := f.GetArgs()[0]
-		arg2 := f.GetArgs()[1]
-	
 	case "remainder_t":
-		arg1 := f.GetArgs()[0]
-		arg2 := f.GetArgs()[1]
-	
 	case "remainder_f":
-		arg1 := f.GetArgs()[0]
-		arg2 := f.GetArgs()[1]
-*/	
 	case "uminus":
 		arg := f.GetArgs()[0]
-		uminus:=unaryFuncSimplex(arg, f, map_v_mv, iv, tab_pcv, left)
+		uminus:=unaryFuncSimplex(arg, f, map_v_mv, iv, tab_pcv, left)	
 		var pair pair_coef_var
 		pair.coef=uminus
 		tab_pcv=append(tab_pcv,pair)
@@ -653,21 +707,33 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,tab
 	case "floor":
 		arg := f.GetArgs()[0]
 		floor:=unaryFuncSimplex(arg, f, map_v_mv, iv, tab_pcv, left)
+		var pair pair_coef_var
+		pair.coef=floor
+		tab_pcv=append(tab_pcv,pair)
 		return tab_pcv,floor,nil
 		
 	case "ceiling":
 		arg := f.GetArgs()[0]
 		ceiling:=unaryFuncSimplex(arg, f, map_v_mv, iv, tab_pcv, left)
+		var pair pair_coef_var
+		pair.coef=ceiling
+		tab_pcv=append(tab_pcv,pair)
 		return tab_pcv,ceiling,nil
 		
 	case "truncate":
 		arg := f.GetArgs()[0]
 		truncate:=unaryFuncSimplex(arg, f, map_v_mv, iv, tab_pcv, left)
+		var pair pair_coef_var
+		pair.coef=truncate
+		tab_pcv=append(tab_pcv,pair)
 		return tab_pcv,truncate,nil
 		
 	case "round":
 		arg := f.GetArgs()[0]
 		round:=unaryFuncSimplex(arg, f, map_v_mv, iv, tab_pcv, left)
+		var pair pair_coef_var
+		pair.coef=round
+		tab_pcv=append(tab_pcv,pair)
 		return tab_pcv,round,nil
 		
 	default:
@@ -677,16 +743,45 @@ func funToSimplex(f types.Fun, map_v_mv *map[string]types.Meta, iv *[]string,tab
 }
 
 
+func quotientMetaFun(arg1 types.Term, arg2 types.Term, operation string,tab_pcv []pair_coef_var, left bool) []pair_coef_var{
+
+	un:= types.MakerConst(types.MakerId("1/1"),tRat)
+	quo:=types.MakerFun(types.MakerId(operation), []types.Term{un, arg2},typing.GetTypeScheme(operation, typing.MkTypeCross(tRat, tRat)))
+	solution,_:=EvaluateFun(quo)
+	var pair pair_coef_var
+	if ! left{
+		solution.Mul(solution, big.NewRat(-1,1))
+	}
+	pair.coef=solution
+	if arg_meta1,ok1:=arg1.(types.Meta);ok1{
+		pair.variable=arg_meta1
+	}
+	tab_pcv=append(tab_pcv,pair)
+	return tab_pcv	
+}
+
 
 func binaryMultiplicativeFuncSimplex2Fun(arg1 types.Term, arg2 types.Term, tab_pcv []pair_coef_var, f types.Fun, map_v_mv *map[string]types.Meta,iv *[]string, left bool) ([]pair_coef_var, *big.Rat){
 	var value *big.Rat
 	if arg_fun2, ok2 := arg2.(types.Fun); ok2 {
 		if arg_fun1, ok1 := arg1.(types.Fun); ok1{
-			if !checkBinaryArithmeticFun(arg_fun1.GetID() ) && ! checkBinaryArithmeticFun(arg_fun2.GetID() ){
-				value,_=EvaluateFun(f)
+			//cas nombre
+			if !checkArithmeticFun(arg_fun1.GetID() ) && ! checkArithmeticFun(arg_fun2.GetID() ){
+				multiplicative_value,_:=EvaluateFun(f)
 				if left{
-					value.Mul(value,big.NewRat(-1,1))
+					multiplicative_value.Mul(multiplicative_value,big.NewRat(-1,1))
 				}
+				//si somme des nombres non lié a une méta
+				var pair pair_coef_var
+				pair.coef=multiplicative_value
+				tab_pcv=append(tab_pcv,pair)
+				//multiplicative value est renvoyé pour le cas o`u la valeur est liée a une méta
+				return tab_pcv,multiplicative_value
+				//cas 2 fonctions unaires
+			}else if !checkBinaryArithmeticFun(arg_fun1.GetID() ) && ! checkBinaryArithmeticFun(arg_fun2.GetID() ){
+				//à gérer
+
+
 			} else if !checkBinaryArithmeticFun(arg_fun1.GetID() ){
 				val,_:=new(big.Rat).SetString(arg_fun1.GetName())
 				tab_pcv,_,_:=funToSimplex(arg_fun2,map_v_mv,iv,tab_pcv,left)
@@ -704,30 +799,33 @@ func binaryMultiplicativeFuncSimplex2Fun(arg1 types.Term, arg2 types.Term, tab_p
 }
 
 func binaryMultiplicativeFuncSimplexMetaFun(arg1 types.Term, arg2 types.Term, tab_pcv []pair_coef_var,map_v_mv *map[string]types.Meta,iv *[]string, left bool) []pair_coef_var{
+
 	if arg_fun, ok := arg1.(types.Fun); ok{
 		if arg_meta,ok2:=arg2.(types.Meta);ok2{
 			var pair pair_coef_var
 			pair.variable=arg_meta
-			if !checkBinaryArithmeticFun(arg_fun.GetID()){
+			if !checkArithmeticFun(arg_fun.GetID()){
 				coef,_:=new(big.Rat).SetString(arg1.GetName())
 				pair.coef=coef	
 				if !left{
 					pair.coef.Mul(pair.coef,big.NewRat(-1,1))
 				}
-			}else {
+			}else if checkBinaryArithmeticFun(arg_fun.GetID()){
 				_,val,_:=funToSimplex(arg_fun,map_v_mv,iv,tab_pcv,left)
-			//si j'ai une méta à gauche, je multiplie par -1 pour retrouver le bon signe du coef. Si la meta est à droite, je multiplie par -1 pour obtenir le bon signe
+				//si j'ai une méta à gauche, je multiplie par -1 pour retrouver le bon signe du coef. Si la meta est à droite, je multiplie par -1 pour obtenir le bon signe
 				val.Mul(val,big.NewRat(-1,1))
 				pair.coef=val
+			}else{
+				//arg_fun est une fonction unaire
+				_,val,_:=funToSimplex(arg_fun,map_v_mv,iv,tab_pcv,left)
+				pair.coef=val
+
 			}
 			tab_pcv=append(tab_pcv,pair)
 		}
-	}
+	}		
 	return tab_pcv
-		
-
 }
-
 
 func unaryFuncSimplex(arg types.Term, f types.Fun, map_v_mv *map[string]types.Meta,iv *[]string, tab_pcv []pair_coef_var, left bool)  *big.Rat{
 	var value *big.Rat
@@ -775,9 +873,10 @@ func BinaryAdditiveFuncSimplex2Metas(arg1 types.Term, arg2 types.Term,tab_pcv []
 }
 
 func BinaryAdditiveFuncSimplex2Fun(arg1 types.Term, arg2 types.Term, tab_pcv []pair_coef_var,left bool, diff bool, f types.Fun,map_v_mv *map[string]types.Meta,iv *[]string) ([]pair_coef_var,*big.Rat){
-	
+		
 	if arg_fun2, ok2 := arg2.(types.Fun); ok2 {
 		if arg_fun1, ok1 := arg1.(types.Fun); ok1{
+			//si j'ai 2 nombres
 			if !checkArithmeticFun(arg_fun1.GetID() ) && !checkArithmeticFun(arg_fun2.GetID() ){
 				additive_value,_:=EvaluateFun(f)
 				if !diff{
@@ -785,13 +884,41 @@ func BinaryAdditiveFuncSimplex2Fun(arg1 types.Term, arg2 types.Term, tab_pcv []p
 						additive_value.Mul(additive_value,big.NewRat(-1,1))
 					}
 				}
-				//réfléchir sur le signe pour diff et else pour sum
+				//si somme des nombres non lié a une méta
+				var pair pair_coef_var
+				pair.coef=additive_value
+				tab_pcv=append(tab_pcv,pair)
+				//additive value est renvoyé pour le cas o`u la valeur est liée a une méta
 				return tab_pcv,additive_value
 			} else if  !checkArithmeticFun(arg_fun1.GetID() ){
-				//a gérer
+				var pair pair_coef_var
+				number_value,_:=new(big.Rat).SetString(arg_fun1.GetName())		
+				if left{
+					number_value.Mul(number_value,big.NewRat(-1,1))
+				}
+				pair.coef=number_value
+				if diff{
+					vpcv2,_,_:=funToSimplex(arg_fun2,map_v_mv,iv,tab_pcv,!left)
+					tab_pcv=append(tab_pcv,pair)
+					tab_pcv=append(tab_pcv,vpcv2...)
+				}else{
+					vpcv2,_,_:=funToSimplex(arg_fun2,map_v_mv,iv,tab_pcv,left)
+					tab_pcv=append(tab_pcv,pair)
+					tab_pcv=append(tab_pcv,vpcv2...)
+				}
+			
 			} else if !checkArithmeticFun(arg_fun2.GetID() ){
-				//a gérer
-
+				var pair pair_coef_var
+				number_value,_:=new(big.Rat).SetString(arg_fun2.GetName())		
+				pair.coef=number_value
+				tab_pcv=append(tab_pcv,pair)
+				if diff{
+					vpcv1,_,_:=funToSimplex(arg_fun1,map_v_mv,iv,tab_pcv,left)		
+					tab_pcv=append(tab_pcv,vpcv1...)
+				}else{
+					vpcv1,_,_:=funToSimplex(arg_fun1,map_v_mv,iv,tab_pcv,!left)		
+					tab_pcv=append(tab_pcv,vpcv1...)
+				}	
 			} else if checkArithmeticFun(arg_fun1.GetID()) && checkArithmeticFun(arg_fun2.GetID()){
 				if diff{
 					if left{

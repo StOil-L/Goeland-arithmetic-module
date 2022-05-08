@@ -217,7 +217,6 @@ func main() {
 	TestSimplexePasse2MultiInf()
 	TestSimplexePasse2MultiSup()
 	TestGomoryCut()
-//	TestSimplexePasse2Quotient()
 //	TestSimplexeCenseBoucle()
 	TestSimplexe3etoile3x()
 	TestSimplexe3xetoile3()
@@ -227,6 +226,16 @@ func main() {
 	TestSimplexUnaryUminus()
 	TestSimplexUnaryUminusGauche()
 	TestSimplexUnaryUminusGaucheCombo()
+	TestSimplexUnaryUminusGaucheComboMult()
+	TestSimplexUnaryFloorGaucheComboMult()
+	TestSimplexUnaryFloorGaucheCombo()
+	TestSimplexNumberSumFun()
+	TestSimplexNumberSumNumberSumFun()
+	TestSimplexNumberSumNumberSumFun2()
+	TestSimplexePasse2Quotient()
+	TestSimplexePasse2QuotientProd()
+	TestSimplexePasse2QuotientProdDroite()
+	TestSimplexePasse2QuotientSumDroite()
 }
 
 /*** Test création de termes ***/
@@ -1807,20 +1816,6 @@ func TestGomoryCut(){
 }
 
 
-func TestSimplexePasse2Quotient(){
-	fmt.Println(" -------- TEST Quotient -------- ")
-	fmt.Println(" x/3 >=4 ")
-	x := types.MakerMeta("X", -1, tRat)
-	quatre := types.MakerConst(types.MakerId("4/1"), tRat)
-	trois:= types.MakerConst(types.MakerId("3/1"),tRat)
-	quo:=types.MakerFun(types.MakerId("quotient"), []types.Term{x, trois},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
-	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{quo, quatre}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
-	systeme := []types.Form{p1}
-	found, solution := ari.ApplySimplexRule(systeme)
-	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
-}
-
-
 func TestSimplexeBoucle(){
 	fmt.Println(" -------- TEST boucle infini -------- ")
 	fmt.Println(" 3x-3y >=1 Et 3x-3y<=2 ")
@@ -1965,7 +1960,7 @@ func TestSimplexUnaryUminusGaucheCombo(){
 	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
 	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
 	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{deux}, tInt)
-	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{uminus, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tInt, tInt)))
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{uminus, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tInt)))
 	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum, prod1}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
 	systeme := []types.Form{p}
 	found, solution := ari.ApplySimplexRule(systeme)
@@ -1973,3 +1968,171 @@ func TestSimplexUnaryUminusGaucheCombo(){
 
 }
 
+func TestSimplexUnaryUminusGaucheComboMult(){
+	
+	fmt.Println(" -------- TEST uminus simplex -------- ")
+	fmt.Println("   uminus(2)x + 2x >= 3  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	uminus := types.MakerFun(types.MakerId("uminus"),[]types.Term{deux}, tInt)
+	prod3:=types.MakerFun(types.MakerId("product"), []types.Term{uminus, x},typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tInt)))
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{prod3, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tInt, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum, trois}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
+
+func TestSimplexUnaryFloorGaucheComboMult(){
+	
+	fmt.Println(" -------- TEST floor simplex -------- ")
+	fmt.Println("   floor(4/3)x + 2x >= 3  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	quatre_tiers:= types.MakerConst(types.MakerId("4/3"),tRat)
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{quatre_tiers}, tRat)
+	prod3:=types.MakerFun(types.MakerId("product"), []types.Term{floor, x},typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tInt)))
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{prod3, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum, trois}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tInt), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+func TestSimplexUnaryFloorGaucheCombo(){
+	
+	fmt.Println(" -------- TEST uminus simplex -------- ")
+	fmt.Println("   floor(4/3) + 2x >= 3x  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	quatre_tiers:= types.MakerConst(types.MakerId("4/3"),tRat)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	floor := types.MakerFun(types.MakerId("floor"),[]types.Term{quatre_tiers}, tRat)
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{floor, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum, prod1}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
+func TestSimplexNumberSumFun(){
+	
+	fmt.Println(" -------- TEST somme nombre et fonction simplex -------- ")
+	fmt.Println("   4/3 + 2x >= 3x  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	quatre_tiers:= types.MakerConst(types.MakerId("4/3"),tRat)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{quatre_tiers, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tInt)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum, prod1}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
+func TestSimplexNumberSumNumberSumFun(){
+	
+	fmt.Println(" -------- TEST somme nombre et fonction simplex -------- ")
+	fmt.Println("  4/3 + (4/3 + 2x) >= 3x  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	quatre_tiers:= types.MakerConst(types.MakerId("4/3"),tRat)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{quatre_tiers, prod2},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tInt)))
+	sum2:=types.MakerFun(types.MakerId("sum"), []types.Term{quatre_tiers, sum},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum2, prod1}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
+func TestSimplexNumberSumNumberSumFun2(){
+	
+	fmt.Println(" -------- TEST somme nombre et fonction simplex -------- ")
+	fmt.Println("  4/3 + 4/3 + 2x >= 3x  ")
+	x := types.MakerMeta("X", -1, tInt)
+	deux := types.MakerConst(types.MakerId("2"), tInt)
+	trois:= types.MakerConst(types.MakerId("3"),tInt)
+	quatre_tiers:= types.MakerConst(types.MakerId("4/3"),tRat)
+	prod1:=types.MakerFun(types.MakerId("product"), []types.Term{trois, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	prod2:=types.MakerFun(types.MakerId("product"), []types.Term{deux, x},typing.GetTypeScheme("product", typing.MkTypeCross(tInt, tInt)))
+	sum:=types.MakerFun(types.MakerId("sum"), []types.Term{quatre_tiers, quatre_tiers},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	sum2:=types.MakerFun(types.MakerId("sum"), []types.Term{prod2, sum},typing.GetTypeScheme("sum", typing.MkTypeCross(tRat, tRat)))
+	p := types.MakePred(types.MakerId("greateq"), []types.Term{sum2, prod1}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+
+}
+
+func TestSimplexePasse2Quotient(){
+	fmt.Println(" -------- TEST Quotient -------- ")
+	fmt.Println(" x/3 >=4 ")
+	x := types.MakerMeta("X", -1, tRat)
+	quatre := types.MakerConst(types.MakerId("4/1"), tRat)
+	trois:= types.MakerConst(types.MakerId("3/1"),tRat)
+	quo:=types.MakerFun(types.MakerId("quotient"), []types.Term{x, trois},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{quo, quatre}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+
+func TestSimplexePasse2QuotientProd(){
+	fmt.Println(" -------- TEST Quotient -------- ")
+	fmt.Println(" 4*x/3 >=4 ")
+	x := types.MakerMeta("X", -1, tRat)
+	quatre := types.MakerConst(types.MakerId("4/1"), tRat)
+	trois:= types.MakerConst(types.MakerId("3/1"),tRat)
+	quo:=types.MakerFun(types.MakerId("quotient"), []types.Term{x, trois},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	prod:=types.MakerFun(types.MakerId("quotient"), []types.Term{quatre, quo},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{prod, quatre}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+func TestSimplexePasse2QuotientProdDroite(){
+	fmt.Println(" -------- TEST Quotient -------- ")
+	fmt.Println(" 4 >= 4*x/3 ")
+	x := types.MakerMeta("X", -1, tRat)
+	quatre := types.MakerConst(types.MakerId("4/1"), tRat)
+	trois:= types.MakerConst(types.MakerId("3/1"),tRat)
+	quo:=types.MakerFun(types.MakerId("quotient"), []types.Term{x, trois},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	prod:=types.MakerFun(types.MakerId("quotient"), []types.Term{quatre, quo},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{quatre, prod}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
+
+func TestSimplexePasse2QuotientSumDroite(){
+	fmt.Println(" -------- TEST Quotient -------- ")
+	fmt.Println(" 4x >= 4/1 + (4/1)/(3/1) ")
+	x := types.MakerMeta("X", -1, tRat)
+	quatre := types.MakerConst(types.MakerId("4/1"), tRat)
+	trois:= types.MakerConst(types.MakerId("3/1"),tRat)
+	quo:=types.MakerFun(types.MakerId("quotient"), []types.Term{quatre, trois},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	sum:=types.MakerFun(types.MakerId("quotient"), []types.Term{quatre, quo},typing.GetTypeScheme("quotient", typing.MkTypeCross(tRat, tRat)))
+	prod:=types.MakerFun(types.MakerId("product"), []types.Term{x, quatre},typing.GetTypeScheme("product", typing.MkTypeCross(tRat, tRat)))
+	p1 := types.MakePred(types.MakerId("greateq"), []types.Term{prod, sum}, typing.MkTypeArrow(typing.MkTypeCross(tRat, tRat), tProp))
+	systeme := []types.Form{p1}
+	found, solution := ari.ApplySimplexRule(systeme)
+	fmt.Printf("Solution trouvée : %v = %v \n", found, solution.ToString())
+}
