@@ -10,7 +10,7 @@ package types
 import (
 	"sync"
 
-	typing "ARI/polymorphism"
+	typing "goeland-arith/ArithmTests/polymorphism"
 )
 
 /* Datas */

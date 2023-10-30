@@ -1,0 +1,7 @@
+# Ignore output program files (Linux)
+*
+!/**/
+!*.*
+
+# Ignore output exe files (Windows)
+*.exe

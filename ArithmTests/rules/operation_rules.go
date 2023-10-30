@@ -8,14 +8,15 @@
 package ari
 
 import (
-	typing "ARI/polymorphism"
-	"ARI/types"
 	"errors"
 	"fmt"
 	"math"
 	"math/big"
 	"strconv"
 	"strings"
+
+	typing "goeland-arith/ArithmTests/polymorphism"
+	"goeland-arith/ArithmTests/types"
 )
 
 var zero_rat = &big.Rat{}
@@ -136,7 +137,7 @@ func evaluateTerm(t types.Term) (*big.Rat, error) {
 
 func checkBinaryArithmeticFun(id types.Id) bool {
 	s := id.ToString()
-	return  s == "sum" || s == "product" || s == "difference" || s == "quotient" || s == "quotient_e" || s == "quotient_t" || s == "quotient_f" || s == "remainder_e" || s == "remainder_t" || s == "remainder_f"
+	return s == "sum" || s == "product" || s == "difference" || s == "quotient" || s == "quotient_e" || s == "quotient_t" || s == "quotient_f" || s == "remainder_e" || s == "remainder_t" || s == "remainder_f"
 }
 
 func EvaluateFun(f types.Fun) (*big.Rat, error) {
@@ -144,7 +145,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 	arg1 = f.GetArgs()[0]
 	if checkBinaryArithmeticFun(f.GetID()) {
 		arg2 = f.GetArgs()[1]
-	
+
 	}
 
 	switch f.GetID().GetName() {
@@ -406,7 +407,7 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 			}
 		case tRat:
 			// TODO : round on rat
-			
+
 			if res1, err := checkError1Arg(arg1); err != nil {
 				return zero_rat, err
 			} else {
@@ -418,24 +419,24 @@ func EvaluateFun(f types.Fun) (*big.Rat, error) {
 				//return res1 - (res2 * quotient_f), nil
 
 				res_1_f64_floor := newRat().SetFloat64(math.Floor(res_1_f64))
-				
+
 				diff := newRat().Sub(res1, res_1_f64_floor)
 				res := newRat()
 
-				if diff.Cmp(big.NewRat(1,2)) == 1 || res1.Cmp(big.NewRat(1,2)) == 0 {
+				if diff.Cmp(big.NewRat(1, 2)) == 1 || res1.Cmp(big.NewRat(1, 2)) == 0 {
 					res = res.SetFloat64(math.Ceil(float64(res_1_f64)))
 					//return newRat().res.SetFloat64(math.Ceil(float64(res_1_f64)))
 				} else {
 					res = res.SetFloat64(math.Floor(float64(res_1_f64)))
 					//return newRat().SetFloat64(math.Floor(float64(res_1_f64)))
 				}
-				
+
 				return res, nil
 				// TODO : ?
 				// return res1, nil
 				// return res1 - res1%1, nil
 			}
-			
+
 		default:
 			return zero_rat, errors.New("Error in evaluate : floor")
 		}

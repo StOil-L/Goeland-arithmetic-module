@@ -8,7 +8,7 @@
 package types
 
 import (
-	typing "ARI/polymorphism"
+	typing "goeland-arith/ArithmTests/polymorphism"
 )
 
 /*** Structure ***/

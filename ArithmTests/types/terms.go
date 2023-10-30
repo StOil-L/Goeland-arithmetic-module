@@ -10,7 +10,7 @@ package types
 import (
 	"strconv"
 
-	typing "ARI/polymorphism"
+	typing "goeland-arith/ArithmTests/polymorphism"
 )
 
 /* Term */

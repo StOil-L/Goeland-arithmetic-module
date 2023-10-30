@@ -8,9 +8,10 @@
 package ari
 
 import (
-	typing "ARI/polymorphism"
-	"ARI/types"
 	"math/big"
+
+	typing "goeland-arith/ArithmTests/polymorphism"
+	"goeland-arith/ArithmTests/types"
 )
 
 func normalizationRule(p types.Pred) []types.FormList {

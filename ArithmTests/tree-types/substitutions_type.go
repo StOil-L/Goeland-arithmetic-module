@@ -41,7 +41,7 @@ package treetypes
 import (
 	"sort"
 
-	basictypes "ARI/types"
+	basictypes "goeland-arith/ArithmTests/types"
 )
 
 /* Stores the result of the algorithm and the substitutions for each metavariable. */

@@ -1,3 +1,3 @@
-module arith
+module goeland-arith
 
-go 1.17
+go 1.21.3

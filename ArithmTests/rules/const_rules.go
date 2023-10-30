@@ -8,8 +8,9 @@
 package ari
 
 import (
-	"ARI/types"
 	"fmt"
+
+	"goeland-arith/ArithmTests/types"
 )
 
 /** This function returns true if the constraint fits with artithmetic **/

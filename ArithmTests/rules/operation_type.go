@@ -8,10 +8,11 @@
 package ari
 
 import (
-	typing "ARI/polymorphism"
-	"ARI/types"
 	"fmt"
 	"math/big"
+
+	typing "goeland-arith/ArithmTests/polymorphism"
+	"goeland-arith/ArithmTests/types"
 )
 
 const (
