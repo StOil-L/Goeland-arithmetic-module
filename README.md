@@ -18,7 +18,7 @@ Enzo GOULESQUE
 
 Margaux RENOIR
 
-Tom SIMULA
+[Tom SIMULA](https://www.linkedin.com/in/tom-simula-5039b8193/)
 
 ## Context
 
