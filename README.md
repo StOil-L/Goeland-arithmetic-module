@@ -16,7 +16,7 @@ Enzo GOULESQUE
 
 [Lorenzo PUCCIO](https://github.com/StOil-L)
 
-Margaux RENOIR
+[Margaux RENOIR](https://www.linkedin.com/in/margaux-renoir-244479220/)
 
 [Tom SIMULA](https://www.linkedin.com/in/tom-simula-5039b8193/)
 
